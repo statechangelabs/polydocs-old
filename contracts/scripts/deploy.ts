@@ -1,18 +1,40 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  
+  const [signer_1, signer_2, signer_3] = await ethers.getSigners();
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  const Doc = await ethers.getContractFactory("Doc");
+  const doc = await Doc.deploy();
+  await doc.deployed();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  console.log("Doc deployed to:", doc.address);
 
-  await lock.deployed();
+  const txn =  await doc.connect(signer_1).mint();
+  const receipt = await txn.wait();
+  console.log("Minted 1 token to:", signer_1.address);
 
-  console.log("Lock with 1 ETH deployed to:", lock.address);
+  const txn2 = await doc.connect(signer_2).acceptTerms(0);
+  const receipt2 = await txn2.wait();
+  console.log("Accepted terms from:", signer_2.address);
+
+  const txn_transfer = await doc.connect(signer_1)["safeTransferFrom(address,address,uint256)"](signer_1.address, signer_2.address, 0);
+  const receipt_transfer = await txn_transfer.wait();
+  console.log("Transfer done to:", signer_2.address);
+
+  const setterms = await doc.connect(signer_1).setTermsURL(0, "sign this please");
+  const receipt_setterms = await setterms.wait();
+  console.log("Set terms url done!!!");
+
+  const acceptTerms = await doc.connect(signer_3).acceptTerms(0);
+  const receipt_acceptTerms = await acceptTerms.wait();
+  console.log("Accepted terms from:", signer_3.address);
+
+  const txn3 = await doc.connect(signer_2)["safeTransferFrom(address,address,uint256)"](signer_2.address, signer_3.address, 0);
+  const receipt_3 = await txn3.wait();
+  console.log("Transfer done to:", signer_3.address);
+
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
