@@ -12,29 +12,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
-contract Doc is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-    event MintNFT(address sender, uint256 tokenId);
+abstract contract Termsable is Ownable {
     event AcceptedTerms(address sender, uint256 tokenId, string terms);
 
     mapping(address => mapping(uint256 => bool)) hasAcceptedTerms;
     mapping(uint256 => string) tokenTermURLs;
 
     string _termsURL = "https://example.com/terms";
-
-    constructor() ERC721("GOAT BLOCS", "GOAT") {
-        console.log("This is my NFT contract. Woah!");
-    }
-
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
-        require(_acceptedTerms(to, tokenId), "Terms not accepted");
-        super._transfer(from, to, tokenId);
-    }
 
     function _acceptedTerms(address to, uint256 tokenId)
         internal
@@ -44,16 +28,20 @@ contract Doc is ERC721URIStorage, Ownable {
         return hasAcceptedTerms[to][tokenId];
     }
 
-    function acceptTerms(uint256 tokenId, string _termsURL) external {
-        require(_termsURL == termsURL(tokenId), "Terms URL does not match");
+    function acceptTerms(uint256 tokenId, string memory _termsURL) external {
+        require(
+            keccak256(bytes(_termsURL)) == keccak256(bytes(termsURL(tokenId))),
+            "Terms URL does not match"
+        );
         hasAcceptedTerms[msg.sender][tokenId] = true;
         emit AcceptedTerms(msg.sender, tokenId, termsURL(tokenId));
     }
 
-    function acceptedTerms(
-        address to,
-        uint256 tokenId,
-    ) external view returns (bool) {
+    function acceptedTerms(address to, uint256 tokenId)
+        external
+        view
+        returns (bool)
+    {
         return hasAcceptedTerms[to][tokenId];
     }
 
@@ -78,6 +66,25 @@ contract Doc is ERC721URIStorage, Ownable {
 
     function defaultTerms() external view returns (string memory) {
         return _termsURL;
+    }
+}
+
+contract Doc is ERC721URIStorage, Ownable, Termsable {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+    event MintNFT(address sender, uint256 tokenId);
+
+    constructor() ERC721("GOAT BLOCS", "GOAT") {
+        console.log("This is my NFT contract. Woah!");
+    }
+
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        require(_acceptedTerms(to, tokenId), "Terms not accepted");
+        super._transfer(from, to, tokenId);
     }
 
     function mint() public {
