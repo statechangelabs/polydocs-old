@@ -9,16 +9,18 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
 abstract contract Termsable is Ownable {
     event AcceptedTerms(address sender, uint256 tokenId, string terms);
-
+    uint256 _chainId = 137;
+    string _renderer = "ABCDEFG";
     mapping(address => mapping(uint256 => bool)) hasAcceptedTerms;
     mapping(uint256 => string) tokenTermURLs;
 
-    string _termsURL = "https://example.com/terms";
+    string _termsURL = "LMNOPQRST";
 
     function _acceptedTerms(address to, uint256 tokenId)
         internal
@@ -47,9 +49,41 @@ abstract contract Termsable is Ownable {
 
     function termsURL(uint256 tokenId) public view returns (string memory) {
         if (bytes(tokenTermURLs[tokenId]).length == 0) {
-            return _termsURL;
+            return
+                string(
+                    abi.encodePacked(
+                        "ipfs://",
+                        _renderer,
+                        "/#/",
+                        _termsURL,
+                        "/",
+                        Strings.toString(_chainId),
+                        ":",
+                        Strings.toHexString(uint160(address(this)), 20),
+                        "/",
+                        Strings.toString(tokenId),
+                        "/",
+                        Strings.toString(block.number)
+                    )
+                );
         } else {
-            return tokenTermURLs[tokenId];
+            return
+                string(
+                    abi.encodePacked(
+                        ("ipfs://"),
+                        _renderer,
+                        "/#/",
+                        tokenTermURLs[tokenId],
+                        "/",
+                        Strings.toString(_chainId),
+                        ":",
+                        Strings.toHexString(uint160(address(this)), 20),
+                        "/",
+                        Strings.toString(tokenId),
+                        "/",
+                        Strings.toString(block.number)
+                    )
+                );
         }
     }
 

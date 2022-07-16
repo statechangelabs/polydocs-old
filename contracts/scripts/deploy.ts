@@ -12,7 +12,7 @@ async function main() {
   const txn = await doc.connect(signer_1).mint();
   const receipt = await txn.wait();
   console.log("Minted 1 token to:", signer_1.address);
-
+  console.log("I'm about ot get terms. Let's see how this works...");
   const terms = await doc.connect(signer_1).termsURL(0);
   console.log("Terms URL:", terms);
 
