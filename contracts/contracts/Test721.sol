@@ -32,20 +32,23 @@ contract Test721 is ERC721URIStorage, Ownable, TokenTermsable {
         super._transfer(from, to, tokenId);
     }
 
-    function tokenTerm(string memory _key, uint256 _tokenId)
-        external
-        view
-        override
-        returns (string memory)
-    {
-        bytes32 keyHash = keccak256(bytes(_key));
+    function tokenTerm(
+        string memory _term,
+        uint256 _tokenId //changed from external to public
+    ) public view override returns (string memory) {
+        bytes32 keyHash = keccak256(bytes(_term));
         if (keyHash == keccak256("name")) {
             return name();
         }
         if (keyHash == keccak256("symbol")) {
             return symbol();
         }
-        return super.tokenTerm(_key, _tokenId);
+        return super.tokenTerm(_term, _tokenId);
+    }
+
+    function _safeMint(address _to, uint256 _tokenId) internal override {
+        require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
+        super._safeMint(_to, _tokenId);
     }
 
     function mint() public {

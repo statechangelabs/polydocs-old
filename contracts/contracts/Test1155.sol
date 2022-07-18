@@ -54,9 +54,17 @@ contract Test1155 is ERC1155Supply, ERC1155Burnable, Ownable, TokenTermsable {
         for (uint256 i = 0; i < ids.length; i++) {
             require(_acceptedTerms(to, ids[i]), "Terms not accepted");
         }
-
-        // require(_acceptedTerms(to, ids), "Terms not accepted");
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+    }
+
+    function _mint(
+        address _to,
+        uint256 _tokenId,
+        uint256 _amount,
+        bytes memory _data
+    ) internal override {
+        require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
+        super._mint(_to, _tokenId, _amount, _data);
     }
 
     function mint() public {

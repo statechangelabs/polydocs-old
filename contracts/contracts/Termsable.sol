@@ -185,12 +185,10 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         );
     }
 
-    function tokenTerm(string memory _term, uint256 _tokenId)
-        external
-        view
-        virtual
-        returns (string memory)
-    {
+    function tokenTerm(
+        string memory _term,
+        uint256 _tokenId //changed from external to public
+    ) public view virtual returns (string memory) {
         return _tokenTerms[_term][_tokenId];
     }
 }
