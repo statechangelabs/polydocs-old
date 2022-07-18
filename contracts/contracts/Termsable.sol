@@ -17,14 +17,6 @@ abstract contract TermsableBase is Ownable, TermReader {
     mapping(uint256 => string) _tokenDocTemplates;
     mapping(string => string) _globalTerms;
 
-    function setGlobalTerm(string memory _key, string memory _value)
-        external
-        onlyOwner
-    {
-        _globalTerms[_key] = _value;
-        emit GlobalTermAdded(keccak256(bytes(_key)), keccak256(bytes(_value)));
-    }
-
     function setTemplate(string memory _newDocTemplate) external onlyOwner {
         _docTemplate = _newDocTemplate;
     }
@@ -33,48 +25,16 @@ abstract contract TermsableBase is Ownable, TermReader {
         return _docTemplate;
     }
 
-    function term(string memory _key) public view returns (string memory) {
-        return _globalTerms[_key];
+    function setGlobalTerm(string memory _key, string memory _value)
+        external
+        onlyOwner
+    {
+        _globalTerms[_key] = _value;
+        emit GlobalTermAdded(keccak256(bytes(_key)), keccak256(bytes(_value)));
     }
 
-    function termsUrl(uint256 tokenId) public view returns (string memory) {
-        if (bytes(_tokenDocTemplates[tokenId]).length == 0) {
-            return
-                string(
-                    abi.encodePacked(
-                        "ipfs://",
-                        _renderer,
-                        "/#/",
-                        _docTemplate,
-                        "/",
-                        Strings.toString(_chainId),
-                        "/",
-                        Strings.toHexString(uint160(address(this)), 20),
-                        "/",
-                        Strings.toString(tokenId),
-                        "/",
-                        Strings.toString(block.number)
-                    )
-                );
-        } else {
-            return
-                string(
-                    abi.encodePacked(
-                        ("ipfs://"),
-                        _renderer,
-                        "/#/",
-                        _tokenDocTemplates[tokenId],
-                        "/",
-                        Strings.toString(_chainId),
-                        "/",
-                        Strings.toHexString(uint160(address(this)), 20),
-                        "/",
-                        Strings.toString(tokenId),
-                        "/",
-                        Strings.toString(block.number)
-                    )
-                );
-        }
+    function term(string memory _key) public view returns (string memory) {
+        return _globalTerms[_key];
     }
 }
 
@@ -145,6 +105,46 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         returns (bool)
     {
         return _acceptedTerms(to, tokenId);
+    }
+
+    function termsUrl(uint256 tokenId) public view returns (string memory) {
+        if (bytes(_tokenDocTemplates[tokenId]).length == 0) {
+            return
+                string(
+                    abi.encodePacked(
+                        "ipfs://",
+                        _renderer,
+                        "/#/",
+                        _docTemplate,
+                        "/",
+                        Strings.toString(_chainId),
+                        "/",
+                        Strings.toHexString(uint160(address(this)), 20),
+                        "/",
+                        Strings.toString(tokenId),
+                        "/",
+                        Strings.toString(block.number)
+                    )
+                );
+        } else {
+            return
+                string(
+                    abi.encodePacked(
+                        ("ipfs://"),
+                        _renderer,
+                        "/#/",
+                        _tokenDocTemplates[tokenId],
+                        "/",
+                        Strings.toString(_chainId),
+                        "/",
+                        Strings.toHexString(uint160(address(this)), 20),
+                        "/",
+                        Strings.toString(tokenId),
+                        "/",
+                        Strings.toString(block.number)
+                    )
+                );
+        }
     }
 
     function setTokenTemplate(uint256 tokenID, string memory _newTermsUrl)
