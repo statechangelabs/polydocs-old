@@ -96,8 +96,8 @@ const Renderer: FC = () => {
   return (
     <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
       <div className="flex-col flex h-full print:h-full">
-        <div className="m-5 flex overflow-y-auto flex-row justify-center max-h-full">
-          <div className="prose bg-white p-2 m-4 w-full max-w-200 overflow-y-auto">
+        <div className="m-2 flex overflow-y-auto flex-row justify-center max-h-full">
+          <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto">
             <Markdown>{output}</Markdown>
           </div>
         </div>
