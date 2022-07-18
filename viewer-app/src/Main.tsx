@@ -53,8 +53,7 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
             : await contract.term(realKey, {
                 blockTag,
               });
-
-          setTerms((prev) => ({ ...prev, [key]: term }));
+          if (term) setTerms((prev) => ({ ...prev, [key]: `**${term}**` }));
           console.log("Got my glboal term", key, term);
         } else {
           console.log("Getting a token term", realKey, token);
@@ -64,8 +63,8 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
             : await contract.tokenTerm(realKey, token, {
                 blockTag,
               });
-          console.log("Got my token term", key, term);
-          // setTerms((prev) => ({ ...prev, [key]: term }));
+          console.log("Got my token term", key, term, blockTag);
+          if (term) setTerms((prev) => ({ ...prev, [key]: `**${term}**` }));
         }
       } catch (e) {
         console.error("My life is so hard", e);
@@ -74,7 +73,10 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
     [address, token]
   );
   console.log("my terms are", terms);
-  //http://localhost:3000/#/bafkreiee2jjuq5j6ccz57qvkatmirtqkhw3jg5orhe34ihfmyuunta7i54::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
+  //http://localhost:3000/
+  // #/bafkreiahgnurv72abvrvlvl4s2k62s4kxwxuc56l7eyfwhh3tatnmt4poa::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
+
+  // https://ipfs.io/ipfs/bafybeia45ccvqp632ysddhs3bykp3j273pkoxnuaq24r37mh3dl4g3qmvm/#/bafkreiahgnurv72abvrvlvl4s2k62s4kxwxuc56l7eyfwhh3tatnmt4poa::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
 
   return useMemo(() => ({ terms, addTerm }), [terms, addTerm]);
 };
@@ -90,7 +92,7 @@ const Renderer: FC = () => {
     typeof tokenId === "undefined" ? undefined : bigTokenId
   );
   useEffect(() => {
-    console.log("Terms changed");
+    console.log("Terms changed", terms);
   }, [terms]);
   useEffect(() => {
     if (template) {
