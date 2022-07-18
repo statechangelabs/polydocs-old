@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 async function main() {
   const [signer_1, signer_2, signer_3] = await ethers.getSigners();
 
-  const Doc = await ethers.getContractFactory("Doc");
+  const Doc = await ethers.getContractFactory("Test721");
   const doc = await Doc.deploy();
   await doc.deployed();
 
