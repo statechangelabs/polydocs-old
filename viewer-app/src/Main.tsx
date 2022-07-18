@@ -1,55 +1,86 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIPFSText } from "./useIPFS";
 import { BigNumber, ethers } from "ethers";
 import { useChainId } from "@raydeck/usemetamask";
-import { TermReader__factory } from "./contracts";
+import { TokenTermReader__factory } from "./contracts";
 import Mustache from "mustache";
+import Markdown from "react-markdown";
 let fragment = window.location.hash;
 if (fragment.startsWith("#/")) fragment = fragment.substring(2);
 else if (fragment.startsWith("#")) fragment = fragment.substring(1);
-const [documentId, chainId, contractAddress, block, tokenId] =
+const [documentId, chainId, contractAddress, blockTag, tokenId] =
   fragment.split("::");
-console.log({ documentId, chainId, contractAddress, block, tokenId });
+console.log({ documentId, chainId, contractAddress, blockTag, tokenId });
+const bigTokenId = BigNumber.from(tokenId);
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
-  ? new ethers.providers.Web3Provider(ethereum)
+  ? new ethers.providers.Web3Provider(
+      ethereum
+      // "0x" + Number.parseInt(chainId, 10).toString(16)
+    )
   : undefined;
+
 export const useTerms = (address: string, token?: ethers.BigNumber) => {
   const [terms, setTerms] = useState<Record<string, string>>({});
+  const termRef = useRef(terms);
+  termRef.current = terms;
   const addTerm = useCallback(
     async (key: string) => {
-      const [realKey, defaultValue] = key.split(",");
-      console.log("Evaluationg", { realKey, defaultValue });
+      const [realKey, _defaultValue] = key.split(",");
+      if (termRef.current[key]) {
+        console.log("I have term already for ", key);
+        return;
+      }
+      console.log("Got past with ", key, termRef.current);
+      const defaultValue = _defaultValue ?? `**${realKey} MISSING**`;
+      console.log("Evaluating", { realKey, defaultValue });
       setTerms((prev) => {
         if (prev[key]) return prev;
         return { ...prev, [key]: defaultValue };
       });
       try {
+        console.log("Gonna try to get my data");
+        console.log("Checking for a provider");
         if (!provider) return;
-        const contract = TermReader__factory.connect(address, provider);
+        console.log("got my provider");
+        const contract = TokenTermReader__factory.connect(address, provider);
+        console.log("Got my contract", address);
         if (typeof token === "undefined") {
-          const term = await contract.getTerm(realKey);
+          console.log("getting a global term");
+          const term = await contract.term(realKey, { blockTag });
           setTerms((prev) => ({ ...prev, [key]: term }));
+          console.log("Got my glboal term", key, term);
         } else {
-          const term = await contract.getTokenTerm(realKey, token);
-          setTerms((prev) => ({ ...prev, [key]: term }));
+          console.log("Getting a token term", realKey, token);
+          const term = await contract.tokenTerm(realKey, token);
+          console.log("Got my token term", key, term);
+          // setTerms((prev) => ({ ...prev, [key]: term }));
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("My life is so hard", e);
+      }
     },
     [address, token]
   );
   console.log("my terms are", terms);
-  return { terms, addTerm };
+  //http://localhost:3000/#/bafkreiee2jjuq5j6ccz57qvkatmirtqkhw3jg5orhe34ihfmyuunta7i54::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
+
+  return useMemo(() => ({ terms, addTerm }), [terms, addTerm]);
 };
+
 const Renderer: FC = () => {
-  // const template = useIPFSText(documentId);
-  const template = `Hello and I am {{myname, NAME GOES HERE}} so I ask hello there {{ipfs:CID, BOBBLE}}`; // useIPFSText(documentId);
-  const _chainId = useChainId();
+  const template = useIPFSText(documentId);
+
+  // const template = `# Hello!
+  //  and I am {{Name, NAME GOES HERE}} so I ask hello there {{ipfs:CID, BOBBLE}}`; // useIPFSText(documentId);
   console.log("I'm gonna useterms", tokenId);
   const { terms, addTerm } = useTerms(
     contractAddress,
-    typeof tokenId === "undefined" ? undefined : BigNumber.from(tokenId)
+    typeof tokenId === "undefined" ? undefined : bigTokenId
   );
+  useEffect(() => {
+    console.log("Terms changed");
+  }, [terms]);
   useEffect(() => {
     if (template) {
       const spans = Mustache.parse(template);
@@ -60,35 +91,25 @@ const Renderer: FC = () => {
     }
   }, [template, addTerm]);
   if (!template) return <div>"Loading..."</div>;
-  if (_chainId !== "0x" + Number.parseInt(chainId, 10).toString(16))
-    return (
-      <div>
-        "Oh noes wrong chain {chainId}{" "}
-        {"0x" + Number.parseInt(chainId, 10).toString(16)}
-      </div>
-    );
   if (!provider) return <div>"No provider"</div>;
   const output = Mustache.render(template, terms);
-
-  console.log("temp output", output);
-  //   useEffect(() => {}, [contract, template]);
   return (
-    <div>
-      fragment: {fragment}
-      <pre>
-        {JSON.stringify(
-          {
-            documentId,
-            chainId,
-            contractAddress,
-            block,
-            tokenId,
-          },
-          null,
-          2
-        )}
-      </pre>
-      <div className="prose">{output}</div>
+    <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
+      <div className="flex-col flex h-full print:h-full">
+        <div className="m-5 flex overflow-y-auto flex-row justify-center max-h-full">
+          <div className="prose bg-white p-2 m-4 w-full max-w-200 overflow-y-auto">
+            <Markdown>{output}</Markdown>
+          </div>
+        </div>
+        <div className=" w-full flex flex-row justify-center print:hidden">
+          <button
+            className="bg-blue-500 text-white font-medium rounded-md p-2"
+            onClick={() => window.print()}
+          >
+            Print
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

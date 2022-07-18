@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { TermReader } from "./TermReader";
+export type { TokenTermReader } from "./TokenTermReader";
 export * as factories from "./factories";
 export { TermReader__factory } from "./factories/TermReader__factory";
+export { TokenTermReader__factory } from "./factories/TokenTermReader__factory";

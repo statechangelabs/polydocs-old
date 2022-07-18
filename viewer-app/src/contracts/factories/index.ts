@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export { TermReader__factory } from "./TermReader__factory";
+export { TokenTermReader__factory } from "./TokenTermReader__factory";

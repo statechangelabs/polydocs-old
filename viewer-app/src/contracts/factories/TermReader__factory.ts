@@ -27,31 +27,6 @@ const _abi = [
     type: "event",
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "term",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "bytes32",
-        name: "value",
-        type: "bytes32",
-      },
-    ],
-    name: "TokenTermAdded",
-    type: "event",
-  },
-  {
     inputs: [
       {
         internalType: "string",
@@ -59,31 +34,7 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "getTerm",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "_key",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "_tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "getTokenTerm",
+    name: "term",
     outputs: [
       {
         internalType: "string",

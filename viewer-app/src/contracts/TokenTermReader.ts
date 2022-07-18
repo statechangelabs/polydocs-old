@@ -4,6 +4,7 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   PopulatedTransaction,
@@ -24,25 +25,33 @@ import type {
   PromiseOrValue,
 } from "./common";
 
-export interface TermReaderInterface extends utils.Interface {
+export interface TokenTermReaderInterface extends utils.Interface {
   functions: {
     "term(string)": FunctionFragment;
+    "tokenTerm(string,uint256)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "term"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "term" | "tokenTerm"): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "term",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "tokenTerm",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
 
   decodeFunctionResult(functionFragment: "term", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
 
   events: {
     "GlobalTermAdded(bytes32,bytes32)": EventFragment;
+    "TokenTermAdded(bytes32,uint256,bytes32)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "GlobalTermAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTermAdded"): EventFragment;
 }
 
 export interface GlobalTermAddedEventObject {
@@ -56,12 +65,24 @@ export type GlobalTermAddedEvent = TypedEvent<
 
 export type GlobalTermAddedEventFilter = TypedEventFilter<GlobalTermAddedEvent>;
 
-export interface TermReader extends BaseContract {
+export interface TokenTermAddedEventObject {
+  term: string;
+  tokenId: BigNumber;
+  value: string;
+}
+export type TokenTermAddedEvent = TypedEvent<
+  [string, BigNumber, string],
+  TokenTermAddedEventObject
+>;
+
+export type TokenTermAddedEventFilter = TypedEventFilter<TokenTermAddedEvent>;
+
+export interface TokenTermReader extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TermReaderInterface;
+  interface: TokenTermReaderInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -87,6 +108,12 @@ export interface TermReader extends BaseContract {
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    tokenTerm(
+      _key: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
   };
 
   term(
@@ -94,9 +121,21 @@ export interface TermReader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  tokenTerm(
+    _key: PromiseOrValue<string>,
+    _tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   callStatic: {
     term(
       _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenTerm(
+      _key: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
   };
@@ -110,6 +149,17 @@ export interface TermReader extends BaseContract {
       term?: PromiseOrValue<BytesLike> | null,
       value?: null
     ): GlobalTermAddedEventFilter;
+
+    "TokenTermAdded(bytes32,uint256,bytes32)"(
+      term?: PromiseOrValue<BytesLike> | null,
+      tokenId?: PromiseOrValue<BigNumberish> | null,
+      value?: null
+    ): TokenTermAddedEventFilter;
+    TokenTermAdded(
+      term?: PromiseOrValue<BytesLike> | null,
+      tokenId?: PromiseOrValue<BigNumberish> | null,
+      value?: null
+    ): TokenTermAddedEventFilter;
   };
 
   estimateGas: {
@@ -117,11 +167,23 @@ export interface TermReader extends BaseContract {
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    tokenTerm(
+      _key: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     term(
       _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenTerm(
+      _key: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
