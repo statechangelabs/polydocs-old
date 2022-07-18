@@ -30,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "restart": "rm -rf node_modules/.cache && yarn livelink once && yarn start"
+    "restart": "rm -rf node_modules/.cache && yarn livelink once && yarn start",
+    "upload": "PUBLIC_URL=. yarn build && yarn uploader -p build"
   },
   "eslintConfig": {
     "extends": [
@@ -55,11 +56,13 @@
     "@types/mustache": "^4.1.3",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
-    "tailwindcss": "^3.1.6"
+    "tailwindcss": "^3.1.6",
+    "uploader": "../uploader/package.tgz"
   },
   "liveLink": {
     "liveLinks": {
-      "@raydeck/usemetamask": "../../usemetamask"
+      "@raydeck/usemetamask": "../../usemetamask",
+      "uploader": "../uploader"
     }
   }
 }
