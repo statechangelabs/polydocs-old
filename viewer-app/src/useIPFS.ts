@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import useAsyncEffect from "./useAsyncEffect";
 import { decode, encode } from "base64-arraybuffer";
-import { abort } from "process";
 let gateway = "https://ipfs.io/ipfs/";
 export const setGateway = (newGateway: string) => {
   gateway = newGateway;

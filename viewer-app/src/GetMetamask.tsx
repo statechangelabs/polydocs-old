@@ -6,7 +6,7 @@ const GetMetamask: FC = () => {
   return (
     <div className="h-screen w-screen flex flex-col justify-center align-center bg-gradient-to-r from-pink-600 to-blue-900 ">
       <h1 className="flex flex-row justify-center text-5xl font-extrabold m-5">
-        <img src={Logo} className="h-16" />
+        <img src={Logo} alt="Logo" className="h-16" />
         <span className="text-purple-300">Poly</span>Chat
       </h1>
       <p className="flex flex-row justify-center text-2xl font-bold m-5 text-purple-300">
