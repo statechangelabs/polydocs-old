@@ -17,6 +17,14 @@ abstract contract TermsableBase is Ownable, TermReader {
     mapping(uint256 => string) _tokenDocTemplates;
     mapping(string => string) _globalTerms;
 
+    function setRenderer(string memory _newRenderer) external onlyOwner {
+        _renderer = _newRenderer;
+    }
+
+    function renderer() public view returns (string memory) {
+        return _renderer;
+    }
+
     function setTemplate(string memory _newDocTemplate) external onlyOwner {
         _docTemplate = _newDocTemplate;
     }
