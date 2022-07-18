@@ -1,16 +1,15 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIPFSText } from "./useIPFS";
 import { BigNumber, ethers } from "ethers";
-import { useChainId } from "@raydeck/usemetamask";
 import { TokenTermReader__factory } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
 let fragment = window.location.hash;
 if (fragment.startsWith("#/")) fragment = fragment.substring(2);
 else if (fragment.startsWith("#")) fragment = fragment.substring(1);
-const [documentId, chainId, contractAddress, blockTag, tokenId] =
+const [documentId, chainId, contractAddress, block, tokenId] =
   fragment.split("::");
-console.log({ documentId, chainId, contractAddress, blockTag, tokenId });
+console.log({ documentId, chainId, contractAddress, block, tokenId });
 const bigTokenId = BigNumber.from(tokenId);
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
@@ -45,14 +44,26 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
         console.log("got my provider");
         const contract = TokenTermReader__factory.connect(address, provider);
         console.log("Got my contract", address);
+        const blockTag = parseInt(block);
         if (typeof token === "undefined") {
           console.log("getting a global term");
-          const term = await contract.term(realKey, { blockTag });
+
+          const term = isNaN(blockTag)
+            ? await contract.term(realKey)
+            : await contract.term(realKey, {
+                blockTag,
+              });
+
           setTerms((prev) => ({ ...prev, [key]: term }));
           console.log("Got my glboal term", key, term);
         } else {
           console.log("Getting a token term", realKey, token);
-          const term = await contract.tokenTerm(realKey, token);
+
+          const term = isNaN(blockTag)
+            ? await contract.tokenTerm(realKey, token)
+            : await contract.tokenTerm(realKey, token, {
+                blockTag,
+              });
           console.log("Got my token term", key, term);
           // setTerms((prev) => ({ ...prev, [key]: term }));
         }
@@ -96,8 +107,8 @@ const Renderer: FC = () => {
   return (
     <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
       <div className="flex-col flex h-full print:h-full">
-        <div className="m-2 flex overflow-y-auto flex-row justify-center max-h-full">
-          <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto">
+        <div className="m-2 flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
+          <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible">
             <Markdown>{output}</Markdown>
           </div>
         </div>
