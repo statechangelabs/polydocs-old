@@ -1,6 +1,6 @@
-import { ethers } from "hardhat";
-import fs from 'fs';
-
+import hre, { network, ethers } from "hardhat";
+import fs from "fs";
+import { execSync } from "child_process";
 async function main() {
   // const [signer_1, signer_2, signer_3] = await ethers.getSigners();
 
@@ -9,20 +9,27 @@ async function main() {
   await doc.deployed();
 
   console.log("Doc deployed to:", doc.address);
-  
-  
+
   let config = `
   export const ERC721address = "${doc.address}";
   export const ERC721abi = ${JSON.stringify(doc.interface)};
   `;
-
+  const onThisNetwork = network.name;
+  if (onThisNetwork && onThisNetwork !== "hardhat") {
+    setTimeout(() => {
+      const cmd = `yarn hardhat verify ${doc.address} --network ${onThisNetwork}`;
+      console.log("Running", cmd);
+      execSync(cmd, {
+        stdio: "inherit",
+      });
+    }, 30000);
+  }
   let data = JSON.stringify(config);
-  fs.writeFileSync('./config.ts', JSON.parse(data));
+  fs.writeFileSync("./config.ts", JSON.parse(data));
 
   const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
   const receipt_setTerms = await txn_setTerms.wait();
   console.log("Terms set!");
-
 
   // const txn = await doc.connect(signer_1).mint();
   // const receipt = await txn.wait();

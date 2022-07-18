@@ -124,14 +124,14 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
                         _renderer,
                         "/#/",
                         _docTemplate,
-                        "/",
+                        "::",
                         Strings.toString(_chainId),
-                        "/",
+                        "::",
                         Strings.toHexString(uint160(address(this)), 20),
-                        "/",
-                        Strings.toString(tokenId),
-                        "/",
-                        Strings.toString(block.number)
+                        "::",
+                        Strings.toString(block.number),
+                        "::",
+                        Strings.toString(tokenId)
                     )
                 );
         } else {
@@ -142,14 +142,14 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
                         _renderer,
                         "/#/",
                         _tokenDocTemplates[tokenId],
-                        "/",
+                        "::",
                         Strings.toString(_chainId),
-                        "/",
+                        "::",
                         Strings.toHexString(uint160(address(this)), 20),
-                        "/",
-                        Strings.toString(tokenId),
-                        "/",
-                        Strings.toString(block.number)
+                        "::",
+                        Strings.toString(block.number),
+                        "::",
+                        Strings.toString(tokenId)
                     )
                 );
         }
@@ -185,10 +185,14 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         );
     }
 
-    function tokenTerm(
-        string memory _term,
-        uint256 _tokenId //changed from external to public
-    ) public view virtual returns (string memory) {
-        return _tokenTerms[_term][_tokenId];
+    function tokenTerm(string memory _term, uint256 _tokenId)
+        public
+        view
+        virtual
+        returns (string memory)
+    {
+        if (bytes(_tokenTerms[_term][_tokenId]).length > 0)
+            return _tokenTerms[_term][_tokenId];
+        else return _globalTerms[_term];
     }
 }
