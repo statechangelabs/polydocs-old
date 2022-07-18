@@ -1990,10 +1990,10 @@
     commander "^6.2.1"
     inquirer "^7.3.3"
 
-"@raydeck/usemetamask@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@raydeck/usemetamask/-/usemetamask-1.0.2.tgz#8db1b0aa6edee1463f1fba694f766b0a18480c6c"
-  integrity sha512-/A0ZLemInwOOvd5V+JWKnEhRk7IdaeDif7L3eULALz2J1cEF/Dvb/NVWRvGF5YKNTsnKT1aeOGFu6Ol0D5Gixg==
+"@raydeck/usemetamask@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@raydeck/usemetamask/-/usemetamask-1.1.0.tgz#1fdbdf684d8a8c7d419abc8ded84d6b0220d90c7"
+  integrity sha512-eO8ZWRN6lLmyy7HrNbFmmVjCTuKY3/2+GaK+atZ+ERbFIQ0LOY1JaniCZk/ezGi6drVpEfmcWQqLAtwpPs+pGA==
   dependencies:
     "@raydeck/metamask-ts" "^1.0.2"
     commander "^6.2.1"
