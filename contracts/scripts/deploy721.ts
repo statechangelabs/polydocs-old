@@ -12,7 +12,6 @@ async function main() {
 
   let config = `
   export const ERC721address = "${doc.address}";
-  export const ERC721abi = ${JSON.stringify(doc.interface)};
   `;
   const onThisNetwork = network.name;
   if (onThisNetwork && onThisNetwork !== "hardhat") {
@@ -26,6 +25,11 @@ async function main() {
   }
   let data = JSON.stringify(config);
   fs.writeFileSync("./config.ts", JSON.parse(data));
+  fs.writeFileSync(
+    "contracts.txt",
+    `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}`,
+    { mode: "a+" }
+  );
 
   const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
   const receipt_setTerms = await txn_setTerms.wait();
