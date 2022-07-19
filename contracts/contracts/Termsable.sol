@@ -11,14 +11,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./TermReader.sol";
 
 abstract contract TermsableBase is Ownable, TermReader {
-    uint256 _chainId = 137;
+    // uint256 _chainId = 137;
     string _renderer = "ABCDEFG";
     string _docTemplate = "LMNOPQRST";
     mapping(uint256 => string) _tokenDocTemplates;
     mapping(string => string) _globalTerms;
+    uint256 _lastTermChange = 0;
 
     function setRenderer(string memory _newRenderer) external onlyOwner {
         _renderer = _newRenderer;
+        _lastTermChange = block.number;
     }
 
     function renderer() public view returns (string memory) {
@@ -27,6 +29,7 @@ abstract contract TermsableBase is Ownable, TermReader {
 
     function setTemplate(string memory _newDocTemplate) external onlyOwner {
         _docTemplate = _newDocTemplate;
+        _lastTermChange = block.number;
     }
 
     function docTemplate() external view returns (string memory) {
@@ -39,10 +42,15 @@ abstract contract TermsableBase is Ownable, TermReader {
     {
         _globalTerms[_key] = _value;
         emit GlobalTermAdded(keccak256(bytes(_key)), keccak256(bytes(_value)));
+        _lastTermChange = block.number;
     }
 
     function term(string memory _key) public view returns (string memory) {
         return _globalTerms[_key];
+    }
+
+    function currentTermsBlock() public view returns (uint256) {
+        return _lastTermChange;
     }
 }
 
@@ -64,21 +72,37 @@ abstract contract TermsableNoToken is TermsableBase {
     }
 
     function termsUrl() public view returns (string memory) {
+        return _termsUrlWithPrefix("ipfs://");
+    }
+
+    function termsUrlWithPrefix(string memory prefix)
+        public
+        view
+        returns (string memory)
+    {
+        return _termsUrlWithPrefix(prefix);
+    }
+
+    function _termsUrlWithPrefix(string memory prefix)
+        public
+        view
+        returns (string memory)
+    {
         return
             string(
                 abi.encodePacked(
-                    "ipfs://",
+                    prefix,
                     _renderer,
                     "/#/",
                     _docTemplate,
                     "::",
                     Strings.toString(block.number),
                     "::",
-                    Strings.toString(_chainId),
+                    Strings.toString(block.chainid),
                     "::",
                     Strings.toHexString(uint160(address(this)), 20),
                     "::",
-                    Strings.toString(block.number)
+                    Strings.toString(_lastTermChange)
                 )
             );
     }
@@ -116,20 +140,28 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
     }
 
     function termsUrl(uint256 tokenId) public view returns (string memory) {
+        return _termsUrlWithPrefix(tokenId, "ipfs://");
+    }
+
+    function _termsUrlWithPrefix(uint256 tokenId, string memory prefix)
+        internal
+        view
+        returns (string memory)
+    {
         if (bytes(_tokenDocTemplates[tokenId]).length == 0) {
             return
                 string(
                     abi.encodePacked(
-                        "ipfs://",
+                        prefix,
                         _renderer,
                         "/#/",
                         _docTemplate,
                         "::",
-                        Strings.toString(_chainId),
+                        Strings.toString(block.chainid),
                         "::",
                         Strings.toHexString(uint160(address(this)), 20),
                         "::",
-                        Strings.toString(block.number),
+                        Strings.toString(_lastTermChange),
                         "::",
                         Strings.toString(tokenId)
                     )
@@ -138,16 +170,16 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
             return
                 string(
                     abi.encodePacked(
-                        ("ipfs://"),
+                        prefix,
                         _renderer,
                         "/#/",
                         _tokenDocTemplates[tokenId],
                         "::",
-                        Strings.toString(_chainId),
+                        Strings.toString(block.chainid),
                         "::",
                         Strings.toHexString(uint160(address(this)), 20),
                         "::",
-                        Strings.toString(block.number),
+                        Strings.toString(_lastTermChange),
                         "::",
                         Strings.toString(tokenId)
                     )
@@ -155,11 +187,20 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         }
     }
 
+    function termsUrlWithPrefix(uint256 _tokenId, string memory prefix)
+        public
+        view
+        returns (string memory)
+    {
+        return _termsUrlWithPrefix(_tokenId, prefix);
+    }
+
     function setTokenTemplate(uint256 tokenID, string memory _newTermsUrl)
         external
         onlyOwner
     {
         _tokenDocTemplates[tokenID] = _newTermsUrl;
+        _lastTermChange = block.number;
     }
 
     function tokenDocTemplate(string memory _key, uint256 _tokenId)
@@ -183,6 +224,7 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
             _tokenId,
             keccak256(bytes(_value))
         );
+        _lastTermChange = block.number;
     }
 
     function tokenTerm(string memory _term, uint256 _tokenId)
