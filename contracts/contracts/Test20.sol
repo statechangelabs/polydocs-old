@@ -34,13 +34,14 @@ contract Test20 is ERC20, Ownable, TermsableNoToken {
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 amount
+        uint256 _amount
     ) internal virtual override {
         require(acceptedTerms(to), "Terms not accepted");
-        super._beforeTokenTransfer(from, to, amount);
+        super._beforeTokenTransfer(from, to, _amount);
     }
 
-    function mint(address account, uint256 amount) external onlyOwner {
-        _mint(account, amount);
+    function mint(address account, uint256 _amount) external onlyOwner {
+        require(acceptedTerms(account), "Terms not accepted");
+        _mint(account, _amount);
     }
 }

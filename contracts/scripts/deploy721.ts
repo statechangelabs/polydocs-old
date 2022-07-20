@@ -27,8 +27,9 @@ async function main() {
   fs.writeFileSync("./config.ts", JSON.parse(data));
   fs.writeFileSync(
     "contracts.txt",
-    `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}`,
-    { mode: "a+" }
+    `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}
+`,
+    { flag: "a" }
   );
 
   const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
