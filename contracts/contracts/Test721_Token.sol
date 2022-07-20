@@ -14,7 +14,7 @@ import "./Termsable.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
-contract Test721 is ERC721URIStorage, Ownable, TokenTermsable {
+contract Test721_Token is ERC721URIStorage, Ownable, TokenTermsable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     event MintNFT(address sender, uint256 tokenId);

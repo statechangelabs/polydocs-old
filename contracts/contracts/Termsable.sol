@@ -58,8 +58,12 @@ abstract contract TermsableNoToken is TermsableBase {
     event AcceptedTerms(address sender, string terms);
     mapping(address => bool) _hasAcceptedTerms;
 
-    function acceptedTerms(address _address) public view returns (bool) {
-        return _hasAcceptedTerms[_address];
+    function _acceptedTerms(address _to) internal view returns (bool) {
+        return _hasAcceptedTerms[_to];
+    }
+
+    function acceptedTerms(address _address) external view returns (bool) {
+        return _acceptedTerms(_address);
     }
 
     function acceptTerms(string memory _newtermsUrl) public {

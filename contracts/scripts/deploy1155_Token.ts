@@ -1,17 +1,18 @@
 import hre, { network, ethers } from "hardhat";
 import fs from "fs";
 import { execSync } from "child_process";
-async function main() {
-  // const [signer_1, signer_2, signer_3] = await ethers.getSigners();
 
-  const Doc = await ethers.getContractFactory("Test721");
-  const doc = await Doc.deploy();
+async function main() {
+  const [signer_1, signer_2, signer_3] = await ethers.getSigners();
+
+  const Doc = await ethers.getContractFactory("Test1155_Token");
+  const doc = await Doc.deploy("TestNFT","TNFT","sampleuri");
   await doc.deployed();
 
-  console.log("Doc deployed to:", doc.address);
+  console.log("1155_Token deployed to:", doc.address);
 
-  let config = `
-  export const ERC721address = "${doc.address}";
+    let config = `
+  export const ERC1155_NoToken address = "${doc.address}";
   `;
   const onThisNetwork = network.name;
   if (onThisNetwork && onThisNetwork !== "hardhat") {
@@ -32,10 +33,6 @@ async function main() {
     { flag: "a" }
   );
 
-  const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
-  const receipt_setTerms = await txn_setTerms.wait();
-  console.log("Terms set!");
-
   // const txn = await doc.connect(signer_1).mint();
   // const receipt = await txn.wait();
   // console.log("Minted 1 token to:", signer_1.address);
@@ -48,11 +45,10 @@ async function main() {
   // console.log("Accepted terms from:", signer_2.address);
 
   // const txn_transfer = await doc
-  //   .connect(signer_1)
-  //   ["safeTransferFrom(address,address,uint256)"](
+  //   .connect(signer_1).safeTransferFrom(
   //     signer_1.address,
   //     signer_2.address,
-  //     0
+  //     0, 1, ""
   //   );
   // const receipt_transfer = await txn_transfer.wait();
   // console.log("Transfer done to:", signer_2.address);
@@ -68,11 +64,10 @@ async function main() {
   // console.log("Accepted terms from:", signer_3.address);
 
   // const txn3 = await doc
-  //   .connect(signer_2)
-  //   ["safeTransferFrom(address,address,uint256)"](
+  //   .connect(signer_2).safeTransferFrom(
+  //     signer_1.address,
   //     signer_2.address,
-  //     signer_3.address,
-  //     0
+  //     0, 1, ""
   //   );
   // const receipt_3 = await txn3.wait();
   // console.log("Transfer done to:", signer_3.address);
