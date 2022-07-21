@@ -45,7 +45,11 @@ abstract contract TermsableBase is Ownable, TermReader {
         _lastTermChange = block.number;
     }
 
-    function term(string memory _key) public view returns (string memory) {
+    function globalTerm(string memory _key)
+        public
+        view
+        returns (string memory)
+    {
         return _globalTerms[_key];
     }
 
@@ -207,14 +211,14 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         _lastTermChange = block.number;
     }
 
-    function tokenDocTemplate(string memory _key, uint256 _tokenId)
+    function tokenDocTemplate(uint256 _tokenId)
         public
         view
         returns (string memory)
     {
-        if (bytes(_tokenTerms[_key][_tokenId]).length > 0)
-            return _tokenTerms[_key][_tokenId];
-        else return _globalTerms[_key];
+        if (bytes(_tokenDocTemplates[_tokenId]).length == 0)
+            return _docTemplate;
+        else return _tokenDocTemplates[_tokenId];
     }
 
     function setTokenTerm(
