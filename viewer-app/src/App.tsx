@@ -7,11 +7,17 @@ import {
   useReloadOnChainChange,
 } from "@raydeck/usemetamask";
 import GetMetamask from "./GetMetamask";
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 import Main from "./Main";
 import WrongChain from "./WrongChain";
-const fragment = window.location.hash;
-const [, chainId] = fragment.split("::");
+let fragment = window.location.hash;
+if (fragment.startsWith("#/")) fragment = fragment.substring(2);
+else if (fragment.startsWith("#")) fragment = fragment.substring(1);
+const [documentId, chainId, contractAddress, block, tokenId] =
+  fragment.split("::");
 const base16Chain = "0x" + Number.parseInt(chainId).toString(16);
 
 function App() {
@@ -26,8 +32,14 @@ function App() {
         <WrongChain />
       </MetamaskWrongChain>
       <MetamaskConnected chainIds={[base16Chain]}>
-        <Main />
+        <Main
+          block={block}
+          contractAddress={contractAddress}
+          documentId={documentId}
+          tokenId={tokenId}
+        />
       </MetamaskConnected>
+      <ToastContainer />
     </Fragment>
   );
 }

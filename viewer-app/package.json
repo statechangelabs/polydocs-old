@@ -15,6 +15,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "base64-arraybuffer": "^1.0.2",
+    "clipboard-copy": "^4.0.1",
     "ethers": "^5.6.9",
     "mustache": "^4.2.0",
     "react": "^18.2.0",
@@ -22,6 +23,7 @@
     "react-icons": "^4.4.0",
     "react-markdown": "^8.0.3",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.0.7",
     "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },

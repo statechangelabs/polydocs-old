@@ -4,22 +4,17 @@ import { BigNumber, ethers } from "ethers";
 import { TokenTermReader__factory } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
-let fragment = window.location.hash;
-if (fragment.startsWith("#/")) fragment = fragment.substring(2);
-else if (fragment.startsWith("#")) fragment = fragment.substring(1);
-const [documentId, chainId, contractAddress, block, tokenId] =
-  fragment.split("::");
-console.log({ documentId, chainId, contractAddress, block, tokenId });
-const bigTokenId = BigNumber.from(tokenId);
+import copy from "clipboard-copy";
+import { toast } from "react-toastify";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
-  ? new ethers.providers.Web3Provider(
-      ethereum
-      // "0x" + Number.parseInt(chainId, 10).toString(16)
-    )
+  ? new ethers.providers.Web3Provider(ethereum)
   : undefined;
-
-export const useTerms = (address: string, token?: ethers.BigNumber) => {
+export const useTerms = (
+  address: string,
+  block: string,
+  token?: ethers.BigNumber
+) => {
   const [terms, setTerms] = useState<Record<string, string>>({});
   const termRef = useRef(terms);
   termRef.current = terms;
@@ -27,44 +22,35 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
     async (key: string) => {
       const [realKey, _defaultValue] = key.split(",");
       if (termRef.current[key]) {
-        console.log("I have term already for ", key);
         return;
       }
-      console.log("Got past with ", key, termRef.current);
-      const defaultValue = _defaultValue ?? `**${realKey} MISSING**`;
-      console.log("Evaluating", { realKey, defaultValue });
-      setTerms((prev) => {
-        if (prev[key]) return prev;
-        return { ...prev, [key]: defaultValue };
-      });
+      const defaultValue = _defaultValue; //?? ``;
+      if (defaultValue)
+        setTerms((prev) => {
+          if (prev[key]) return prev;
+          return { ...prev, [key]: defaultValue };
+        });
       try {
-        console.log("Gonna try to get my data");
-        console.log("Checking for a provider");
         if (!provider) return;
-        console.log("got my provider");
+
         const contract = TokenTermReader__factory.connect(address, provider);
-        console.log("Got my contract", address);
+
         const blockTag = parseInt(block);
         if (typeof token === "undefined") {
-          console.log("getting a global term");
-
           const term = isNaN(blockTag)
             ? await contract.term(realKey)
             : await contract.term(realKey, {
                 blockTag,
               });
-          if (term) setTerms((prev) => ({ ...prev, [key]: `**${term}**` }));
-          console.log("Got my glboal term", key, term);
+          if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
         } else {
-          console.log("Getting a token term", realKey, token);
-
           const term = isNaN(blockTag)
             ? await contract.tokenTerm(realKey, token)
             : await contract.tokenTerm(realKey, token, {
                 blockTag,
               });
-          console.log("Got my token term", key, term, blockTag);
-          if (term) setTerms((prev) => ({ ...prev, [key]: `**${term}**` }));
+          if (term.startsWith(""))
+            if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
         }
       } catch (e) {
         console.error("My life is so hard", e);
@@ -72,7 +58,7 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
     },
     [address, token]
   );
-  console.log("my terms are", terms);
+
   //http://localhost:3000/
   // #/bafkreiahgnurv72abvrvlvl4s2k62s4kxwxuc56l7eyfwhh3tatnmt4poa::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
 
@@ -81,19 +67,18 @@ export const useTerms = (address: string, token?: ethers.BigNumber) => {
   return useMemo(() => ({ terms, addTerm }), [terms, addTerm]);
 };
 
-const Renderer: FC = () => {
+const Renderer: FC<{
+  documentId: string;
+  contractAddress: string;
+  block: string;
+  tokenId?: string;
+}> = ({ block, contractAddress, documentId, tokenId }) => {
   const template = useIPFSText(documentId);
-
-  // const template = `# Hello!
-  //  and I am {{Name, NAME GOES HERE}} so I ask hello there {{ipfs:CID, BOBBLE}}`; // useIPFSText(documentId);
-  console.log("I'm gonna useterms", tokenId);
   const { terms, addTerm } = useTerms(
     contractAddress,
-    typeof tokenId === "undefined" ? undefined : bigTokenId
+    block,
+    typeof tokenId === "undefined" ? undefined : BigNumber.from(tokenId)
   );
-  useEffect(() => {
-    console.log("Terms changed", terms);
-  }, [terms]);
   useEffect(() => {
     if (template) {
       const spans = Mustache.parse(template);
@@ -106,6 +91,7 @@ const Renderer: FC = () => {
   if (!template) return <div>"Loading..."</div>;
   if (!provider) return <div>"No provider"</div>;
   const output = Mustache.render(template, terms);
+  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
   return (
     <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
       <div className="flex-col flex h-full print:h-full">
@@ -113,6 +99,17 @@ const Renderer: FC = () => {
           <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible">
             <Markdown>{output}</Markdown>
           </div>
+        </div>
+        <div className=" w-full flex flex-row justify-center print:hidden">
+          <button
+            className="m-2 rounded-md p-2 border-2 border-purple-800 bg-pink-200 text-gray-800 hover:text-gray-600"
+            onClick={() => {
+              copy(hash);
+              toast("Copied to clipboard");
+            }}
+          >
+            <span className="text-gray-600">Hash:</span> {hash}
+          </button>
         </div>
         <div className=" w-full flex flex-row justify-center print:hidden">
           <button
