@@ -12,28 +12,30 @@ import "./TermReader.sol";
 
 abstract contract TermsableBase is Ownable, TermReader {
     // uint256 _chainId = 137;
-    string _renderer = "ABCDEFG";
-    string _docTemplate = "LMNOPQRST";
-    mapping(uint256 => string) _tokenDocTemplates;
+    string _globalRenderer = "ABCDEFG";
+    string _globalDocTemplate = "LMNOPQRST";
     mapping(string => string) _globalTerms;
     uint256 _lastTermChange = 0;
 
-    function setRenderer(string memory _newRenderer) external onlyOwner {
-        _renderer = _newRenderer;
+    function setGlobalRenderer(string memory _newRenderer) external onlyOwner {
+        _globalRenderer = _newRenderer;
         _lastTermChange = block.number;
     }
 
     function renderer() public view returns (string memory) {
-        return _renderer;
+        return _globalRenderer;
     }
 
-    function setTemplate(string memory _newDocTemplate) external onlyOwner {
-        _docTemplate = _newDocTemplate;
+    function setGlobalTemplate(string memory _newDocTemplate)
+        external
+        onlyOwner
+    {
+        _globalDocTemplate = _newDocTemplate;
         _lastTermChange = block.number;
     }
 
     function docTemplate() external view returns (string memory) {
-        return _docTemplate;
+        return _globalDocTemplate;
     }
 
     function setGlobalTerm(string memory _key, string memory _value)
@@ -100,9 +102,9 @@ abstract contract TermsableNoToken is TermsableBase {
             string(
                 abi.encodePacked(
                     prefix,
-                    _renderer,
+                    _globalRenderer,
                     "/#/",
-                    _docTemplate,
+                    _globalDocTemplate,
                     "::",
                     // Strings.toString(block.number),
                     // "::",
@@ -120,6 +122,8 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
     event AcceptedTerms(address sender, uint256 tokenId, string terms);
     mapping(address => mapping(uint256 => bool)) hasAcceptedTerms;
     mapping(string => mapping(uint256 => string)) _tokenTerms;
+    mapping(uint256 => string) _tokenDocTemplates;
+    mapping(uint256 => string) _tokenRenderers;
 
     function _acceptedTerms(address to, uint256 tokenId)
         internal
@@ -163,43 +167,23 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         view
         returns (string memory)
     {
-        if (bytes(_tokenDocTemplates[tokenId]).length == 0) {
-            return
-                string(
-                    abi.encodePacked(
-                        prefix,
-                        _renderer,
-                        "/#/",
-                        _docTemplate,
-                        "::",
-                        Strings.toString(block.chainid),
-                        "::",
-                        Strings.toHexString(uint160(address(this)), 20),
-                        "::",
-                        Strings.toString(_lastTermChange),
-                        "::",
-                        Strings.toString(tokenId)
-                    )
-                );
-        } else {
-            return
-                string(
-                    abi.encodePacked(
-                        prefix,
-                        _renderer,
-                        "/#/",
-                        _tokenDocTemplates[tokenId],
-                        "::",
-                        Strings.toString(block.chainid),
-                        "::",
-                        Strings.toHexString(uint160(address(this)), 20),
-                        "::",
-                        Strings.toString(_lastTermChange),
-                        "::",
-                        Strings.toString(tokenId)
-                    )
-                );
-        }
+        return
+            string(
+                abi.encodePacked(
+                    prefix,
+                    _tokenRenderer(tokenId),
+                    "/#/",
+                    _tokenTemplate(tokenId),
+                    "::",
+                    Strings.toString(block.chainid),
+                    "::",
+                    Strings.toHexString(uint160(address(this)), 20),
+                    "::",
+                    Strings.toString(_lastTermChange),
+                    "::",
+                    Strings.toString(tokenId)
+                )
+            );
     }
 
     function termsUrlWithPrefix(uint256 _tokenId, string memory prefix)
@@ -218,13 +202,40 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         _lastTermChange = block.number;
     }
 
-    function tokenDocTemplate(uint256 _tokenId)
-        public
+    function tokenTemplate(uint256 _tokenId)
+        external
         view
         returns (string memory)
     {
+        return _tokenTemplate(_tokenId);
+    }
+
+    function setTokenRenderer(uint256 tokenId, string memory _newRenderer)
+        external
+        onlyOwner
+    {
+        _tokenRenderers[tokenId] = _newRenderer;
+    }
+
+    function tokenRenderer(uint256 tokenId)
+        external
+        view
+        returns (string memory)
+    {
+        return _tokenRenderer(tokenId);
+    }
+
+    function _tokenRenderer(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
+        return _tokenRenderers[tokenId];
+    }
+
+    function _tokenTemplate(uint256 _tokenId) internal returns (string memory) {
         if (bytes(_tokenDocTemplates[_tokenId]).length == 0)
-            return _docTemplate;
+            return _globalDocTemplate;
         else return _tokenDocTemplates[_tokenId];
     }
 
