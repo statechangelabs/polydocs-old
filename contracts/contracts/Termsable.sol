@@ -129,7 +129,22 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         return hasAcceptedTerms[to][tokenId];
     }
 
+    function acceptedTerms(address to, uint256 tokenId)
+        external
+        view
+        returns (bool)
+    {
+        return _acceptedTerms(to, tokenId);
+    }
+
     function acceptTerms(uint256 tokenId, string memory _newtermsUrl) external {
+        _acceptTerms(tokenId, _newtermsUrl);
+    }
+
+    function _acceptTerms(uint256 tokenId, string memory _newtermsUrl)
+        internal
+        virtual
+    {
         require(
             keccak256(bytes(_newtermsUrl)) ==
                 keccak256(bytes(termsUrl(tokenId))),
@@ -137,14 +152,6 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         );
         hasAcceptedTerms[msg.sender][tokenId] = true;
         emit AcceptedTerms(msg.sender, tokenId, termsUrl(tokenId));
-    }
-
-    function acceptedTerms(address to, uint256 tokenId)
-        external
-        view
-        returns (bool)
-    {
-        return _acceptedTerms(to, tokenId);
     }
 
     function termsUrl(uint256 tokenId) public view returns (string memory) {
