@@ -16,7 +16,7 @@ import "./Termsable.sol";
 
 contract Test721_NoToken is ERC721URIStorage, Ownable, TermsableNoToken {
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
     constructor() ERC721("GOAT BLOCS", "GOAT") {
