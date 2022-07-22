@@ -81,10 +81,10 @@ async function main() {
 
     const txn_setTerms = await doc.setTokenTerm("Project Name", current_token_id, "Pooptogether");
     const receipt_setTerms = await txn_setTerms.wait();
-    console.log("New {{Project name}} set for Token 0! with hash: ", receipt_setTerms.blockHash);
+    console.log("New {{Project name}} set for Token ", current_token_id,"! with hash: ", receipt_setTerms.blockHash);
 
     const terms_project_name = await doc.tokenTerm("Project Name", current_token_id);
-    console.log("New {{Project Name}} for Token 0: ", terms_project_name);
+    console.log("New {{Project Name}} for Token ",current_token_id ,": ", terms_project_name);
         
     } catch (error) {
      console.error(error);   
