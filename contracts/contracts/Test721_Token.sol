@@ -19,7 +19,7 @@ contract Test721_Token is ERC721URIStorage, Ownable, TokenTermsable {
     Counters.Counter public _tokenIds; //  Made public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
-    constructor() ERC721("GOAT BLOCS", "GOAT") {
+    constructor() ERC721("TEST BLOCS", "NFTYAYY") {
         console.log("This is my NFT contract. Woah!");
     }
 
