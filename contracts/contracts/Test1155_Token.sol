@@ -22,12 +22,11 @@ contract Test1155_Token is
     TokenTermsable
 {
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-    event MintNFT(address sender, uint256 tokenId);
+    Counters.Counter public _tokenIds;
+    event MintNFT(address sender, uint256 tokenId, uint256 amount);
 
-    string public name_;
-    string public symbol_;
-    uint256 amount;
+    string internal name_;
+    string internal symbol_;
 
     // string uri;
 
@@ -62,17 +61,17 @@ contract Test1155_Token is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function _mint(
-        address _to,
-        uint256 _tokenId,
-        uint256 _amount,
-        bytes memory _data
-    ) internal override {
-        require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
-        super._mint(_to, _tokenId, _amount, _data);
-    }
+    // function _mint(
+    //     address _to,
+    //     uint256 _tokenId,
+    //     uint256 _amount,
+    //     bytes memory _data
+    // ) internal override {
+    //     require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
+    //     super._mint(_to, _tokenId, _amount, _data);
+    // }
 
-    function mint() public {
+    function mint(uint256 amount) public {
         uint256 newItemId = _tokenIds.current();
 
         string memory json = Base64.encode(
@@ -97,13 +96,14 @@ contract Test1155_Token is
 
         _setURI(finalTokenUri);
 
-        _tokenIds.increment();
+        // _tokenIds.increment();
         console.log(
-            "An NFT w/ ID %s has been minted to %s",
+            "%s NFTs w/ ID %s has been minted to %s",
+            amount,
             newItemId,
             msg.sender
         );
 
-        emit MintNFT(msg.sender, newItemId);
+        emit MintNFT(msg.sender, newItemId, amount);
     }
 }
