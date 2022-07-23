@@ -1,4 +1,12 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FC,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useIPFSText } from "./useIPFS";
 import { BigNumber, ethers } from "ethers";
 import {
@@ -11,6 +19,8 @@ import Mustache from "mustache";
 import Markdown from "react-markdown";
 import copy from "clipboard-copy";
 import { toast } from "react-toastify";
+import Topography from "./topography.svg";
+import { FaClipboard } from "react-icons/fa";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -145,41 +155,49 @@ const Renderer: FC<{
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
 
   return (
-    <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
-      <div className="flex-col flex h-full print:h-full">
-        <div className="m-2 flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
-          <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible">
-            <Markdown>{output}</Markdown>
-          </div>
-        </div>
-        <div className=" w-full flex flex-row justify-center print:hidden">
+    <Fragment>
+      <div
+        className="w-screen h-screen print:bg-white p-5 z-20 bg-opacity-"
+        style={{ background: `url(${Topography})` }}
+      >
+        <div className=" w-full flex flex-row justify-end print:hidden">
           <button
-            className="m-2 rounded-md p-2 border-2 border-purple-800 bg-pink-200 text-gray-800 hover:text-gray-600"
+            className=" text-purple-600 hover:text-gray-800 transition font-medium text-xs"
             onClick={() => {
               copy(hash);
               toast("Copied to clipboard");
             }}
           >
             <span className="text-gray-600">Hash:</span> {hash}
+            <FaClipboard className="inline ml-1 -mt-1" />
           </button>
         </div>
-        <div className=" w-full flex flex-row justify-center print:hidden gap-4">
-          <button
-            className="bg-blue-500 text-white font-medium rounded-md p-2"
-            onClick={sign}
-          >
-            {terms["signatureLabel"] || "Agree To Terms"}
-          </button>
-          <button
-            className="bg-blue-500 text-white font-medium rounded-md p-2"
-            onClick={() => window.print()}
-          >
-            Print
-          </button>
+        <div className="flex-col flex h-full print:h-full">
+          <div className="m-2 flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
+            <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible border border-gray-200">
+              <Markdown>{output}</Markdown>
+            </div>
+          </div>
+
+          <div className="flex flex-row justify-center">
+            <div className=" w-100 flex flex-row justify-end print:hidden gap-4">
+              <button
+                className="bg-white border-green-600 text-black border font-medium  p-2 px-6"
+                onClick={() => window.print()}
+              >
+                Print
+              </button>
+              <button
+                className="bg-white bg-gradient-to-r from-purple-800 to-purple-500 text-white border font-medium  p-2 px-6 "
+                onClick={sign}
+              >
+                {terms["signatureLabel"] || "Agree To Terms"}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className=" w-full flex flex-row justify-center print:hidden"></div>
       </div>
-    </div>
+    </Fragment>
   );
 };
 export default Renderer;

@@ -3,7 +3,7 @@ import Logo from "./logo.svg";
 const Title: FC = () => {
   return (
     <Fragment>
-      <h1 className="flex flex-row justify-center text-5xl font-extrabold m-5">
+      <h1 className="flex flex-row justify-center text-5xl font-medium m-5">
         <img src={Logo} alt="Logo" className="h-16 -mt-2 mr-2" />
         <span className="text-purple-300">Poly</span>Docs
       </h1>
