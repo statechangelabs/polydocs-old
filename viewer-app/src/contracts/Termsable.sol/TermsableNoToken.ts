@@ -33,13 +33,13 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     "acceptedTerms(address)": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
+    "globalTerm(string)": FunctionFragment;
     "owner()": FunctionFragment;
     "renderer()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setGlobalRenderer(string)": FunctionFragment;
+    "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
-    "setRenderer(string)": FunctionFragment;
-    "setTemplate(string)": FunctionFragment;
-    "term(string)": FunctionFragment;
     "termsUrl()": FunctionFragment;
     "termsUrlWithPrefix(string)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -52,13 +52,13 @@ export interface TermsableNoTokenInterface extends utils.Interface {
       | "acceptedTerms"
       | "currentTermsBlock"
       | "docTemplate"
+      | "globalTerm"
       | "owner"
       | "renderer"
       | "renounceOwnership"
+      | "setGlobalRenderer"
+      | "setGlobalTemplate"
       | "setGlobalTerm"
-      | "setRenderer"
-      | "setTemplate"
-      | "term"
       | "termsUrl"
       | "termsUrlWithPrefix"
       | "transferOwnership"
@@ -84,6 +84,10 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "docTemplate",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "globalTerm",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "renderer", values?: undefined): string;
   encodeFunctionData(
@@ -91,20 +95,16 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setGlobalRenderer",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setGlobalTemplate",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setGlobalTerm",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setRenderer",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTemplate",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "term",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "termsUrl", values?: undefined): string;
   encodeFunctionData(
@@ -136,6 +136,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "docTemplate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "renderer", data: BytesLike): Result;
   decodeFunctionResult(
@@ -143,18 +144,17 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setGlobalRenderer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setGlobalTemplate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setGlobalTerm",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRenderer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTemplate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "term", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
@@ -256,6 +256,11 @@ export interface TermsableNoToken extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<[string]>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renderer(overrides?: CallOverrides): Promise<[string]>;
@@ -264,26 +269,21 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setGlobalTerm(
       _key: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
-
-    setRenderer(
-      _newRenderer: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
 
     termsUrl(overrides?: CallOverrides): Promise<[string]>;
 
@@ -317,6 +317,11 @@ export interface TermsableNoToken extends BaseContract {
 
   docTemplate(overrides?: CallOverrides): Promise<string>;
 
+  globalTerm(
+    _key: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   renderer(overrides?: CallOverrides): Promise<string>;
@@ -325,26 +330,21 @@ export interface TermsableNoToken extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setGlobalRenderer(
+    _newRenderer: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setGlobalTemplate(
+    _newDocTemplate: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setGlobalTerm(
     _key: PromiseOrValue<string>,
     _value: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  setRenderer(
-    _newRenderer: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setTemplate(
-    _newDocTemplate: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  term(
-    _key: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   termsUrl(overrides?: CallOverrides): Promise<string>;
 
@@ -378,32 +378,32 @@ export interface TermsableNoToken extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<string>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     renderer(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setGlobalTerm(
       _key: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    setRenderer(
-      _newRenderer: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     termsUrl(overrides?: CallOverrides): Promise<string>;
 
@@ -464,6 +464,11 @@ export interface TermsableNoToken extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<BigNumber>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renderer(overrides?: CallOverrides): Promise<BigNumber>;
@@ -472,25 +477,20 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setGlobalTerm(
-      _key: PromiseOrValue<string>,
-      _value: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setRenderer(
+    setGlobalRenderer(
       _newRenderer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setTemplate(
+    setGlobalTemplate(
       _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    term(
+    setGlobalTerm(
       _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
+      _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     termsUrl(overrides?: CallOverrides): Promise<BigNumber>;
@@ -526,6 +526,11 @@ export interface TermsableNoToken extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renderer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -534,25 +539,20 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setGlobalTerm(
-      _key: PromiseOrValue<string>,
-      _value: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setRenderer(
+    setGlobalRenderer(
       _newRenderer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setTemplate(
+    setGlobalTemplate(
       _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    term(
+    setGlobalTerm(
       _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
+      _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     termsUrl(overrides?: CallOverrides): Promise<PopulatedTransaction>;

@@ -54,8 +54,8 @@ export const useTerms = (
         if (typeof token === "undefined") {
           const contract = TermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
-            ? await contract.term(realKey)
-            : await contract.term(realKey, {
+            ? await contract.globalTerm(realKey)
+            : await contract.globalTerm(realKey, {
                 blockTag,
               });
           if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
@@ -167,7 +167,7 @@ const Renderer: FC<{
     } else {
       const contract = TermsableNoToken__factory.connect(
         contractAddress,
-        provider
+        provider.getSigner()
       );
 
       const href = await contract.termsUrl();
@@ -232,6 +232,16 @@ const Renderer: FC<{
                   disabled={isSigned || isSigning}
                 >
                   Print
+                </button>
+                <button
+                  className="btn btn-gradient"
+                  onClick={() => {
+                    copy(window.location.href);
+                    toast("Copied to clipboard");
+                  }}
+                  disabled={isSigned || isSigning}
+                >
+                  Copy Unique URL
                 </button>
                 <button
                   className={[

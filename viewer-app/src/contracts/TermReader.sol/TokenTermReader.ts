@@ -27,14 +27,16 @@ import type {
 
 export interface TokenTermReaderInterface extends utils.Interface {
   functions: {
-    "term(string)": FunctionFragment;
+    "globalTerm(string)": FunctionFragment;
     "tokenTerm(string,uint256)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "term" | "tokenTerm"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic: "globalTerm" | "tokenTerm"
+  ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "term",
+    functionFragment: "globalTerm",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -42,7 +44,7 @@ export interface TokenTermReaderInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
 
-  decodeFunctionResult(functionFragment: "term", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
 
   events: {
@@ -104,7 +106,7 @@ export interface TokenTermReader extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -116,7 +118,7 @@ export interface TokenTermReader extends BaseContract {
     ): Promise<[string]>;
   };
 
-  term(
+  globalTerm(
     _key: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -128,7 +130,7 @@ export interface TokenTermReader extends BaseContract {
   ): Promise<string>;
 
   callStatic: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -163,7 +165,7 @@ export interface TokenTermReader extends BaseContract {
   };
 
   estimateGas: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -176,7 +178,7 @@ export interface TokenTermReader extends BaseContract {
   };
 
   populateTransaction: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

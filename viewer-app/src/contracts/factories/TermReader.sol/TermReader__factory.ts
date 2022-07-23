@@ -37,7 +37,7 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "term",
+    name: "globalTerm",
     outputs: [
       {
         internalType: "string",
