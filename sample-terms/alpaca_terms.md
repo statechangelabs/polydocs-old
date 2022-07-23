@@ -218,10 +218,10 @@ connection with use of or reliance on any such content, goods or services availa
 ## Applicable Policies
 
 In addition to these Terms and Conditions, your access to and use of the Content and the Service is subject to {{ShortCompanyName}}’s then-current policies
-relating to the Content and the Service, including, without limitation, the {{{ShortCompanyName}} Privacy Policy available on the Service. You agree to be bound by
+relating to the Content and the Service, including, without limitation, the {{ShortCompanyName}} Privacy Policy available on the Service. You agree to be bound by
 these policies and all other {{ShortCompanyName}} policies applicable to the access and use of the Content and the Service.
 
-By using the Service, you are consenting to have your personal data transferred to and processed by{ {ShortCompanyName}} and its affiliates. As part of
+By using the Service, you are consenting to have your personal data transferred to and processed by {{ShortCompanyName}} and its affiliates. As part of
 providing you the Service, {{ShortCompanyName}} may need to provide you with certain communications, such as service announcements and administrative
 messages. These communications are considered part of the Service, which you may not be able to opt-out from receiving.
 
