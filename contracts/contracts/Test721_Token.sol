@@ -19,7 +19,7 @@ contract Test721_Token is ERC721URIStorage, Ownable, TokenTermsable {
     Counters.Counter public _tokenIds; //  Made public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
-    constructor() ERC721("TEST BLOCS", "NFTYAYY") {
+    constructor() ERC721("PolyDocs", "DOCS") {
         console.log("This is my NFT contract. Woah!");
     }
 
@@ -49,6 +49,13 @@ contract Test721_Token is ERC721URIStorage, Ownable, TokenTermsable {
     function _safeMint(address _to, uint256 _tokenId) internal override {
         require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
         super._safeMint(_to, _tokenId);
+    }
+
+    function setTokenURI(uint256 _tokenId, string memory _uri)
+        external
+        onlyOwner
+    {
+        _setTokenURI(_tokenId, _uri);
     }
 
     function mint() public {
