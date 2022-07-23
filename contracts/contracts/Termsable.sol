@@ -225,12 +225,14 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         return _tokenRenderer(tokenId);
     }
 
-    function _tokenRenderer(uint256 tokenId)
+    function _tokenRenderer(uint256 _tokenId)
         internal
         view
         returns (string memory)
     {
-        return _tokenRenderers[tokenId];
+        if (bytes(_tokenRenderers[_tokenId]).length == 0)
+            return _globalRenderer;
+        else return _tokenRenderers[_tokenId];
     }
 
     function _tokenTemplate(uint256 _tokenId)
