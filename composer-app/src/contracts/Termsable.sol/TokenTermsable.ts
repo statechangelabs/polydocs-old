@@ -33,18 +33,20 @@ export interface TokenTermsableInterface extends utils.Interface {
     "acceptedTerms(address,uint256)": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
+    "globalTerm(string)": FunctionFragment;
     "owner()": FunctionFragment;
     "renderer()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setGlobalRenderer(string)": FunctionFragment;
+    "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
-    "setRenderer(string)": FunctionFragment;
-    "setTemplate(string)": FunctionFragment;
+    "setTokenRenderer(uint256,string)": FunctionFragment;
     "setTokenTemplate(uint256,string)": FunctionFragment;
     "setTokenTerm(string,uint256,string)": FunctionFragment;
-    "term(string)": FunctionFragment;
     "termsUrl(uint256)": FunctionFragment;
     "termsUrlWithPrefix(uint256,string)": FunctionFragment;
-    "tokenDocTemplate(string,uint256)": FunctionFragment;
+    "tokenRenderer(uint256)": FunctionFragment;
+    "tokenTemplate(uint256)": FunctionFragment;
     "tokenTerm(string,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
@@ -55,18 +57,20 @@ export interface TokenTermsableInterface extends utils.Interface {
       | "acceptedTerms"
       | "currentTermsBlock"
       | "docTemplate"
+      | "globalTerm"
       | "owner"
       | "renderer"
       | "renounceOwnership"
+      | "setGlobalRenderer"
+      | "setGlobalTemplate"
       | "setGlobalTerm"
-      | "setRenderer"
-      | "setTemplate"
+      | "setTokenRenderer"
       | "setTokenTemplate"
       | "setTokenTerm"
-      | "term"
       | "termsUrl"
       | "termsUrlWithPrefix"
-      | "tokenDocTemplate"
+      | "tokenRenderer"
+      | "tokenTemplate"
       | "tokenTerm"
       | "transferOwnership"
   ): FunctionFragment;
@@ -87,6 +91,10 @@ export interface TokenTermsableInterface extends utils.Interface {
     functionFragment: "docTemplate",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "globalTerm",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "renderer", values?: undefined): string;
   encodeFunctionData(
@@ -94,16 +102,20 @@ export interface TokenTermsableInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setGlobalRenderer",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setGlobalTemplate",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setGlobalTerm",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setRenderer",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTemplate",
-    values: [PromiseOrValue<string>]
+    functionFragment: "setTokenRenderer",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "setTokenTemplate",
@@ -118,10 +130,6 @@ export interface TokenTermsableInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "term",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "termsUrl",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -130,8 +138,12 @@ export interface TokenTermsableInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "tokenDocTemplate",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    functionFragment: "tokenRenderer",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenTemplate",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "tokenTerm",
@@ -158,6 +170,7 @@ export interface TokenTermsableInterface extends utils.Interface {
     functionFragment: "docTemplate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "renderer", data: BytesLike): Result;
   decodeFunctionResult(
@@ -165,15 +178,19 @@ export interface TokenTermsableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setGlobalRenderer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setGlobalTemplate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setGlobalTerm",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setRenderer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTemplate",
+    functionFragment: "setTokenRenderer",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -184,14 +201,17 @@ export interface TokenTermsableInterface extends utils.Interface {
     functionFragment: "setTokenTerm",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "term", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "tokenDocTemplate",
+    functionFragment: "tokenRenderer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenTemplate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
@@ -303,11 +323,26 @@ export interface TokenTermsable extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<[string]>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renderer(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -317,13 +352,9 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    setRenderer(
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
       _newRenderer: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -340,11 +371,6 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -356,8 +382,12 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    tokenDocTemplate(
-      _key: PromiseOrValue<string>,
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenTemplate(
       _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -390,11 +420,26 @@ export interface TokenTermsable extends BaseContract {
 
   docTemplate(overrides?: CallOverrides): Promise<string>;
 
+  globalTerm(
+    _key: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   renderer(overrides?: CallOverrides): Promise<string>;
 
   renounceOwnership(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setGlobalRenderer(
+    _newRenderer: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setGlobalTemplate(
+    _newDocTemplate: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -404,13 +449,9 @@ export interface TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  setRenderer(
+  setTokenRenderer(
+    tokenId: PromiseOrValue<BigNumberish>,
     _newRenderer: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setTemplate(
-    _newDocTemplate: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -427,11 +468,6 @@ export interface TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  term(
-    _key: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   termsUrl(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -443,8 +479,12 @@ export interface TokenTermsable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  tokenDocTemplate(
-    _key: PromiseOrValue<string>,
+  tokenRenderer(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenTemplate(
     _tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -477,11 +517,26 @@ export interface TokenTermsable extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<string>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     renderer(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setGlobalTerm(
       _key: PromiseOrValue<string>,
@@ -489,13 +544,9 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setRenderer(
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
       _newRenderer: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -512,11 +563,6 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -528,8 +574,12 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    tokenDocTemplate(
-      _key: PromiseOrValue<string>,
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenTemplate(
       _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -605,11 +655,26 @@ export interface TokenTermsable extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<BigNumber>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renderer(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -619,13 +684,9 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setRenderer(
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
       _newRenderer: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -642,11 +703,6 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -658,8 +714,12 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tokenDocTemplate(
-      _key: PromiseOrValue<string>,
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenTemplate(
       _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -693,11 +753,26 @@ export interface TokenTermsable extends BaseContract {
 
     docTemplate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    globalTerm(
+      _key: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renderer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGlobalRenderer(
+      _newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGlobalTemplate(
+      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -707,13 +782,9 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setRenderer(
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
       _newRenderer: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTemplate(
-      _newDocTemplate: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -730,11 +801,6 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    term(
-      _key: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -746,8 +812,12 @@ export interface TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    tokenDocTemplate(
-      _key: PromiseOrValue<string>,
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenTemplate(
       _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

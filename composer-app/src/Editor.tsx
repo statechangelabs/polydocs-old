@@ -2,6 +2,11 @@ import { FC, Fragment, useCallback, useEffect, useState } from "react";
 import { Formik, Form, Field, validateYupSchema } from "formik";
 import Renderer from "./Renderer";
 import { useMain } from "./Main";
+import { upload } from "./upload";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useParams } from "react-router-dom";
+import { useIPFS, useIPFSText } from "./useIPFS";
 const example: string = `
 # Title
 
@@ -39,6 +44,18 @@ And put terms you want to use in the document between {{curly braces}}
 `;
 const Editor: FC = () => {
   const [terms, setTerms] = useState<Record<string, string>>({});
+  const { templateId, subpath1, subpath2, subpath3 } = useParams();
+  const combinedPath = [templateId, subpath1, subpath2, subpath3]
+    .filter(Boolean)
+    .join("/");
+  const ipfsText = useIPFSText(combinedPath);
+  console.log("I would get from IPFS", combinedPath);
+  useEffect(() => {
+    if (ipfsText) {
+      console.log("IPFSText is ", ipfsText);
+    }
+  }, [ipfsText]);
+  const initialDoc = ipfsText || example;
   const addTerm = useCallback((newTerm: string) => {
     setTerms((old) => {
       if (old[newTerm]) return old;
@@ -49,11 +66,12 @@ const Editor: FC = () => {
   useEffect(() => {
     setTitle("Editor");
   }, []);
+  if (combinedPath && !ipfsText) return null;
   return (
     <Fragment>
       <Formik
         initialValues={
-          { template: example, terms: {} } as {
+          { template: initialDoc, terms: {} } as {
             template: string;
             terms: Record<string, string>;
           }
@@ -71,7 +89,34 @@ const Editor: FC = () => {
                   as="textarea"
                   name="template"
                   className="form-textarea w-full min-h-40"
+                  rows={20}
                 />
+                <button
+                  className="bg-blue-500 border-2 border-blue-800 text-white p-2 rounded-lg"
+                  type="button"
+                  onClick={async () => {
+                    console.log("Hello there my friend");
+                    toast("Uploading");
+                    const cidWithPath = await upload(values.template);
+                    toast("Successfully uploaded" + cidWithPath);
+                    console.log("uploaded", cidWithPath);
+                    localStorage.setItem("currentTemplate", cidWithPath);
+                    const templates: Record<string, string> = JSON.parse(
+                      localStorage.getItem("templates") || "{}"
+                    );
+                    templates[cidWithPath] = values.template;
+                    console.log(
+                      "I will save templates",
+                      JSON.stringify(templates)
+                    );
+                    localStorage.setItem(
+                      "templates",
+                      JSON.stringify(templates)
+                    );
+                  }}
+                >
+                  Upload to IPFS
+                </button>
                 <div>
                   {terms && (
                     <div className="border-2 p-4 m-2 bg-pink-200 border-purple-800 rounded-md">
@@ -104,7 +149,15 @@ const Editor: FC = () => {
                 <Renderer
                   addTerm={addTerm}
                   template={values.template}
-                  terms={values.terms}
+                  terms={Object.entries(values.terms)
+                    .map(([key, value]) => [
+                      key,
+                      `**${value || key + " NOT DEFINED"}**`,
+                    ])
+                    .reduce(
+                      (acc, [key, value]) => ({ ...acc, [key]: value }),
+                      {}
+                    )}
                 />
               </div>
             </div>
