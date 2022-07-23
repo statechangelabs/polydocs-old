@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TemplateRegistry is Ownable {
     string[] public templates;
+    mapping(string => uint256) public templateScores;
+    uint minfee = 0.5 ether;
 
     function addTemplate(string memory _templateCID) public onlyOwner {
         templates.push(_templateCID);
@@ -40,6 +42,21 @@ contract TemplateRegistry is Ownable {
             templates[i] = templates[i + 1];
         }
         templates.pop();
-        // templates.remove(_template);
+    }
+
+    function upvoteTemplate(string memory _templateCID) public payable {
+        require(
+            msg.value >= minfee,
+            "You must pay at least the minimum fee to upvote"
+        );
+        templateScores[_templateCID] += msg.value;
+    }
+
+    function downvoteTemplate(string memory _templateCID) public payable {
+        require(
+            msg.value >= minfee,
+            "You must pay at least the minimum fee to downvote"
+        );
+        templateScores[_templateCID] += msg.value;
     }
 }
