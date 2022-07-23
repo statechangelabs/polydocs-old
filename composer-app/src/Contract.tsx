@@ -31,7 +31,11 @@ const Contract: FC = () => {
   const [contractAddress, setContractAddress] = useState("");
   useEffect(() => {
     if (contractId) setContractAddress(contractId);
-  }, [contractId]);
+    else {
+      const storedId = localStorage.getItem("contractAddress");
+      if (storedId) navigate(`/contract/${storedId}`);
+    }
+  }, [contractId, navigate]);
   const [currentRenderer, setCurrentRenderer] = useState("");
   const [currentBlock, setCurrentBlock] = useState("");
   const [currentTemplate, setCurrentTemplate] = useState("");
@@ -109,10 +113,12 @@ const Contract: FC = () => {
       );
       try {
         await Promise.all(
-          templateTerms.map(async (term) => {
-            const termText = await tokenContract.tokenTerm(term, tokenId);
-            setCurrentTerms((prev) => ({ ...prev, [term]: termText }));
-          })
+          templateTerms
+            .filter((v, i, a) => a.indexOf(v) === i)
+            .map(async (term) => {
+              const termText = await tokenContract.tokenTerm(term, tokenId);
+              setCurrentTerms((prev) => ({ ...prev, [term]: termText }));
+            })
         );
       } catch (e) {
         const noTokenContract = TermReader__factory.connect(
@@ -139,6 +145,7 @@ const Contract: FC = () => {
       ethers.utils.isAddress(contractAddress)
     ) {
       navigate(`/contract/${contractAddress}`);
+      localStorage.setItem("contractAddress", contractAddress);
     }
   }, [contractAddress, contractId, navigate]);
   const knownTemplates = useIPFSList(knownCids);

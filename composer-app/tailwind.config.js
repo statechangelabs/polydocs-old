@@ -5,7 +5,19 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        sans: ["IBM Plex Sans Devanagari", "sans-serif"],
+      },
+      colors: {
+        purple: {
+          light: "#C971FF",
+          default: "#A050D2",
+          dark: "#7C2AAD",
+        },
+        teal: {
+          light: "#66FFC8",
+          dark: "#509E8C",
+        },
+        black: "#202020",
       },
     },
   },
