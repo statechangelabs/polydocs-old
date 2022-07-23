@@ -13,7 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const knownCids = [
-  "bafybeifqmf6t2osakwoop6lefrjdqaws3qtwwfi6zuftdy7anqeufn7e5e/template.md",
+  "bafybeih2ea4d777iaot4fodu76r5adaqf5hvp4aumfrlxk4teexs2b54ua/template.md",
 ];
 
 const knownRenderers = [
