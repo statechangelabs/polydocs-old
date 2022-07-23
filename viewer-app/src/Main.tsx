@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import Topography from "./topography.svg";
 import Logo from "./logo.svg";
 import { FaClipboard } from "react-icons/fa";
+import useAsyncEffect from "./useAsyncEffect";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -96,6 +97,32 @@ const Renderer: FC<{
   block: string;
   tokenId?: string;
 }> = ({ block, contractAddress, documentId, tokenId }) => {
+  const [isSigned, setIsSigned] = useState(false);
+  const [isSigning, setIsSigning] = useState(false);
+  useAsyncEffect(async () => {
+    if (!provider) return;
+    if (typeof tokenId !== "undefined") {
+      const contract = TokenTermsable__factory.connect(
+        contractAddress,
+        provider
+      );
+      const accepted = await contract.acceptedTerms(
+        provider.getSigner().getAddress(),
+        tokenId
+      );
+      if (accepted) setIsSigned(true);
+    } else {
+      const contract = TermsableNoToken__factory.connect(
+        contractAddress,
+        provider.getSigner()
+      );
+
+      const accepted = await contract.acceptedTerms(
+        provider.getSigner().getAddress()
+      );
+      if (accepted) provider.getSigner();
+    }
+  }, []);
   const template = useIPFSText(documentId);
   const { terms, addTerm } = useTerms(
     contractAddress,
@@ -112,43 +139,52 @@ const Renderer: FC<{
     }
   }, [template, addTerm]);
   const sign = useCallback(async () => {
-    console.log("STARTING TO SIGN");
     if (!provider) return;
     if (typeof tokenId !== "undefined") {
       const contract = TokenTermsable__factory.connect(
         contractAddress,
-        provider
+        provider.getSigner()
       );
-      console.log("I am goign to get termsurl");
+
       const href = await contract.termsUrl(tokenId);
-      console.log("I am got termsurl", href);
+      setIsSigning(true);
+      toast("Please approve your signature...");
       if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-        console.log("Im going to run acceptterms", tokenId, href);
         try {
-          console.log("lets go");
           const txn = await contract.acceptTerms(tokenId, href);
-          console.log("ran acceptterms");
+          toast("Waiting for chain to record your signature...");
           await txn.wait();
-          console.log("HOoray");
+          toast("Signature recorded!");
+          setIsSigned(true);
         } catch (e) {
-          console.log("uh oh");
           console.error(e);
         }
+      } else {
+        toast("This is not the correct page to sign the terms!", {
+          type: "error",
+        });
       }
     } else {
       const contract = TermsableNoToken__factory.connect(
         contractAddress,
         provider
       );
-      console.log(" iwll get termsurl");
+
       const href = await contract.termsUrl();
-      console.log("I got href", href);
+
       if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-        console.log("Im going to run acceptterms", href);
         const txn = await contract.acceptTerms(href);
+        toast("Waiting for chain to record your signature...");
         await txn.wait();
+        toast("Signature recorded!");
+        setIsSigned(true);
+      } else {
+        toast("This is not the correct page to sign the terms!", {
+          type: "error",
+        });
       }
     }
+    setIsSigning(false);
   }, [contractAddress, tokenId]);
   if (!template) return <div>"Loading..."</div>;
   if (!provider) return <div>"No provider"</div>;
@@ -162,7 +198,9 @@ const Renderer: FC<{
           <header className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
               <img src={Logo} alt="Logo" className="w-6" />
-              <h1 className="text-lg font-bold text-purple-default">PolyDoc</h1>
+              <h1 className="text-lg font-bold text-purple-default">
+                PolyDocs
+              </h1>
             </div>
 
             <div className="flex flex-row justify-end print:hidden">
@@ -191,11 +229,26 @@ const Renderer: FC<{
                 <button
                   className="btn btn-gradient"
                   onClick={() => window.print()}
+                  disabled={isSigned || isSigning}
                 >
                   Print
                 </button>
-                <button className="btn btn-primary" onClick={sign}>
-                  {terms["signatureLabel"] || "Agree To Terms"}
+                <button
+                  className={[
+                    "btn ",
+                    isSigning || isSigned
+                      ? "text-black border bg-gradient-to-r from-gray-200 to-gray-400 hover:background-gray-200"
+                      : "btn-primary",
+                  ].join(" ")}
+                  onClick={() => {
+                    if (!isSigned && !isSigning) sign();
+                  }}
+                >
+                  {isSigned
+                    ? "You're all set!"
+                    : isSigning
+                    ? "Signing..."
+                    : terms["signatureLabel"] || "Agree To Terms"}
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 {
-  "short_name": "Immutable Document Renderer",
-  "name": "Immutable Document Renderer",
+  "short_name": "Polydocs Renderer",
+  "name": "Polydocs: Immutable Dynamic Documents",
   "icons": [
     {
       "src": "favicon.ico",
