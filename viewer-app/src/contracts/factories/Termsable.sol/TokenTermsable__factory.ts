@@ -167,6 +167,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_key",
+        type: "string",
+      },
+    ],
+    name: "globalTerm",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "owner",
     outputs: [
@@ -203,6 +222,32 @@ const _abi = [
     inputs: [
       {
         internalType: "string",
+        name: "_newRenderer",
+        type: "string",
+      },
+    ],
+    name: "setGlobalRenderer",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_newDocTemplate",
+        type: "string",
+      },
+    ],
+    name: "setGlobalTemplate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
         name: "_key",
         type: "string",
       },
@@ -220,25 +265,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
         internalType: "string",
         name: "_newRenderer",
         type: "string",
       },
     ],
-    name: "setRenderer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "_newDocTemplate",
-        type: "string",
-      },
-    ],
-    name: "setTemplate",
+    name: "setTokenRenderer",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -287,25 +324,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "_key",
-        type: "string",
-      },
-    ],
-    name: "term",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
@@ -349,17 +367,31 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "tokenRenderer",
+    outputs: [
+      {
         internalType: "string",
-        name: "_key",
+        name: "",
         type: "string",
       },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
       {
         internalType: "uint256",
         name: "_tokenId",
         type: "uint256",
       },
     ],
-    name: "tokenDocTemplate",
+    name: "tokenTemplate",
     outputs: [
       {
         internalType: "string",

@@ -145,6 +145,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_key",
+        type: "string",
+      },
+    ],
+    name: "globalTerm",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "owner",
     outputs: [
@@ -181,29 +200,11 @@ const _abi = [
     inputs: [
       {
         internalType: "string",
-        name: "_key",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_value",
-        type: "string",
-      },
-    ],
-    name: "setGlobalTerm",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
         name: "_newRenderer",
         type: "string",
       },
     ],
-    name: "setRenderer",
+    name: "setGlobalRenderer",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -216,7 +217,7 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "setTemplate",
+    name: "setGlobalTemplate",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -228,16 +229,15 @@ const _abi = [
         name: "_key",
         type: "string",
       },
-    ],
-    name: "term",
-    outputs: [
       {
         internalType: "string",
-        name: "",
+        name: "_value",
         type: "string",
       },
     ],
-    stateMutability: "view",
+    name: "setGlobalTerm",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

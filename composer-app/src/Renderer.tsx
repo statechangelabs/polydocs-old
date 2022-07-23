@@ -1,11 +1,12 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIPFSText } from "./useIPFS";
 import { BigNumber, ethers } from "ethers";
-import { TokenTermReader__factory } from "./contracts";
+import { TokenTermReader__factory, TermReader__factory } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
 import copy from "clipboard-copy";
 import { toast } from "react-toastify";
+import { tSExpressionWithTypeArguments } from "@babel/types";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -33,17 +34,17 @@ export const useTerms = (
       try {
         if (!provider) return;
 
-        const contract = TokenTermReader__factory.connect(address, provider);
-
         const blockTag = parseInt(block);
         if (typeof token === "undefined") {
+          const contract = TermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
-            ? await contract.term(realKey)
-            : await contract.term(realKey, {
+            ? await contract.globalTerm(realKey)
+            : await contract.globalTerm(realKey, {
                 blockTag,
               });
           if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
         } else {
+          const contract = TokenTermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
             ? await contract.tokenTerm(realKey, token)
             : await contract.tokenTerm(realKey, token, {
@@ -79,11 +80,20 @@ export const useTerms = (
 //   block,
 //   typeof tokenId === "undefined" ? undefined : BigNumber.from(tokenId)
 // );
+const defaultAddTerm = (key: string) => {};
+const defaultSetTerms = (terms: string[]) => {};
+const defaultTerms = {};
 const Renderer: FC<{
   template?: string;
   terms?: Record<string, string>;
   addTerm?: (key: string) => void;
-}> = ({ template = "", terms = {}, addTerm = (key) => {} }) => {
+  setTerms?: (terms: string[]) => void;
+}> = ({
+  template = "",
+  terms = defaultTerms,
+  addTerm = defaultAddTerm,
+  setTerms = defaultSetTerms,
+}) => {
   useEffect(() => {
     if (template) {
       try {
@@ -91,12 +101,15 @@ const Renderer: FC<{
         const tokens = spans
           .filter(([type]) => type === "name")
           .map(([, key]) => key);
-        tokens.forEach(addTerm);
+        const goodTokens = tokens.filter((s) => s.indexOf("{{") === -1);
+        goodTokens.forEach(addTerm);
+        setTerms(goodTokens);
+        console.log("Firing setterms");
       } catch (e) {
         console.error(e);
       }
     }
-  }, [template, addTerm]);
+  }, [template, addTerm, setTerms]);
   if (!template) return <div>"Loading..."</div>;
   if (!provider) return <div>"No provider"</div>;
   let output: string = "";

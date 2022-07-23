@@ -26,17 +26,17 @@ import type {
 
 export interface TermReaderInterface extends utils.Interface {
   functions: {
-    "term(string)": FunctionFragment;
+    "globalTerm(string)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "term"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "globalTerm"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "term",
+    functionFragment: "globalTerm",
     values: [PromiseOrValue<string>]
   ): string;
 
-  decodeFunctionResult(functionFragment: "term", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
 
   events: {
     "GlobalTermAdded(bytes32,bytes32)": EventFragment;
@@ -83,19 +83,19 @@ export interface TermReader extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
   };
 
-  term(
+  globalTerm(
     _key: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
 
   callStatic: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -113,14 +113,14 @@ export interface TermReader extends BaseContract {
   };
 
   estimateGas: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    term(
+    globalTerm(
       _key: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
