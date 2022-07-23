@@ -20,6 +20,7 @@ import Markdown from "react-markdown";
 import copy from "clipboard-copy";
 import { toast } from "react-toastify";
 import Topography from "./topography.svg";
+import Logo from "./logo.svg";
 import { FaClipboard } from "react-icons/fa";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
@@ -156,43 +157,47 @@ const Renderer: FC<{
 
   return (
     <Fragment>
-      <div
-        className="w-screen h-screen print:bg-white p-5 z-20 bg-opacity-"
-        style={{ background: `url(${Topography})` }}
-      >
-        <div className=" w-full flex flex-row justify-end print:hidden">
-          <button
-            className=" text-purple-600 hover:text-gray-800 transition font-medium text-xs"
-            onClick={() => {
-              copy(hash);
-              toast("Copied to clipboard");
-            }}
-          >
-            <span className="text-gray-600">Hash:</span> {hash}
-            <FaClipboard className="inline ml-1 -mt-1" />
-          </button>
-        </div>
-        <div className="flex-col flex h-full print:h-full">
-          <div className="m-2 flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
-            <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible border border-gray-200">
+      <div style={{ background: `url(${Topography})` }}>
+        <div className="relative max-w-[760px] mx-auto flex flex-col h-screen">
+          <header className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-2">
+              <img src={Logo} alt="Logo" className="w-6" />
+              <h1 className="text-lg font-bold text-purple-default">PolyDoc</h1>
+            </div>
+
+            <div className="flex flex-row justify-end print:hidden">
+              <button
+                className=" text-purple-600 hover:text-gray-800 transition font-medium text-xs"
+                onClick={() => {
+                  copy(hash);
+                  toast("Copied to clipboard");
+                }}
+              >
+                <span className="text-gray-600">Hash:</span> {hash}
+                <FaClipboard className="inline ml-1 -mt-1" />
+              </button>
+            </div>
+          </header>
+
+          <div className="flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll">
+            <div className="p-6 lg:p-8">
               <Markdown>{output}</Markdown>
             </div>
           </div>
 
-          <div className="flex flex-row justify-center">
-            <div className=" w-100 flex flex-row justify-end print:hidden gap-4">
-              <button
-                className="bg-white border-green-600 text-black border font-medium  p-2 px-6"
-                onClick={() => window.print()}
-              >
-                Print
-              </button>
-              <button
-                className="bg-white bg-gradient-to-r from-purple-800 to-purple-500 text-white border font-medium  p-2 px-6 "
-                onClick={sign}
-              >
-                {terms["signatureLabel"] || "Agree To Terms"}
-              </button>
+          <div className="py-4">
+            <div className="prose mx-auto flex flex-row justify-end mt-4">
+              <div className=" flex flex-row  print:hidden gap-4">
+                <button
+                  className="btn btn-gradient"
+                  onClick={() => window.print()}
+                >
+                  Print
+                </button>
+                <button className="btn btn-primary" onClick={sign}>
+                  {terms["signatureLabel"] || "Agree To Terms"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
