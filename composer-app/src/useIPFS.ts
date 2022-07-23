@@ -32,7 +32,39 @@ export const useIPFS = (cid: string | undefined) => {
   }, [cid]);
   return ipfs;
 };
-
+export const useIPFSList = (cids: string[]) => {
+  const [abs, setAbs] = useState<Record<string, ArrayBuffer>>({});
+  useAsyncEffect(async () => {
+    if (!cids.length) return;
+    await Promise.all(
+      cids.map(async (cid) => {
+        const content64 = localStorage.getItem("ipfs_" + cid);
+        if (content64) {
+          const content = decode(content64);
+          setAbs((old) => ({ ...old, [cid]: content }));
+        } else {
+          console.log("Requesting from ", gateway + cid);
+          const result = await fetch(gateway + cid);
+          console.log("got my result");
+          const content2 = await result.blob();
+          console.log("got my blob");
+          try {
+            const ab = await content2.arrayBuffer();
+            const b64 = encode(ab);
+            localStorage.setItem("ipfs_" + cid, b64);
+            setAbs((old) => ({ ...old, [cid]: ab }));
+            console.log("I set the ipfs");
+          } catch (e) {
+            console.log("I hit an error", e);
+          }
+        }
+      })
+    );
+  }, [cids]);
+  return abs;
+};
+export const decodeAB = (buf: ArrayBuffer) =>
+  buf ? new TextDecoder().decode(buf) : "";
 export const useIPFSText = (cid: string) => {
   const buf = useIPFS(cid);
   const text = useMemo(() => (buf ? new TextDecoder().decode(buf) : ""), [buf]);

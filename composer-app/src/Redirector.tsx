@@ -28,19 +28,19 @@ const Redirector: FC = () => {
       }
       try {
         const provider = new ethers.providers.JsonRpcProvider(providers[chain]);
-        if (token) {
-          const contract = TokenTermsable__factory.connect(address, provider);
-          const termsUrl = await contract.termsUrlWithPrefix(
-            BigNumber.from(token),
-            prefix
-          );
+        // if (token) {
+        //   const contract = TokenTermsable__factory.connect(address, provider);
+        //   const termsUrl = await contract.termsUrlWithPrefix(
+        //     BigNumber.from(token),
+        //     prefix
+        //   );
 
-          window.location.href = termsUrl;
-        } else {
-          const contract = TermsableNoToken__factory.connect(address, provider);
-          const termsUrl = await contract.termsUrlWithPrefix(prefix);
-          window.location.href = termsUrl;
-        }
+        //   window.location.href = termsUrl;
+        // } else {
+        const contract = TermsableNoToken__factory.connect(address, provider);
+        const termsUrl = await contract.termsUrlWithPrefix(prefix);
+        window.location.href = termsUrl;
+        // }
       } catch (e) {
         console.log(e);
       }

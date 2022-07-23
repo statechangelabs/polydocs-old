@@ -8,11 +8,18 @@ import {
 import { ethers } from "ethers";
 import useAsyncEffect from "./useAsyncEffect";
 import Renderer from "./Renderer";
-import { useIPFSText } from "./useIPFS";
+import { decodeAB, useIPFSText, useIPFSList } from "./useIPFS";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { catchClause } from "@babel/types";
-import { prepareDataForValidation } from "formik";
+
+const knownCids = [
+  "bafybeifqmf6t2osakwoop6lefrjdqaws3qtwwfi6zuftdy7anqeufn7e5e/template.md",
+];
+
+const knownRenderers = [
+  "bafybeidxa2vnac25dtq4d7jxtafqsahknuxbjwr4ltycxusw6ibn2omrgy",
+];
+
 const ethereum = (window as unknown as { ethereum: any }).ethereum;
 const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -134,6 +141,7 @@ const Contract: FC = () => {
       navigate(`/contract/${contractAddress}`);
     }
   }, [contractAddress, contractId, navigate]);
+  const knownTemplates = useIPFSList(knownCids);
   return (
     <Fragment>
       <div className="w-screen flex-row">
@@ -163,6 +171,34 @@ const Contract: FC = () => {
               >
                 {currentRenderer}
               </a>
+            )}
+            {currentRenderer !== knownRenderers[0] && (
+              <button
+                onClick={async () => {
+                  console.log("Uou are pressing the button");
+                  if (!provider) return;
+                  const contract = TermsableNoToken__factory.connect(
+                    contractAddress,
+                    provider?.getSigner()
+                  );
+                  try {
+                    const txn = await contract.setGlobalRenderer(
+                      knownRenderers[0]
+                    );
+                    toast("Saving renderer to blockchain");
+                    txn.wait();
+                    toast("Saved to blockchain");
+                    setCurrentRenderer(knownRenderers[0]);
+                  } catch (e) {
+                    toast(
+                      "Error saving to blockchain: " +
+                        (e as { reason: string }).reason.substring(14)
+                    );
+                  }
+                }}
+              >
+                Use Default Renderer
+              </button>
             )}
           </div>
           {!showTemplateForm && (
@@ -207,9 +243,9 @@ const Contract: FC = () => {
                         const txn = await contract.setGlobalTemplate(
                           currentTemplate
                         );
-                        toast("Saving new renderer to chain");
+                        toast("Saving new template to chain");
                         await txn.wait();
-                        toast("Renderer saved to chain");
+                        toast("Template saved to chain");
                         updateUrl();
                       } catch (e) {
                         let reason = (e as { reason: any }).reason;
@@ -228,7 +264,33 @@ const Contract: FC = () => {
                 )}
               </div>
               <div>
-                <h2>Available Templates</h2>
+                <h2>Known Templates</h2>
+                <ol>
+                  {Object.entries(knownTemplates).map(([cid, ab]) => (
+                    <li className="list-decimal ml-10">
+                      <button
+                        onClick={() => {
+                          setCurrentTemplate(cid);
+                        }}
+                        className="hover:text-gray-500 align-left"
+                      >
+                        <div>
+                          {decodeAB(ab).replaceAll("#", "").substring(0, 60)}
+                          ...
+                        </div>
+                        <div className="text-xs text-gray-60">cid: {cid}</div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate("/template/" + cid);
+                        }}
+                      >
+                        Copy
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+                <h2>My Templates</h2>
                 <ol>
                   {Object.entries(templates).map(([cid, template]) => (
                     <li className="list-decimal ml-10">
@@ -264,57 +326,60 @@ const Contract: FC = () => {
             </div>
           )}
           <div>
-            {templateTerms.map((term) => (
-              <div>
+            {templateTerms
+              .filter((v, i, a) => a.indexOf(v) === i)
+              .map((term) => (
                 <div>
-                  {term}: {currentTerms[term] || "UNDEFINED"}
-                </div>
-                <div>
-                  <input
-                    value={currentTerms[term]}
-                    onChange={(e) => {
-                      setCurrentTerms((prev) => ({
-                        ...prev,
-                        [term]: e.target.value,
-                      }));
-                    }}
-                  />
-                  <button
-                    className="bg-blue-500 rounded text-white"
-                    onClick={async () => {
-                      if (!provider) return;
-                      const contract = TermsableNoToken__factory.connect(
-                        contractAddress,
-                        provider.getSigner()
-                      );
-                      try {
-                        const txn = await contract.setGlobalTerm(
-                          term,
-                          currentTerms[term]
+                  <div>
+                    {term}: {currentTerms[term] || "UNDEFINED"}
+                  </div>
+                  <div>
+                    <input
+                      className="form-text-input"
+                      value={currentTerms[term]}
+                      onChange={(e) => {
+                        setCurrentTerms((prev) => ({
+                          ...prev,
+                          [term]: e.target.value,
+                        }));
+                      }}
+                    />
+                    <button
+                      className="bg-blue-500 rounded text-white"
+                      onClick={async () => {
+                        if (!provider) return;
+                        const contract = TermsableNoToken__factory.connect(
+                          contractAddress,
+                          provider.getSigner()
                         );
-                        console.log("Saving", term, currentTerms[term]);
-                        toast("Saving new term to chain");
-                        await txn.wait();
-                        toast("Term saved to chain");
-                        updateUrl();
-                      } catch (e) {
-                        let reason = (e as { reason: any }).reason;
-                        if (reason.startsWith("execution reverted: "))
-                          reason = reason.substring(
-                            "execution reverted: ".length
+                        try {
+                          const txn = await contract.setGlobalTerm(
+                            term,
+                            currentTerms[term]
                           );
-                        toast("Could not save because " + reason, {
-                          type: "error",
-                        });
-                      }
-                      updateUrl();
-                    }}
-                  >
-                    Save
-                  </button>
+                          console.log("Saving", term, currentTerms[term]);
+                          toast("Saving new term to chain");
+                          await txn.wait();
+                          toast("Term saved to chain");
+                          updateUrl();
+                        } catch (e) {
+                          let reason = (e as { reason: any }).reason;
+                          if (reason.startsWith("execution reverted: "))
+                            reason = reason.substring(
+                              "execution reverted: ".length
+                            );
+                          toast("Could not save because " + reason, {
+                            type: "error",
+                          });
+                        }
+                        updateUrl();
+                      }}
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
         <div className="flex flex-col w-1/2">
