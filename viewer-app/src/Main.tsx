@@ -179,7 +179,7 @@ const Renderer: FC<{
             </div>
           </header>
 
-          <div className="scrollable flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll">
+          <div className="scrollable flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll print:overflow-visible print:shadow-none">
             <div className="p-6 lg:p-8">
               <Markdown>{output}</Markdown>
             </div>
