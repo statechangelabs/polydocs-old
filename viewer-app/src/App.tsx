@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import Main from "./Main";
 import WrongChain from "./WrongChain";
+import Disconnected from "./Disconnected";
 let fragment = window.location.hash;
 if (fragment.startsWith("#/")) fragment = fragment.substring(2);
 else if (fragment.startsWith("#")) fragment = fragment.substring(1);
@@ -27,7 +28,9 @@ function App() {
       <MetamaskNotInstalled>
         <GetMetamask />
       </MetamaskNotInstalled>
-      <MetamaskDisconnected>DISCONNECTED</MetamaskDisconnected>
+      <MetamaskDisconnected>
+        <Disconnected />
+      </MetamaskDisconnected>
       <MetamaskWrongChain chainIds={[base16Chain]}>
         <WrongChain />
       </MetamaskWrongChain>

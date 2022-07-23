@@ -2,6 +2,7 @@ import { wallet_switchEthereumChain } from "@raydeck/metamask-ts";
 import { useChainId } from "@raydeck/usemetamask";
 import Logo from "./logo.png";
 import { FaGithub } from "react-icons/fa";
+import Title from "./Title";
 const chainNames: Record<number, string> = {
   1: "mainnet",
   3: "ropsten",
@@ -20,14 +21,7 @@ export default function WrongChain() {
   if (!isMatch) {
     return (
       <div className="h-screen w-screen flex flex-col gap-2 justify-center align-center bg-gradient-to-r from-pink-600 to-blue-900 ">
-        <h1 className="flex flex-row justify-center text-5xl font-extrabold m-5">
-          <img src={Logo} alt="Logo" className="h-16" />
-          <span className="text-purple-300">Poly</span>Chat
-        </h1>
-        <p className="flex flex-row justify-center text-2xl font-bold m-5 text-purple-300">
-          Select a supported network
-        </p>
-
+        <Title />
         {[targetChain].map((chainId) => (
           <div className="flex flex-row justify-center ">
             <button
@@ -45,7 +39,7 @@ export default function WrongChain() {
         ))}
         <div className="fixed bottom-0 w-screen h-10 p-2 bg-black text-white flex flex-row space-between">
           <div className="text-xs hover:text-purple-400 transition">
-            <a href="https://github.com/rhdeck/polychat">
+            <a href="https://github.com/akshay-rakheja/polydocs">
               <FaGithub className="h-6 w-6 mr-2 inline " />
               Source on GitHub
             </a>

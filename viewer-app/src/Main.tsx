@@ -1,7 +1,12 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIPFSText } from "./useIPFS";
 import { BigNumber, ethers } from "ethers";
-import { TokenTermReader__factory } from "./contracts";
+import {
+  TokenTermReader__factory,
+  TokenTermsable__factory,
+  TermsableNoToken__factory,
+  TermReader__factory,
+} from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
 import copy from "clipboard-copy";
@@ -33,10 +38,9 @@ export const useTerms = (
       try {
         if (!provider) return;
 
-        const contract = TokenTermReader__factory.connect(address, provider);
-
         const blockTag = parseInt(block);
         if (typeof token === "undefined") {
+          const contract = TermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
             ? await contract.term(realKey)
             : await contract.term(realKey, {
@@ -44,6 +48,7 @@ export const useTerms = (
               });
           if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
         } else {
+          const contract = TokenTermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
             ? await contract.tokenTerm(realKey, token)
             : await contract.tokenTerm(realKey, token, {
@@ -63,10 +68,17 @@ export const useTerms = (
   // #/bafkreiahgnurv72abvrvlvl4s2k62s4kxwxuc56l7eyfwhh3tatnmt4poa::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
 
   // https://ipfs.io/ipfs/bafybeia45ccvqp632ysddhs3bykp3j273pkoxnuaq24r37mh3dl4g3qmvm/#/bafkreiahgnurv72abvrvlvl4s2k62s4kxwxuc56l7eyfwhh3tatnmt4poa::31337::0x5FbDB2315678afecb367f032d93F642f64180aa3::2::0
-
-  return useMemo(() => ({ terms, addTerm }), [terms, addTerm]);
+  const reset = useCallback(() => {
+    setTerms({});
+  }, []);
+  const setTerm = useCallback((term: string, value: string) => {
+    setTerms((old) => ({ ...old, [term]: term }));
+  }, []);
+  return useMemo(
+    () => ({ terms, addTerm, reset, setTerm }),
+    [terms, addTerm, reset, setTerm]
+  );
 };
-
 const Renderer: FC<{
   documentId: string;
   contractAddress: string;
@@ -88,10 +100,50 @@ const Renderer: FC<{
       tokens.forEach(addTerm);
     }
   }, [template, addTerm]);
+  const sign = useCallback(async () => {
+    console.log("STARTING TO SIGN");
+    if (!provider) return;
+    if (typeof tokenId !== "undefined") {
+      const contract = TokenTermsable__factory.connect(
+        contractAddress,
+        provider
+      );
+      console.log("I am goign to get termsurl");
+      const href = await contract.termsUrl(tokenId);
+      console.log("I am got termsurl", href);
+      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
+        console.log("Im going to run acceptterms", tokenId, href);
+        try {
+          console.log("lets go");
+          const txn = await contract.acceptTerms(tokenId, href);
+          console.log("ran acceptterms");
+          await txn.wait();
+          console.log("HOoray");
+        } catch (e) {
+          console.log("uh oh");
+          console.error(e);
+        }
+      }
+    } else {
+      const contract = TermsableNoToken__factory.connect(
+        contractAddress,
+        provider
+      );
+      console.log(" iwll get termsurl");
+      const href = await contract.termsUrl();
+      console.log("I got href", href);
+      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
+        console.log("Im going to run acceptterms", href);
+        const txn = await contract.acceptTerms(href);
+        await txn.wait();
+      }
+    }
+  }, [contractAddress, tokenId]);
   if (!template) return <div>"Loading..."</div>;
   if (!provider) return <div>"No provider"</div>;
   const output = Mustache.render(template, terms);
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
+
   return (
     <div className="w-screen h-screen bg-pink-800 print:bg-white p-5">
       <div className="flex-col flex h-full print:h-full">
@@ -111,7 +163,13 @@ const Renderer: FC<{
             <span className="text-gray-600">Hash:</span> {hash}
           </button>
         </div>
-        <div className=" w-full flex flex-row justify-center print:hidden">
+        <div className=" w-full flex flex-row justify-center print:hidden gap-4">
+          <button
+            className="bg-blue-500 text-white font-medium rounded-md p-2"
+            onClick={sign}
+          >
+            {terms["signatureLabel"] || "Agree To Terms"}
+          </button>
           <button
             className="bg-blue-500 text-white font-medium rounded-md p-2"
             onClick={() => window.print()}
@@ -119,6 +177,7 @@ const Renderer: FC<{
             Print
           </button>
         </div>
+        <div className=" w-full flex flex-row justify-center print:hidden"></div>
       </div>
     </div>
   );

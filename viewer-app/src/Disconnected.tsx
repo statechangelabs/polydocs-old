@@ -1,8 +1,8 @@
+import { eth_requestAccounts } from "@raydeck/metamask-ts";
 import { FC } from "react";
 import { FaGithub } from "react-icons/fa";
-import MetaMaskOnboarding from "@metamask/onboarding";
 import Title from "./Title";
-const GetMetamask: FC = () => {
+const Disconnected: FC = () => {
   return (
     <div className="h-screen w-screen flex flex-col justify-center align-center bg-gradient-to-r from-pink-600 to-blue-900 ">
       <Title />
@@ -10,16 +10,16 @@ const GetMetamask: FC = () => {
         <button
           className="bg-black bg-opacity-60 text-white hover:text-gray-200 hover:bg-opacity-80 font-bold py-2 px-4 border-1 rounded-md transition transition-opacity flex items-center justify-center"
           onClick={async () => {
-            const onboarder = new MetaMaskOnboarding();
-            onboarder.startOnboarding();
+            const accounts = await eth_requestAccounts();
+            console.log("I haz accounts", accounts);
           }}
         >
-          Get Metamask
+          Connect to Metamask
         </button>
       </div>
       <div className="fixed bottom-0 w-screen h-10 p-2 bg-black text-white flex flex-row space-between">
         <div className="text-xs hover:text-purple-400 transition">
-          <a href="https://github.com/akshay-rakheja/polydocs">
+          <a href="https://github.com/rhdeck/polyDocs">
             <FaGithub className="h-6 w-6 mr-2 inline " />
             Source on GitHub
           </a>
@@ -28,4 +28,4 @@ const GetMetamask: FC = () => {
     </div>
   );
 };
-export default GetMetamask;
+export default Disconnected;
