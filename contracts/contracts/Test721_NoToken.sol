@@ -37,6 +37,13 @@ contract Test721_NoToken is ERC721URIStorage, Ownable, TermsableNoToken {
         super._safeMint(_to, _tokenId);
     }
 
+    function setTokenURI(uint256 _tokenId, string memory _uri)
+        external
+        onlyOwner
+    {
+        _setTokenURI(_tokenId, _uri);
+    }
+
     function mint() public {
         uint256 newItemId = _tokenIds.current();
 
