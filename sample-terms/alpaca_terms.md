@@ -1,23 +1,23 @@
-# Alpaca Terms and Conditions
+# {{Company Name}} Terms and Conditions
 
-Alpaca Securities, LLC (“Alpaca Securities”) and Alpaca Crypto, LLC (“Alpaca Crypto”), wholly-owned subsidiaries of AlpacaDB, Inc.
-(collectively “ALPACA”; “the Firm”). Alpaca Securities is a registered broker-dealer and member of FINRA and SIPC that provides online and
-mobile application-based discount stock brokerage services to self-directed investors. Alpaca Crypto provides digital asset trading services
+{{Company Name}} Securities, LLC (“{{Company Name}} Securities”) and {{Company Name}} Crypto, LLC (“{{Company Name}} Crypto”), wholly-owned subsidiaries of {{Company Name}}DB, Inc.
+(collectively “{{Company Name}}”; “the Firm”). {{Company Name}} Securities is a registered broker-dealer and member of FINRA and SIPC that provides online and
+mobile application-based discount stock brokerage services to self-directed investors. {{Company Name}} Crypto provides digital asset trading services
 and is registered with FinCEN as a Money Service Business (registration # 31000188404516).
 
-These Terms and Conditions are in addition to any other agreements between you, Alpaca Securities, Alpaca Crypto and AlpacaDB
-(collectively, “Alpaca”), including any customer or account agreements and any other agreements that govern your use of software, products,
-goods, services, content, tools, and information provided by Alpaca.
+These Terms and Conditions are in addition to any other agreements between you, {{Company Name}} Securities, {{Company Name}} Crypto and {{Company Name}}DB
+(collectively, “{{Company Name}}”), including any customer or account agreements and any other agreements that govern your use of software, products,
+goods, services, content, tools, and information provided by {{Company Name}}.
 
 ## General
 
-The Alpaca website, Application Programming Interface (“API”), and mobile application for Android and iOS (collectively, the “Service”) may
+The {{Company Name}} website, Application Programming Interface (“API”), and mobile application for Android and iOS (collectively, the “Service”) may
 include or make available certain content (the “Content”). Content includes, without limitation: (1) account positions, balances, transactions,
 confirmations, and order history; (2) general news and information, commentary, research reports, educational material and information and
 data concerning the financial markets, securities and other subjects; (3) market data such as quotations for securities transactions and/or last
 sale information for completed securities transactions reported in accordance with federal securities regulations; (4) financial and investment
 interactive tools, such as alerts or calculators; (5) tax preparation, bill payment and account management tools; (6) company names, logos,
-product and service names, trade names, trademarks and services marks (collectively, “Marks”) owned by Alpaca, and Marks owned by Third
+product and service names, trade names, trademarks and services marks (collectively, “Marks”) owned by {{Company Name}}, and Marks owned by Third
 Party Providers (defined below); and (7) any other information, content, services, or software. Certain Content is furnished by third parties
 (each, a “Third-Party Provider” and collectively, the “Third-Party Providers”). Such Content (“Third Party Content”) includes, without limitation,
 any information, ‘Basic’ and ‘Pro’ data (if provided through a Paid Subscription, as defined below), content, service or software made available
@@ -27,50 +27,50 @@ Party Content may be available through framed areas or through hyperlinks to the
 ## Acceptance of Terms and Conditions
 
 By using the Service and the Content, you agree to follow and be bound by these Terms and Conditions, including the policies referenced
-herein. Brokerage account customers of Alpaca are granted additional levels of access to the website and their relationship with Alpaca is
+herein. Brokerage account customers of {{Company Name}} are granted additional levels of access to the website and their relationship with {{Company Name}} is
 governed by additional agreements and terms of use, such as the Customer Agreement.
 
 Data Plans
-When creating a user account with Alpaca/onboarding through Alpaca’s Services you will have the option to subscribe to a market data plan.
-Alpaca offers a ‘Basic’ market data plan, which is made available at no cost, as well as a ‘Pro’ market data plan, that is made available on a
+When creating a user account with {{Company Name}}/onboarding through {{Company Name}}’s Services you will have the option to subscribe to a market data plan.
+{{Company Name}} offers a ‘Basic’ market data plan, which is made available at no cost, as well as a ‘Pro’ market data plan, that is made available on a
 paid subscription basis (a “Paid Subscription”). By selecting the ‘Pro’ market data plan during the user account creation/onboarding through
-Alpaca’s Services, you agree to: (i) the NASDAQ OMX Global Subscriber Agreement, or AGREEMENT FOR MARKET DATA DISPLAY
-SERVICES, each to the extent applicable; and (ii) to allow Alpaca to charge your selected payment method for your Paid Subscription for the
+{{Company Name}}’s Services, you agree to: (i) the NASDAQ OMX Global Subscriber Agreement, or AGREEMENT FOR MARKET DATA DISPLAY
+SERVICES, each to the extent applicable; and (ii) to allow {{Company Name}} to charge your selected payment method for your Paid Subscription for the
 duration of your subscription period and any applicable recurring charges when your Paid Subscription automatically renews. To the extent you
-wish to cancel your Paid Subscription, you may do so through the ‘Market data subscription’ page in your Alpaca Services account. To the
-extent you cancel your Paid Subscription prior to the end of your applicable subscription term, Alpaca will not charge you for any additional
-paid subscriptions. Notwithstanding the foregoing, Alpaca shall not be obligated to provide you any refund for the unused portion of your Paid
+wish to cancel your Paid Subscription, you may do so through the ‘Market data subscription’ page in your {{Company Name}} Services account. To the
+extent you cancel your Paid Subscription prior to the end of your applicable subscription term, {{Company Name}} will not charge you for any additional
+paid subscriptions. Notwithstanding the foregoing, {{Company Name}} shall not be obligated to provide you any refund for the unused portion of your Paid
 Subscription term.
 
 BY PURCHASING A PAID SUBSCRIPTION, YOU ACKNOWLEDGE THAT YOUR PAID SUBSCRIPTION HAS AN INITIAL AND RECURRING
 
-PAYMENT CHARGE AT ALPACA’S THEN-CURRENT RATES, AND AGREE THAT ALPACA MAY SUBMIT MONTHLY OR YEARLY
+PAYMENT CHARGE AT {{Company Name}}’S THEN-CURRENT RATES, AND AGREE THAT {{Company Name}} MAY SUBMIT MONTHLY OR YEARLY
 CHARGES, AS APPLICABLE, IN ADVANCE THROUGH YOUR CHOSEN PAYMENT METHOD WITHOUT FURTHER AUTHORIZATION
 FROM YOU UNTIL CANCELLED BY YOU, OR YOU CHANGE YOUR PAYMENT METHOD. FOR THE AVOIDANCE OF DOUBT, UNLESS
 CANCELLED PRIOR TO THE CONCLUSION OF YOUR THEN-CURRENT PAID SUBSCRIPTION TERM, UPON SUCH CONCLUSION YOUR
-PAID SUBSCRIPTION SHALL AUTOMATICALLY RENEW AT ALPACA’S THEN-CURRENT RATES WITHOUT ADDITIONAL NOTICE TO YOU
-AND YOU ACCEPT RESPONSIBILITY FOR ALL RECURRING CHARGES FOR YOUR PAID SUBSCRIPTION CHARGED BY ALPACA,
-INCLUDING ANY CHARGES PROCESSED BY ALPACA AFTER THE EXPIRATION DATE OF ANY APPLICABLE PAYMENT METHOD.
+PAID SUBSCRIPTION SHALL AUTOMATICALLY RENEW AT {{Company Name}}’S THEN-CURRENT RATES WITHOUT ADDITIONAL NOTICE TO YOU
+AND YOU ACCEPT RESPONSIBILITY FOR ALL RECURRING CHARGES FOR YOUR PAID SUBSCRIPTION CHARGED BY {{Company Name}},
+INCLUDING ANY CHARGES PROCESSED BY {{Company Name}} AFTER THE EXPIRATION DATE OF ANY APPLICABLE PAYMENT METHOD.
 
 ## Personal and Non-Commercial Usage
 
 Other than as set forth herein, you agree to use the Services and Content solely for your own personal and non-commercial purposes. Should
 you wish to use the Services and Content for any other purposes, including without limitation commercial usage, or making the Services and
-Content available to others through your own application (a “User Application”), you shall provide Alpaca with 30 days advance written notice
-prior to making such User Application available to others. Alpaca reserves the right to restrict your User Application’s connectivity to the Service
-and Content, and may disallow any connectivity entirely, if Alpaca determines the User Application may interfere with Alpaca’s Services or
-otherwise be detrimental to Alpaca, as may be determined in Alpaca’s sole discretion.
+Content available to others through your own application (a “User Application”), you shall provide {{Company Name}} with 30 days advance written notice
+prior to making such User Application available to others. {{Company Name}} reserves the right to restrict your User Application’s connectivity to the Service
+and Content, and may disallow any connectivity entirely, if {{Company Name}} determines the User Application may interfere with {{Company Name}}’s Services or
+otherwise be detrimental to {{Company Name}}, as may be determined in {{Company Name}}’s sole discretion.
 
 ## Disclaimer and Limitations of Liability
 
-The Content and the Service are provided on an “as is” and “as available” basis. To the fullest extent permitted under applicable law, Alpaca and
+The Content and the Service are provided on an “as is” and “as available” basis. To the fullest extent permitted under applicable law, {{Company Name}} and
 the Third Party Providers expressly disclaim all warranties of any kind with respect to the Content and the Service, whether express or implied,
 
-including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose and non-infringement. Neither Alpaca nor
+including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose and non-infringement. Neither {{Company Name}} nor
 Third Party Providers guarantee the accuracy, timeliness, completeness or usefulness of any Content. You agree to use the Content and the
 Service only at your own risk.
 
-Neither Alpaca nor the Third Party Providers explicitly or implicitly endorse or approve any Third Party Content. Third Party Content is provided
+Neither {{Company Name}} nor the Third Party Providers explicitly or implicitly endorse or approve any Third Party Content. Third Party Content is provided
 for informational purposes only.
 
 The Content is not intended to provide financial, legal, tax or investment advice or recommendations.
@@ -80,9 +80,9 @@ your personal investment objectives, financial circumstances and risk tolerance.
 specific situation.
 
 **
-ALPACA AND THE THIRD PARTY PROVIDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+{{Company Name}} AND THE THIRD PARTY PROVIDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
 CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, REVENUE,
-INCOME, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES (EVEN IF ALPACA OR ANY THIRD PARTY PROVIDER HAS BEEN
+INCOME, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES (EVEN IF {{Company Name}} OR ANY THIRD PARTY PROVIDER HAS BEEN
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGES), RESULTING FROM: (1) THE USE OF OR THE INABILITY TO USE THE CONTENT
 OR THE SERVICE; (2) THE COST OF PROCUREMENT OF SUBSTITUTE GOODS AND SERVICES RESULTING FROM ANY GOODS,
 DATA, INFORMATION OR SERVICES PURCHASED OR OBTAINED OR MESSAGES RECEIVED OR TRANSACTIONS ENTERED INTO,
@@ -97,9 +97,9 @@ provider or mobile carrier, that you incur when accessing the Services.
 
 ## No Recommendations
 
-Alpaca Securities provides self-directed investors with discount brokerage services, and does not make recommendations of any kind. You are
+{{Company Name}} Securities provides self-directed investors with discount brokerage services, and does not make recommendations of any kind. You are
 solely responsible for evaluating the merits and risks associated with the use of any Content provided through the Service before making any
-decisions based on such Content. You agree not to hold Alpaca or any Third-Party Provider liable for any possible claim for damages arising
+decisions based on such Content. You agree not to hold {{Company Name}} or any Third-Party Provider liable for any possible claim for damages arising
 from any decision you make based on the Content or other information made available to you through the Service or any Third-Party Provider
 websites. Past performance data should not be construed as indicative of future results.
 
@@ -110,37 +110,37 @@ jurisdiction where such solicitation would be illegal.
 
 ## Content
 
-Content posted on the Service is published as of its stated date or, if no date is stated, the date of first posting. Neither Alpaca nor the Third-Party
+Content posted on the Service is published as of its stated date or, if no date is stated, the date of first posting. Neither {{Company Name}} nor the Third-Party
 Providers have undertaken any duty to update any such information.
 
-Alpaca does not prepare, edit, or endorse Third Party Content. Alpaca does not guarantee the accuracy, timeliness, completeness or usefulness
+{{Company Name}} does not prepare, edit, or endorse Third Party Content. {{Company Name}} does not guarantee the accuracy, timeliness, completeness or usefulness
 of Third Party Content, and is not responsible or liable for any content, advertising, products, or other materials on or available from third party
 sites.
 
-You will not hold Alpaca and/or any Third-Party Provider liable in any way for (a) any inaccuracy of, error or delay in, or omission of the Content;
+You will not hold {{Company Name}} and/or any Third-Party Provider liable in any way for (a) any inaccuracy of, error or delay in, or omission of the Content;
 or (b) any loss or damage arising from or occasioned by i) any error or delay in the transmission of such Content; ii) interruption in any such
 Content due either to any negligent act or omission by any party to any “force majeure” (e.g., flood, extraordinary weather conditions, earthquake
 or other act of God, fire, war, insurrection, riot, labor dispute, accident, action of government, communications or power failure, equipment or
-software malfunction), or iii) to any other cause beyond the reasonable control of Alpaca and/or Third-Party Provider, or iv) non-performance.
+software malfunction), or iii) to any other cause beyond the reasonable control of {{Company Name}} and/or Third-Party Provider, or iv) non-performance.
 
 Any price quotes may be delayed 20 minutes or longer, according to the rules and regulations applicable to exchanges and Third Party
-Providers. Neither Alpaca nor the Third-Party Providers make any representations, warranties or other guarantees as to the accuracy or
-timeliness of any price quotes. Neither Alpaca nor the Third-Party Providers make any representations, warranties or other guarantees as to the
+Providers. Neither {{Company Name}} nor the Third-Party Providers make any representations, warranties or other guarantees as to the accuracy or
+timeliness of any price quotes. Neither {{Company Name}} nor the Third-Party Providers make any representations, warranties or other guarantees as to the
 present or future value or suitability of any sale, trade or other transaction involving any particular security or any other investment.
 
 Content is provided exclusively for personal and noncommercial access and use. No part of the Service or Content may be copied, reproduced,
 republished, uploaded, posted, publicly displayed, encoded, translated, transmitted or distributed in any way (including “mirroring”) to any other
-computer, server, web site or other medium for publication or distribution or for any commercial enterprise, without Alpaca’s express prior written
+computer, server, web site or other medium for publication or distribution or for any commercial enterprise, without {{Company Name}}’s express prior written
 consent.
 
-You acknowledge that Alpaca is the sole owner of Alpaca Marks and that other Marks are the property of their respective owners. You agree that
+You acknowledge that {{Company Name}} is the sole owner of {{Company Name}} Marks and that other Marks are the property of their respective owners. You agree that
 you will not use any Marks for any purpose without the prior express written consent of the respective owners.
 
 ## Agreement not with App Stores
 
 You acknowledge and agree that the availability of our mobile application is dependent on the third party from which you received it, e.g., the
 Google Play or Apple App Store (each, an “App Store”). When you download our mobile application through the App Store, you agree that: (i)
-these Terms and Conditions are concluded between you and Alpaca and not between you and the App Store, and that we (not the App Store),
+these Terms and Conditions are concluded between you and {{Company Name}} and not between you and the App Store, and that we (not the App Store),
 are responsible for our software; (ii) the App Store has no obligation to furnish any maintenance and support services with regards to our mobile
 application or handle any warranty claims; (iii) the App Store is not responsible for addressing any claims you have or any claims of any third
 party relating to our mobile application, such as, product liability, consumer protection claims, intellectual property claims, or any claim that our
@@ -151,23 +151,23 @@ using our mobile application.
 
 ## Termination; Modification
 
-You agree that, without notice, Alpaca may terminate these Terms and Conditions, or suspend your access to the Service or the Content, with or
-without cause at any time and effective immediately. These Terms and Conditions will terminate immediately without notice from Alpaca if you, in
-Alpaca’s sole discretion, fail to comply with any provision of these Terms and Conditions. Alpaca shall not be liable to you or any third party for
-the termination or suspension of the Service or the Content, or any claims related to such termination or suspension. Alpaca may also terminate
-or suspend your access to the Service or the Content if Alpaca finds that your usage violates these Terms and Conditions, or if your usage puts
-an undue strain on Alpaca’s information technology infrastructure.
+You agree that, without notice, {{Company Name}} may terminate these Terms and Conditions, or suspend your access to the Service or the Content, with or
+without cause at any time and effective immediately. These Terms and Conditions will terminate immediately without notice from {{Company Name}} if you, in
+{{Company Name}}’s sole discretion, fail to comply with any provision of these Terms and Conditions. {{Company Name}} shall not be liable to you or any third party for
+the termination or suspension of the Service or the Content, or any claims related to such termination or suspension. {{Company Name}} may also terminate
+or suspend your access to the Service or the Content if {{Company Name}} finds that your usage violates these Terms and Conditions, or if your usage puts
+an undue strain on {{Company Name}}’s information technology infrastructure.
 
-Alpaca and/or the Third-Party Providers may discontinue or modify the Content, or any portion thereof, at any time. You release and agree to
-indemnify and hold harmless Alpaca, and the Third-Party Providers, for any loss or damages arising from or relating to such discontinuation or
+{{Company Name}} and/or the Third-Party Providers may discontinue or modify the Content, or any portion thereof, at any time. You release and agree to
+indemnify and hold harmless {{Company Name}}, and the Third-Party Providers, for any loss or damages arising from or relating to such discontinuation or
 modification.
 
 ## Communications
 
 By using the Service or the Content, you consent to any form of recording and retention of any communication, information and data exchanged
-between you and Alpaca or its representatives or agents.
+between you and {{Company Name}} or its representatives or agents.
 
-All communications made at or through the Forums are public. Neither Alpaca nor the Third-Party Providers screen, review, approve or endorse
+All communications made at or through the Forums are public. Neither {{Company Name}} nor the Third-Party Providers screen, review, approve or endorse
 any Third Party Content available on or through the Forums.
 
 Reliance on any Third Party Content available on or through the Forums is at your own risk. When discussing a particular company, stock or
@@ -179,7 +179,7 @@ defamatory, vulgar, obscene, libelous, invasive of another's privacy (including,
 any other contact information without the written consent of the owner of such information), hateful, or racially, ethnically or otherwise
 objectionable;
 2. harm minors in any way;
-3. impersonate any person or entity, including, but not limited to, (i) an Alpaca or Third-Party Provider manager, employee, agent, or
+3. impersonate any person or entity, including, but not limited to, (i) an {{Company Name}} or Third-Party Provider manager, employee, agent, or
 representative or (ii) forum leader, guide or host;
 4. falsely state or otherwise misrepresent your affiliation with any person or entity;
 5. forge headers or otherwise manipulate identifiers in order to disguise the origin of any material;
@@ -205,33 +205,33 @@ regulations having the force of law;
 promote any act of cruelty;
 15. promote, offer for sale or sell any security or item, good or service that i) violates any applicable federal, state, or local law or regulation,
 ii) you do not have full power and authority under all relevant laws and regulations to offer and sell, including all necessary licenses and
-authorizations, or iii) Alpaca or the Third Party Providers determine, in their sole discretion, is inappropriate for sale;
+authorizations, or iii) {{Company Name}} or the Third Party Providers determine, in their sole discretion, is inappropriate for sale;
 16. use the Forums as a forwarding service to another website; or
 17. access or otherwise use the Forums in any unlawful manner, for any unlawful purpose or in violation of these Terms and Conditions.
 
 ## External Links
 
-Alpaca and/or the Third-Party Providers may provide links to other websites or resources. Because neither Alpaca or the Third-Party Providers
-have any control over such sites and resources, you acknowledge and agree that neither Alpaca nor the Third Party Providers are responsible for
-the availability of such external sites or resources. Alpaca and the Third Party Providers do not endorse and are not liable for any content,
-advertising, products, or other materials on or available through such sites or resources. You further acknowledge and agree that neither Alpaca
+{{Company Name}} and/or the Third-Party Providers may provide links to other websites or resources. Because neither {{Company Name}} or the Third-Party Providers
+have any control over such sites and resources, you acknowledge and agree that neither {{Company Name}} nor the Third Party Providers are responsible for
+the availability of such external sites or resources. {{Company Name}} and the Third Party Providers do not endorse and are not liable for any content,
+advertising, products, or other materials on or available through such sites or resources. You further acknowledge and agree that neither {{Company Name}}
 nor the Third Party Providers shall be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in
 connection with use of or reliance on any such content, goods or services available on or through any such site or resource.
 
 ## Applicable Policies
 
-In addition to these Terms and Conditions, your access to and use of the Content and the Service is subject to Alpaca’s then-current policies
-relating to the Content and the Service, including, without limitation, the Alpaca Privacy Policy available on the Service. You agree to be bound by
-these policies and all other Alpaca policies applicable to the access and use of the Content and the Service.
+In addition to these Terms and Conditions, your access to and use of the Content and the Service is subject to {{Company Name}}’s then-current policies
+relating to the Content and the Service, including, without limitation, the {{Company Name}} Privacy Policy available on the Service. You agree to be bound by
+these policies and all other {{Company Name}} policies applicable to the access and use of the Content and the Service.
 
-By using the Service, you are consenting to have your personal data transferred to and processed by Alpaca and its affiliates. As part of
-providing you the Service, Alpaca may need to provide you with certain communications, such as service announcements and administrative
+By using the Service, you are consenting to have your personal data transferred to and processed by {{Company Name}} and its affiliates. As part of
+providing you the Service, {{Company Name}} may need to provide you with certain communications, such as service announcements and administrative
 messages. These communications are considered part of the Service, which you may not be able to opt-out from receiving.
 
 ## Indemnification
 
-You will indemnify and hold harmless Alpaca and the Third Party Providers, and the officers, directors, agents, partners, employees, licensors,
-distributors, and representatives of Alpaca and the Third Party Providers, from and against any and all claims, demands, actions, causes of
+You will indemnify and hold harmless {{Company Name}} and the Third Party Providers, and the officers, directors, agents, partners, employees, licensors,
+distributors, and representatives of {{Company Name}} and the Third Party Providers, from and against any and all claims, demands, actions, causes of
 action, suits, proceedings, losses, damages, costs, and expenses, including reasonable attorneys' fees, arising from or relating to your access
 and/or use of, or interaction with the Content (including, without limitation, Third Party Content), or any act, error, or omission of your use of your
 account or any user of your account, in connection therewith, including, but not limited to, matters relating to incorrect, incomplete, or misleading
@@ -241,9 +241,9 @@ with the Service; or violation of any applicable law.
 
 ## Revisions
 
-Alpaca may at any time revise these Terms and Conditions by updating this document and making it available to you through the Services. You
+{{Company Name}} may at any time revise these Terms and Conditions by updating this document and making it available to you through the Services. You
 agree to be bound by subsequent revisions and agree to review these Terms and Conditions periodically for changes. The most updated version
-of this document will be available for your review under the “Alpaca Terms and Conditions” link that appears on the Alpaca website and mobile
+of this document will be available for your review under the “{{Company Name}} Terms and Conditions” link that appears on the {{Company Name}} website and mobile
 application.
 
 ## Applicable Law and Venue; Severability
