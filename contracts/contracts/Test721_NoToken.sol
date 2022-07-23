@@ -19,7 +19,7 @@ contract Test721_NoToken is ERC721URIStorage, Ownable, TermsableNoToken {
     Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
-    constructor() ERC721("GOAT BLOCS", "GOAT") {
+    constructor() ERC721("PolyDocs", "DOCS") {
         console.log("This is my NFT contract. Woah!");
     }
 
@@ -31,20 +31,6 @@ contract Test721_NoToken is ERC721URIStorage, Ownable, TermsableNoToken {
         require(_acceptedTerms(to), "Terms not accepted");
         super._transfer(from, to, tokenId);
     }
-
-    // function tokenTerm(
-    //     string memory _term,
-    //     uint256 _tokenId //changed from external to public
-    // ) public view override returns (string memory) {
-    //     bytes32 keyHash = keccak256(bytes(_term));
-    //     if (keyHash == keccak256("name")) {
-    //         return name();
-    //     }
-    //     if (keyHash == keccak256("symbol")) {
-    //         return symbol();
-    //     }
-    //     return super.tokenTerm(_term, _tokenId);
-    // }
 
     function _safeMint(address _to, uint256 _tokenId) internal override {
         require(_acceptedTerms(_to), "Terms not accepted");
