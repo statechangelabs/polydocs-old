@@ -5,7 +5,7 @@ import {
   MetamaskNotInstalled,
   MetamaskWrongChain,
 } from "@raydeck/usemetamask";
-import { HashRouter, BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import GetMetamask from "./GetMetamask";
 import WrongChain from "./WrongChain";
 import Disconnected from "./Disconnected";
@@ -15,13 +15,13 @@ import "inter-ui";
 import Redirector from "./Redirector";
 const App: FC = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/redirect/:key" element={<Redirector />} />
         <Route path="*" element={<RestOfApp />} />
       </Routes>
       <ToastContainer />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
