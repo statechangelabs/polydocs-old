@@ -28,7 +28,7 @@ const Home: FC = () => {
       <div className="w-full">
         <div className="flex justify-center space-x-12">
           <h2 className="flex text-3xl font-bold text-purple-default">
-            Manage My Contract
+            Manage My Smart Contract
           </h2>
         </div>
         <div className="flex justify-center space-x-2">
@@ -52,13 +52,13 @@ const Home: FC = () => {
       <div>
         <div className="flex justify-center space-x-12 mt-8">
           <h2 className="flex text-3xl font-bold text-purple-default">
-            Manage Template Documents
+            Manage Document Templates
           </h2>
         </div>
-        <div className="w-3/4 mx-auto">
+        <div className="w-full mx-auto">
           <div className="flex justify-center space-x-12 mt-8">
             <h3 className="flex text-xl font-bold text-purple-default">
-              Known Documents
+              Known Templates
             </h3>
           </div>
           <div className="text-xs italic flex justify-center space-x-12">
@@ -72,43 +72,42 @@ const Home: FC = () => {
                   className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
                 >
                   <div>
-                    {decodeAB(ab).replaceAll("#", "").substring(0, 60)}
+                    {decodeAB(ab).replaceAll("#", "").substring(0, 120)}
                     ...
                   </div>
-                </Link>
-                <div className="text-xs text-gray-600">
-                  {/* <a
+                  <div className="text-xs text-gray-600">
+                    {/* <a
                     href={"https://ipfs.io/ipfs/" + cid}
                     className=" hover:text-purple-light"
                   > */}
-                  cid: {cid}
-                  {/* </a> */}
-                </div>
+                    cid: {cid}
+                    {/* </a> */}
+                  </div>
+                </Link>
               </li>
             ))}
           </ol>
           <div className="flex justify-center space-x-12 mt-8">
             <h3 className="flex text-xl font-bold text-purple-default">
-              My Documents
+              My Templates
             </h3>
           </div>
           <div className="text-xs italic flex justify-center space-x-12">
             Click To Review/Revise
           </div>
-          <ol>
+          <ol className="flex flex-col justify-center mt-4 w-full grid">
             {Object.entries(templates).map(([cid, template]) => (
-              <li className=" ml-10">
-                <button
-                  onClick={() => {
-                    navigate("/template/" + cid);
-                  }}
+              <div className="flex justify-between w-full mt-4">
+                <Link
+                  to={"/template/" + cid}
+                  className="block align-left text-purple-default hover:text-purple-light"
                 >
-                  <div>
-                    {template.replaceAll("#", "").substring(0, 60)}
+                  <div className="truncate">
+                    {template.replaceAll("#", "").substring(0, 120)}
                     ...
                   </div>
                   <div className="text-xs text-gray-60">cid: {cid}</div>
-                </button>
+                </Link>
                 <button
                   onClick={() => {
                     delete templates[cid];
@@ -118,10 +117,11 @@ const Home: FC = () => {
                     );
                     incrementCounter();
                   }}
+                  className="btn btn-gradient"
                 >
                   Delete
                 </button>
-              </li>
+              </div>
             ))}
           </ol>
         </div>

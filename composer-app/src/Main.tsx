@@ -194,7 +194,7 @@ const Main: FC = () => {
           </main>
         </div>
       </div>
-      <footer className="p-2 flex flex-row justify-end fixed bottom-0 w-full align-right  ">
+      <div className="p-4 flex flex-row justify-end fixed top-0 w-full align-right  ">
         <div className="text-purple-800 text-xs bg-opacity-50">
           Operating on{" "}
           {blockExplorers[parseInt(chainId, 16)] ? (
@@ -219,7 +219,7 @@ const Main: FC = () => {
           with account {address.substring(0, 6)}...
           {address.substring(address.length - 4)}
         </div>
-      </footer>
+      </div>
     </div>
   );
 };

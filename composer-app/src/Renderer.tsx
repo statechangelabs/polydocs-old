@@ -120,9 +120,9 @@ const Renderer: FC<{
   }
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
   return (
-    <div className="flex-col flex h-full print:h-full">
-      <div className="m-2 flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
-        <div className="prose bg-white rounded-md shadow-md p-4 lg:p-8 m-2 w-full max-w-200 overflow-y-auto print:overflow-visible">
+    <div className="flex-col flex h-full print:h-full doc-shadow h-full">
+      <div className="flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
+        <div className="prose bg-white rounded-md  p-4 w-full max-w-200 overflow-y-auto print:overflow-visible">
           <Markdown>{output}</Markdown>
         </div>
       </div>
