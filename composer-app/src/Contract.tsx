@@ -17,7 +17,7 @@ const knownCids = [
 ];
 
 const knownRenderers = [
-  "bafybeidxa2vnac25dtq4d7jxtafqsahknuxbjwr4ltycxusw6ibn2omrgy",
+  "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
 
 const ethereum = (window as unknown as { ethereum: any }).ethereum;
