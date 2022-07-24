@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { utils } from "ethers";
 import { decodeAB, useIPFSList } from "./useIPFS";
+import { useMain } from "./Main";
 const knownCids = [
   "bafybeih2ea4d777iaot4fodu76r5adaqf5hvp4aumfrlxk4teexs2b54ua/template.md",
 ];
@@ -23,11 +24,16 @@ const Home: FC = () => {
     setCounter((old) => old + 1);
   }, []);
   const knownTemplates = useIPFSList(knownCids);
+
+  const { setTitle } = useMain();
+  useEffect(() => {
+    setTitle("Dashboard");
+  }, []);
   return (
-    <div className="w-full">
-      <div className="w-full">
+    <div>
+      <div className="mb-16">
         <div className="flex justify-center space-x-12">
-          <h2 className="flex text-3xl font-bold text-purple-default">
+          <h2 className="flex text-3xl font-bold text-black mb-4">
             Manage My Smart Contract
           </h2>
         </div>
@@ -51,79 +57,83 @@ const Home: FC = () => {
       </div>
       <div>
         <div className="flex justify-center space-x-12 mt-8">
-          <h2 className="flex text-3xl font-bold text-purple-default">
+          <h2 className="flex text-3xl font-bold text-black">
             Manage Document Templates
           </h2>
         </div>
         <div className="w-full mx-auto">
-          <div className="flex justify-center space-x-12 mt-8">
-            <h3 className="flex text-xl font-bold text-purple-default">
-              Known Templates
-            </h3>
-          </div>
-          <div className="text-xs italic flex justify-center space-x-12">
-            Click To Review/Revise
-          </div>
-          <ol className="flex justify-center space-x-12 mt-4">
-            {Object.entries(knownTemplates).map(([cid, ab]) => (
-              <li className=" ml-10">
-                <Link
-                  to={"/template/" + cid}
-                  className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
-                >
-                  <div>
-                    {decodeAB(ab).replaceAll("#", "").substring(0, 120)}
-                    ...
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    {/* <a
+          <div className="mb-12">
+            <div className="flex justify-center space-x-12 mt-8">
+              <h3 className="flex text-xl font-bold text-black">
+                Known Templates
+              </h3>
+            </div>
+            <div className="text-xs italic flex justify-center space-x-12 opacity-75 mb-4">
+              Click To Review/Revise
+            </div>
+            <ul className="max-w-4xl mx-auto">
+              {Object.entries(knownTemplates).map(([cid, ab]) => (
+                <li>
+                  <Link
+                    to={"/template/" + cid}
+                    className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
+                  >
+                    <div>
+                      {decodeAB(ab).replaceAll("#", "").substring(0, 120)}
+                      ...
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {/* <a
                     href={"https://ipfs.io/ipfs/" + cid}
                     className=" hover:text-purple-light"
                   > */}
-                    cid: {cid}
-                    {/* </a> */}
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ol>
-          <div className="flex justify-center space-x-12 mt-8">
-            <h3 className="flex text-xl font-bold text-purple-default">
-              My Templates
-            </h3>
+                      cid: {cid}
+                      {/* </a> */}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="text-xs italic flex justify-center space-x-12">
-            Click To Review/Revise
+          <div>
+            <div className="flex justify-center space-x-12 mt-8">
+              <h3 className="flex text-xl font-bold text-black">
+                My Templates
+              </h3>
+            </div>
+            <div className="text-xs italic flex justify-center space-x-12">
+              Click To Review/Revise
+            </div>
+            <ul className="max-w-4xl mx-auto">
+              {Object.entries(templates).map(([cid, template]) => (
+                <div className="flex justify-between mt-4">
+                  <Link
+                    to={"/template/" + cid}
+                    className="w-3/4 block align-left text-purple-default hover:text-purple-light"
+                  >
+                    <div className="truncate">
+                      {template.replaceAll("#", "").substring(0, 120)}
+                      ...
+                    </div>
+                    <div className="text-xs text-gray-60">cid: {cid}</div>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      delete templates[cid];
+                      localStorage.setItem(
+                        "templates",
+                        JSON.stringify(templates)
+                      );
+                      incrementCounter();
+                    }}
+                    className="btn btn-gradient"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </ul>
           </div>
-          <ol className="flex flex-col justify-center mt-4 w-full grid">
-            {Object.entries(templates).map(([cid, template]) => (
-              <div className="flex justify-between w-full mt-4">
-                <Link
-                  to={"/template/" + cid}
-                  className="block align-left text-purple-default hover:text-purple-light"
-                >
-                  <div className="truncate">
-                    {template.replaceAll("#", "").substring(0, 120)}
-                    ...
-                  </div>
-                  <div className="text-xs text-gray-60">cid: {cid}</div>
-                </Link>
-                <button
-                  onClick={() => {
-                    delete templates[cid];
-                    localStorage.setItem(
-                      "templates",
-                      JSON.stringify(templates)
-                    );
-                    incrementCounter();
-                  }}
-                  className="btn btn-gradient"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </ol>
         </div>
       </div>
     </div>

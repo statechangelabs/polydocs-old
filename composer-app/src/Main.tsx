@@ -79,7 +79,11 @@ const Main: FC = () => {
   const [title, setTitle] = useState("Dashboard");
   const value = useMemo(() => ({ title, setTitle }), [title]);
   return (
-    <div style={{ background: `url(${Topography})` }}>
+    <div>
+      <div
+        className="fixed w-screen h-screen"
+        style={{ background: `url(${Topography})` }}
+      />
       <div className="relative  mx-auto flex flex-col h-screen">
         {/* <Fragment>
       <div className="min-h-screen bg-purple-200"> */}
@@ -87,10 +91,13 @@ const Main: FC = () => {
           {({ open }) => (
             <>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-12">
+                <div className="flex justify-between items-center h-12">
                   <div className="flex">
-                    <div className="flex-shrink-0 flex items-center">
-                      <img className="h-8 w-auto" src={Logo} alt="PolyDocs" />
+                    <div className="flex-shrink-0 flex items-center space-x-2">
+                      <img src={Logo} alt="Logo" className="w-6" />
+                      <span className="text-lg font-bold text-purple-default">
+                        PolyDocs
+                      </span>
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                       {navigation.map((item) => (
@@ -133,6 +140,31 @@ const Main: FC = () => {
                       )}
                     </Disclosure.Button>
                   </div>
+
+                  <p className="text-purple-dark text-xs ">
+                    Operating on{" "}
+                    {blockExplorers[parseInt(chainId, 16)] ? (
+                      // <a
+                      //   className="text-purple-300 hover:text-purple-500 transition"
+                      //   href={
+                      //     blockExplorers[parseInt(chainId, 16)] +
+                      //     addresses[parseInt(chainId, 16)]
+                      //   }
+                      // >
+                      // {
+                      chainNames[parseInt(chainId, 16)] ||
+                      "chain " + parseInt(chainId, 16).toString(10)
+                    ) : (
+                      // }
+                      // </a>
+                      <span className="">
+                        {chainNames[parseInt(chainId, 16)] ||
+                          "chain " + parseInt(chainId, 16).toString(10)}
+                      </span>
+                    )}{" "}
+                    with account {address.substring(0, 6)}...
+                    {address.substring(address.length - 4)}
+                  </p>
                 </div>
               </div>
 
@@ -176,7 +208,7 @@ const Main: FC = () => {
         <div className="py-2">
           <header>
             <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <h1 className="text-2xl font-bold leading-tight text-gray-900">
+              <h1 className="text-4xl font-bold leading-tight text-purple-default mt-2">
                 {title}
               </h1>
             </div>
@@ -192,32 +224,6 @@ const Main: FC = () => {
               {/* /End replace */}
             </div>
           </main>
-        </div>
-      </div>
-      <div className="p-4 flex flex-row justify-end fixed top-0 w-full align-right  ">
-        <div className="text-purple-800 text-xs bg-opacity-50">
-          Operating on{" "}
-          {blockExplorers[parseInt(chainId, 16)] ? (
-            // <a
-            //   className="text-purple-300 hover:text-purple-500 transition"
-            //   href={
-            //     blockExplorers[parseInt(chainId, 16)] +
-            //     addresses[parseInt(chainId, 16)]
-            //   }
-            // >
-            // {
-            chainNames[parseInt(chainId, 16)] ||
-            "chain " + parseInt(chainId, 16).toString(10)
-          ) : (
-            // }
-            // </a>
-            <span className="">
-              {chainNames[parseInt(chainId, 16)] ||
-                "chain " + parseInt(chainId, 16).toString(10)}
-            </span>
-          )}{" "}
-          with account {address.substring(0, 6)}...
-          {address.substring(address.length - 4)}
         </div>
       </div>
     </div>

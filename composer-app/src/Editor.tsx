@@ -85,45 +85,47 @@ const Editor: FC = () => {
           <Form>
             <div className="flex w-full flex-row justify-between space-x-12">
               <div className="flex-1 w-1/2 flex-col ">
-                <h2 className="text-2xl font-bold">Template Editor</h2>
-                <Field
-                  as="textarea"
-                  name="template"
-                  className="form-textarea w-full min-h-40 border-gray-300"
-                  rows={20}
-                />
-                <div className="flex justify-end mt-6">
-                  <button
-                    className="btn btn-primary"
-                    type="button"
-                    onClick={async () => {
-                      console.log("Hello there my friend");
-                      toast("Uploading");
-                      const cidWithPath = await upload(values.template);
-                      toast("Successfully uploaded" + cidWithPath);
-                      console.log("uploaded", cidWithPath);
-                      localStorage.setItem("currentTemplate", cidWithPath);
-                      const templates: Record<string, string> = JSON.parse(
-                        localStorage.getItem("templates") || "{}"
-                      );
-                      templates[cidWithPath] = values.template;
-                      console.log(
-                        "I will save templates",
-                        JSON.stringify(templates)
-                      );
-                      localStorage.setItem(
-                        "templates",
-                        JSON.stringify(templates)
-                      );
-                    }}
-                  >
-                    Upload to IPFS
-                  </button>
+                <div className="doc-shadow p-6 bg-white">
+                  <h2 className="text-2xl font-bold mb-4">Template Editor</h2>
+                  <Field
+                    as="textarea"
+                    name="template"
+                    className="scrollable form-textarea w-full min-h-40 border-gray-300"
+                    rows={20}
+                  />
+                  <div className="flex justify-end mt-6">
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={async () => {
+                        console.log("Hello there my friend");
+                        toast("Uploading");
+                        const cidWithPath = await upload(values.template);
+                        toast("Successfully uploaded" + cidWithPath);
+                        console.log("uploaded", cidWithPath);
+                        localStorage.setItem("currentTemplate", cidWithPath);
+                        const templates: Record<string, string> = JSON.parse(
+                          localStorage.getItem("templates") || "{}"
+                        );
+                        templates[cidWithPath] = values.template;
+                        console.log(
+                          "I will save templates",
+                          JSON.stringify(templates)
+                        );
+                        localStorage.setItem(
+                          "templates",
+                          JSON.stringify(templates)
+                        );
+                      }}
+                    >
+                      Upload to IPFS
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   {terms && (
-                    <div className=" p-4 m-2 bg-white doc-shadow rounded-md border-gray-200 border-t-2 border-t-teal-light mt-24">
+                    <div className=" p-4 m-2 bg-white doc-shadow  mt-12">
                       <h2 className="text-2xl font-bold">
                         Terms Used in this document
                       </h2>
@@ -150,7 +152,7 @@ const Editor: FC = () => {
               </div>
 
               <div className="flex-1 w-1/2 flex-col px-4">
-                <h2 className="text-2xl font-bold">Preview</h2>
+                <h2 className="text-2xl font-bold mb-4">Preview</h2>
                 <Renderer
                   addTerm={addTerm}
                   template={values.template}
