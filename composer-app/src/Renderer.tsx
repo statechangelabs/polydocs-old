@@ -120,21 +120,21 @@ const Renderer: FC<{
   }
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
   return (
-    <div className="flex-col flex h-full print:h-full doc-shadow h-full">
-      <div className="flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full">
-        <div className="prose bg-white rounded-md  p-4 w-full max-w-200 overflow-y-auto print:overflow-visible">
+    <div className="relative flex-col flex h-full print:h-full ">
+      <div className="flex overflow-y-auto print:overflow-visible flex-row justify-center max-h-full doc-shadow">
+        <div className="prose bg-white p-6 w-full max-w-200 overflow-y-auto print:overflow-visible">
           <Markdown>{output}</Markdown>
         </div>
       </div>
-      <div className=" w-full flex flex-row justify-center print:hidden">
+      <div className="text-sm w-full flex flex-row justify-center print:hidden">
         <button
-          className="m-2 rounded-md p-2 border-2 border-purple-800 bg-pink-200 text-gray-800 hover:text-gray-600"
+          className=" p-2 bg-teal-light border-2 border-teal-dark"
           onClick={() => {
             copy(hash);
             toast("Copied to clipboard");
           }}
         >
-          <span className="text-gray-600">Hash:</span> {hash}
+          <span className="text-xs">Hash:</span> {hash}
         </button>
       </div>
     </div>

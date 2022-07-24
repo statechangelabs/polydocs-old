@@ -7,6 +7,7 @@ import {
 } from "./contracts";
 import { ethers } from "ethers";
 import useAsyncEffect from "./useAsyncEffect";
+import { useMain } from "./Main";
 import Renderer from "./Renderer";
 import { decodeAB, useIPFSText, useIPFSList } from "./useIPFS";
 import { useNavigate, useParams } from "react-router-dom";
@@ -63,6 +64,10 @@ const Contract: FC = () => {
     );
     console.log("I will use templates", templates);
     return templates;
+  }, []);
+  const { setTitle } = useMain();
+  useEffect(() => {
+    setTitle("Contract");
   }, []);
   useAsyncEffect(async () => {
     if (!provider) return;
@@ -152,23 +157,25 @@ const Contract: FC = () => {
   return (
     <Fragment>
       <div>
-        <div className="flex flex-row space-x-6 justify-center mb-12">
-          <h2 className="text-xl font-semibold mb-2">Contract Address</h2>
+        <div className="flex space-x-6 items-center mb-12 bg-white doc-shadow p-6">
+          <h2 className="text-xl font-semibold ">Contract Address</h2>
           <input
-            className="border border-gray-200 rounded-none p-1 mb-2 flex-grow"
+            className="border border-gray-200 rounded-none p-1  flex-grow"
             value={contractAddress}
             onChange={(e) => {
               setContractAddress(e.target.value);
             }}
           />
-          <a
-            className="btn btn-primary text-center"
-            href={currentUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open Signing Page in New Tab
-          </a>
+          <div>
+            <a
+              className="btn btn-primary text-center"
+              href={currentUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open Signing Page in New Tab
+            </a>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-x-6">
           <div>
@@ -423,12 +430,14 @@ const Contract: FC = () => {
               ))}
           </div>
         </div>
-        <div className="flex flex-col mt-24">
-          <Renderer
-            template={currentTemplateText}
-            setTerms={setTemplateTerms}
-            terms={currentTerms}
-          />
+        <div className="flex flex-col mt-12">
+          <div className="prose mx-auto">
+            <Renderer
+              template={currentTemplateText}
+              setTerms={setTemplateTerms}
+              terms={currentTerms}
+            />
+          </div>
         </div>
       </div>
     </Fragment>
