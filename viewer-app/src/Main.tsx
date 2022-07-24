@@ -23,6 +23,7 @@ import Topography from "./topography.svg";
 import Logo from "./logo.svg";
 import { FaClipboard } from "react-icons/fa";
 import useAsyncEffect from "./useAsyncEffect";
+import Loading from "./Loading";
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -186,7 +187,7 @@ const Renderer: FC<{
     }
     setIsSigning(false);
   }, [contractAddress, tokenId]);
-  if (!template) return <div>"Loading..."</div>;
+  if (!template) return <Loading />;
   if (!provider) return <div>"No provider"</div>;
   const output = Mustache.render(template, terms);
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
