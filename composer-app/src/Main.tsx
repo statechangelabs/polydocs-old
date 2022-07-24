@@ -83,7 +83,7 @@ const Main: FC = () => {
       <div className="relative  mx-auto flex flex-col h-screen">
         {/* <Fragment>
       <div className="min-h-screen bg-purple-200"> */}
-        <Disclosure as="nav" className=" border-b border-gray-200">
+        <Disclosure as="nav" className=" border-b border-gray-200 z-50">
           {({ open }) => (
             <>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

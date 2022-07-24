@@ -151,198 +151,232 @@ const Contract: FC = () => {
   const knownTemplates = useIPFSList(knownCids);
   return (
     <Fragment>
-      <div className="w-screen flex-row">
-        <div className="flex flex-col w-1/2">
-          <div>Contract Address</div>
+      <div>
+        <div className="flex flex-row space-x-6 justify-center mb-12">
+          <h2 className="text-xl font-semibold mb-2">Contract Address</h2>
           <input
+            className="border border-gray-200 rounded-none p-1 mb-2 flex-grow"
             value={contractAddress}
             onChange={(e) => {
               setContractAddress(e.target.value);
             }}
           />
           <a
-            className="bg-blue-500 text-white border-2 border-blue-800"
+            className="btn btn-primary text-center"
             href={currentUrl}
             target="_blank"
             rel="noreferrer"
           >
             Open Signing Page in New Tab
           </a>
+        </div>
+        <div className="grid grid-cols-2 gap-x-6">
           <div>
-            renderer CID:{" "}
-            {currentRenderer && (
-              <a
-                href={`https://ipfs.io/ipfs/${currentRenderer}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {currentRenderer}
-              </a>
-            )}
-            {currentRenderer !== knownRenderers[0] && (
-              <button
-                onClick={async () => {
-                  console.log("Uou are pressing the button");
-                  if (!provider) return;
-                  const contract = TermsableNoToken__factory.connect(
-                    contractAddress,
-                    provider?.getSigner()
-                  );
-                  try {
-                    const txn = await contract.setGlobalRenderer(
-                      knownRenderers[0]
-                    );
-                    toast("Saving renderer to blockchain");
-                    txn.wait();
-                    toast("Saved to blockchain");
-                    setCurrentRenderer(knownRenderers[0]);
-                  } catch (e) {
-                    toast(
-                      "Error saving to blockchain: " +
-                        (e as { reason: string }).reason.substring(14)
-                    );
-                  }
-                }}
-              >
-                Use Default Renderer
-              </button>
-            )}
-          </div>
-          {!showTemplateForm && (
-            <div>
-              <div>
-                template CID:
-                {currentTemplate && (
-                  <a
-                    href={`https://ipfs.io/ipfs/${currentTemplate}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {currentTemplate}
-                  </a>
-                )}
-              </div>
-              <button
-                className="bg-blue-500 rounded text-white"
-                onClick={() => setShowTemplateForm(true)}
-              >
-                Change
-              </button>
+            <div className="bg-white doc-shadow p-6 mb-6">
+              <span className="font-semibold mr-6">Renderer CID:</span>{" "}
+              {currentRenderer && (
+                <a
+                  href={`https://ipfs.io/ipfs/${currentRenderer}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {currentRenderer.substring(0, 6)}...
+                  {currentRenderer.substring(currentRenderer.length - 4)}
+                </a>
+              )}
+              {currentRenderer === knownRenderers[0] && (
+                <span className="ml-2 text-xs text-teal-dark">
+                  Using the best renderer!
+                </span>
+              )}
             </div>
-          )}
-          {showTemplateForm && (
-            <div>
-              <div className="flex flex-row">
-                <input
-                  value={currentTemplate}
-                  onChange={(e) => setCurrentTemplate(e.target.value)}
-                />{" "}
-                {currentTemplate !== contractTemplate && (
+            <div className="bg-white doc-shadow p-6">
+              <div className="mb-3">
+                <h2 className="text-lg font-semibold">Document Template</h2>
+                {currentRenderer !== knownRenderers[0] && (
                   <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="btn btn-primary"
                     onClick={async () => {
+                      console.log("Uou are pressing the button");
                       if (!provider) return;
                       const contract = TermsableNoToken__factory.connect(
                         contractAddress,
-                        provider.getSigner()
+                        provider?.getSigner()
                       );
                       try {
-                        const txn = await contract.setGlobalTemplate(
-                          currentTemplate
+                        const txn = await contract.setGlobalRenderer(
+                          knownRenderers[0]
                         );
-                        toast("Saving new template to chain");
-                        await txn.wait();
-                        toast("Template saved to chain");
-                        updateUrl();
+                        toast("Saving renderer to blockchain");
+                        txn.wait();
+                        toast("Saved to blockchain");
+                        setCurrentRenderer(knownRenderers[0]);
                       } catch (e) {
-                        let reason = (e as { reason: any }).reason;
-                        if (reason.startsWith("execution reverted: "))
-                          reason = reason.substring(
-                            "execution reverted: ".length
-                          );
-                        toast("Could not save because " + reason, {
-                          type: "error",
-                        });
+                        toast(
+                          "Error saving to blockchain: " +
+                            (e as { reason: string }).reason.substring(14)
+                        );
                       }
                     }}
                   >
-                    Update Template
+                    Use Default Renderer
                   </button>
                 )}
               </div>
-              <div>
-                <h2>Known Templates</h2>
-                <ol>
-                  {Object.entries(knownTemplates).map(([cid, ab]) => (
-                    <li className="list-decimal ml-10">
-                      <button
-                        onClick={() => {
-                          setCurrentTemplate(cid);
-                        }}
-                        className="hover:text-gray-500 align-left"
+
+              {!showTemplateForm && (
+                <div>
+                  <div>
+                    <span className="font-semibold mr-6">Template CID:</span>
+                    {currentTemplate && (
+                      <a
+                        href={`https://ipfs.io/ipfs/${currentTemplate}`}
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        <div>
-                          {decodeAB(ab).replaceAll("#", "").substring(0, 60)}
-                          ...
-                        </div>
-                        <div className="text-xs text-gray-60">cid: {cid}</div>
-                      </button>
+                        {currentTemplate.substring(0, 6)}...
+                        {currentTemplate.substring(currentTemplate.length - 4)}
+                      </a>
+                    )}
+                  </div>
+                  <button
+                    className="btn btn-primary mt-6"
+                    onClick={() => setShowTemplateForm(true)}
+                  >
+                    Change
+                  </button>
+                </div>
+              )}
+              {showTemplateForm && (
+                <div>
+                  <div className="flex flex-col mb-6">
+                    <input
+                      className="border border-gray-200 p-1 rounded-none mb-3"
+                      value={currentTemplate}
+                      onChange={(e) => setCurrentTemplate(e.target.value)}
+                    />{" "}
+                    {currentTemplate !== contractTemplate && (
                       <button
-                        onClick={() => {
-                          navigate("/template/" + cid);
+                        className="btn btn-primary"
+                        onClick={async () => {
+                          if (!provider) return;
+                          const contract = TermsableNoToken__factory.connect(
+                            contractAddress,
+                            provider.getSigner()
+                          );
+                          try {
+                            const txn = await contract.setGlobalTemplate(
+                              currentTemplate
+                            );
+                            toast("Saving new template to chain");
+                            await txn.wait();
+                            toast("Template saved to chain");
+                            updateUrl();
+                          } catch (e) {
+                            let reason = (e as { reason: any }).reason;
+                            if (reason.startsWith("execution reverted: "))
+                              reason = reason.substring(
+                                "execution reverted: ".length
+                              );
+                            toast("Could not save because " + reason, {
+                              type: "error",
+                            });
+                          }
                         }}
                       >
-                        Copy
+                        Update Template
                       </button>
-                    </li>
-                  ))}
-                </ol>
-                <h2>My Templates</h2>
-                <ol>
-                  {Object.entries(templates).map(([cid, template]) => (
-                    <li className="list-decimal ml-10">
-                      <button
-                        onClick={() => {
-                          setCurrentTemplate(cid);
-                        }}
-                        className="hover:text-gray-500 align-left"
-                      >
-                        <div>
-                          {template.replaceAll("#", "").substring(0, 60)}
-                          ...
-                        </div>
-                        <div className="text-xs text-gray-60">cid: {cid}</div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate("/template/" + cid);
-                        }}
-                      >
-                        Copy
-                      </button>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              <button
-                className="bg-blue-500 rounded text-white"
-                onClick={() => setShowTemplateForm(false)}
-              >
-                Cancel
-              </button>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs opacity-75 mb-2">
+                      Click on a template to preview how it would work in your
+                      contract. Click copy to make a modified version of the
+                      template.
+                    </p>
+                    <h3 className="font-semibold mb-2">Known Templates</h3>
+                    <ul>
+                      {Object.entries(knownTemplates).map(([cid, ab]) => (
+                        <li className="flex justify-between  mb-4 ">
+                          <button
+                            onClick={() => {
+                              setCurrentTemplate(cid);
+                            }}
+                            className="text-gray-60 text-purple-default hover:text-purple-light truncate"
+                          >
+                            <div>
+                              {decodeAB(ab)
+                                .replaceAll("#", "")
+                                .substring(0, 60)}
+                              ...
+                            </div>
+                            <div className="text-xs text-gray-60">
+                              cid: {cid}
+                            </div>
+                          </button>
+                          <button
+                            className="btn btn-gradient !px-4 ml-4"
+                            onClick={() => {
+                              navigate("/template/" + cid);
+                            }}
+                          >
+                            Copy
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <h3 className="font-semibold mb-2">My Templates</h3>
+                    <ul>
+                      {Object.entries(templates).map(([cid, template]) => (
+                        <li className="flex justify-between  mb-4 ">
+                          <button
+                            onClick={() => {
+                              setCurrentTemplate(cid);
+                            }}
+                            className="text-gray-60 text-purple-default hover:text-purple-light truncate"
+                          >
+                            <div>
+                              {template.replaceAll("#", "").substring(0, 60)}
+                              ...
+                            </div>
+                            <div className="text-xs text-gray-60">
+                              cid: {cid}
+                            </div>
+                          </button>
+                          <button
+                            className="btn btn-gradient !px-4 ml-4"
+                            onClick={() => {
+                              navigate("/template/" + cid);
+                            }}
+                          >
+                            Copy
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button
+                    className="btn btn-gradient"
+                    onClick={() => setShowTemplateForm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-          <div>
+          </div>
+          <div className="bg-white doc-shadow p-6">
+            <h2 className="text-lg font-semibold">Terms used in contract</h2>
             {templateTerms
               .filter((v, i, a) => a.indexOf(v) === i)
               .map((term) => (
                 <div>
-                  <div>
-                    {term}: {currentTerms[term] || "UNDEFINED"}
+                  <div className="text-xs text-black text-opacity-75 mt-4">
+                    {term}
                   </div>
-                  <div>
+                  <div className="w-full flex">
                     <input
-                      className="form-text-input"
+                      className="border border-gray-200 p-1 rounded-none flex-grow"
                       value={currentTerms[term]}
                       onChange={(e) => {
                         setCurrentTerms((prev) => ({
@@ -352,7 +386,7 @@ const Contract: FC = () => {
                       }}
                     />
                     <button
-                      className="bg-blue-500 rounded text-white"
+                      className="btn btn-gradient !px-4 ml-4"
                       onClick={async () => {
                         if (!provider) return;
                         const contract = TermsableNoToken__factory.connect(
@@ -389,7 +423,7 @@ const Contract: FC = () => {
               ))}
           </div>
         </div>
-        <div className="flex flex-col w-1/2">
+        <div className="flex flex-col mt-24">
           <Renderer
             template={currentTemplateText}
             setTerms={setTemplateTerms}
