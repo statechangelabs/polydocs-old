@@ -1,4 +1,5 @@
 # PolyDocs
+Submitted to [Hackfs 2022](https://ethglobal.com/events/hackfs2022)
 
 ## Short Description
 NFTs and DAOs are more than just deeds and clubs. They reflect rights and terms that require protecting. Polydocs makes it easy to create immutable, known agreements to ensure everyone is protected. 
