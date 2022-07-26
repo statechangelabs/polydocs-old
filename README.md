@@ -44,7 +44,6 @@ https://ipfs.io/ipfs/bafybeidxa2vnac25dtq4d7jxtafqsahknuxbjwr4ltycxusw6ibn2omrgy
 
 This project has its reference implementations deployed on Polygon. Our approach to this information is a little more chatty to maintain atomic control for owners and clarity for customers. This is uniquely possible on Polygon, making it the likely future of legaltech in web3. Check out our "Signing Sloths" signature-required reference contract at https://polygonscan.com/address/0x66307Afe31cC1f7d93D01d23144b43310415dDa0#readContract
 
-https://polygonscan.com/address/0x66307Afe31cC1f7d93D01d23144b43310415dDa0#readContract
 
 ### Spheron
 
