@@ -33,7 +33,7 @@ pragma solidity ^0.8.9;
 
 import "@polydocs/contracts/TermsableNoToken.sol";
 
-contract MyCollectible is ERC721 {
+contract MyCollectible is ERC721 is TermsableNoToken {
     constructor() ERC721("MyCollectible", "MCO") {
     }
     // Adds terms restrictions while transferring a token
