@@ -1,6 +1,6 @@
 {
   "name": "@polydocs/contracts",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "peerDependencies": {
     "@openzeppelin/contracts": "*"
   },
@@ -35,5 +35,24 @@
   "files": [
     "*.sol",
     "interfaces/*.sol"
+  ],
+  "license": "MIT",
+  "contributors": [
+    "Ray Deck",
+    "Akshay Rakheja"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/statechangelabs/polydocs.git"
+  },
+  "homepage": "https://github.com/statechangelabs/polydocs",
+  "bugs": {
+    "url": "https://github.com/statechangelabs/polydocs/issues"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts"
   ]
 }
