@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     },
   },
   docgen: {
-    exclude:["reference-721/*.sol"]
+    exclude:["reference-721/**/*.sol"]
   }
 };
 if (!config.networks!.polygonMumbai) delete config.networks!.polygonMumbai;
