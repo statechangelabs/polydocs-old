@@ -1,9 +1,6 @@
 {
   "name": "@polydocs/contracts",
   "version": "0.1.0",
-  "peerDependencies": {
-    "@openzeppelin/contracts": "*"
-  },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.4",
     "@ethersproject/providers": "^5.6.8",
@@ -33,7 +30,6 @@
     "build:types:composer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../composer-app/src/contracts"
   },
   "files": [
-    "*.sol",
-    "interfaces/*.sol"
+    "**/*.sol"
   ]
 }

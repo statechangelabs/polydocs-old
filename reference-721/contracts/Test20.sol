@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./Termsable.sol";
+import "@polydocs/contracts/Termsable.sol";
 
 contract Test20 is ERC20, Ownable, TermsableNoToken {
     string public name_;
