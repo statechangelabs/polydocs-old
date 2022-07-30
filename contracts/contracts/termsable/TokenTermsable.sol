@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./TermsableBase.sol";
-import "./interfaces/TokenTermReader.sol";
+import "../interfaces/TokenTermReader.sol";
 
 abstract contract TokenTermsable is TermsableBase, TokenTermReader {
     /// @notice Event that is emitted when a terms are accepted.

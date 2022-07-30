@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/TermReader.sol";
+import "../interfaces/TermReader.sol";
 
 abstract contract TermsableBase is Ownable, TermReader {
     /// @notice The default value of the global renderer.
