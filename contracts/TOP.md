@@ -1,5 +1,9 @@
 # <img src="assets/Polydocs Logo.svg" height="40px"> Polydocs contracts
 
+PolyDocs: an open-source tool to create immutable and dynamic documents using IPFS and Polygon smart contracts. Our goal is to De-Risk the web3 space.
+
+Finalist: [HackFS 2022](https://ethglobal.com/showcase/polydocs-1oas6)
+
 ## Interfaces
 * TermReader.sol - Interface for termsreader contracts
 * TokenTermReader.sol - Interface for token termsreader contracts

@@ -1,6 +1,6 @@
 {
   "name": "@polydocs/contracts",
-  "version": "0.1.6",
+  "version": "0.1.9",
   "peerDependencies": {
     "@openzeppelin/contracts": "*"
   },
@@ -35,8 +35,7 @@
     "docs": "yarn hardhat docgen && cat TOP.md docs/index.md > README.md"
   },
   "files": [
-    "*.sol",
-    "interfaces/*.sol"
+    "contracts/**/*.sol"
   ],
   "license": "MIT",
   "contributors": [
