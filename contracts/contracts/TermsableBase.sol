@@ -5,10 +5,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/TermReader.sol";
 
 abstract contract TermsableBase is Ownable, TermReader {
-    // uint256 _chainId = 137;
-    string _globalRenderer = "ABCDEFG";
-    string _globalDocTemplate = "LMNOPQRST";
+    /// @notice The default value of the global renderer.
+    /// @dev The default value of the global renderer.
+    string _globalRenderer = "";
+
+    /// @notice The default value of the global template.
+    /// @dev The default value of the global template.
+    string _globalDocTemplate = "";
+
+    /// @notice Mapping that store the global terms.
+    /// @dev This mapping stores the global terms.
     mapping(string => string) _globalTerms;
+
+    /// @notice This is the latest block height at which the terms were updated.
+    /// @dev This is the latest block height at which the terms were updated. 0 by default.
     uint256 _lastTermChange = 0;
 
     /// @notice Function to set the Global Renderer.
