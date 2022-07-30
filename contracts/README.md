@@ -1,4 +1,4 @@
-# <img src="assets/Polydocs Logo.svg" alt="Polydocs" height="40px"> Polydocs contracts and mixins
+# <img src="assets/Polydocs Logo.svg" height="40px"> Polydocs contracts and mixins
 
 ## Interfaces
 * TermReader.sol - Interface for termsreader contracts
