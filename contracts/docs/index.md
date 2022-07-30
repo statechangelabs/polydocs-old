@@ -8,196 +8,9 @@
 string _globalRenderer
 ```
 
-### _globalDocTemplate
+The default value of the global renderer.
 
-```solidity
-string _globalDocTemplate
-```
-
-### _globalTerms
-
-```solidity
-mapping(string => string) _globalTerms
-```
-
-### _lastTermChange
-
-```solidity
-uint256 _lastTermChange
-```
-
-### setGlobalRenderer
-
-```solidity
-function setGlobalRenderer(string _newRenderer) external
-```
-
-Function to set the Global Renderer.
-
-_This function lets the owner of the contract set the global renderer of the terms._
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _newRenderer | string | The new renderer to use for the terms. |
-
-### renderer
-
-```solidity
-function renderer() public view returns (string)
-```
-
-Function that returns the global renderer.
-
-_This function returns the global renderer of the terms._
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | string | _globalRenderer The global renderer of the terms. |
-
-### setGlobalTemplate
-
-```solidity
-function setGlobalTemplate(string _newDocTemplate) external
-```
-
-Function to set the Global Document Template.
-
-_This function lets the owner of the contract set the global document template of the terms._
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _newDocTemplate | string | The new document template to use for the terms. |
-
-### docTemplate
-
-```solidity
-function docTemplate() external view returns (string)
-```
-
-Function that returns the global document template.
-
-### setGlobalTerm
-
-```solidity
-function setGlobalTerm(string _key, string _value) external
-```
-
-### globalTerm
-
-```solidity
-function globalTerm(string _key) public view returns (string)
-```
-
-This function is used to return the value of the term
-
-_Function to return the value of the term_
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _key | string | - The key of the term being returned |
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | string |  |
-
-### currentTermsBlock
-
-```solidity
-function currentTermsBlock() public view returns (uint256)
-```
-
-## TermsableNoToken
-
-### AcceptedTerms
-
-```solidity
-event AcceptedTerms(address sender, string terms)
-```
-
-### _hasAcceptedTerms
-
-```solidity
-mapping(address => bool) _hasAcceptedTerms
-```
-
-### _acceptedTerms
-
-```solidity
-function _acceptedTerms(address _to) internal view returns (bool)
-```
-
-### acceptedTerms
-
-```solidity
-function acceptedTerms(address _address) external view returns (bool)
-```
-
-### acceptTerms
-
-```solidity
-function acceptTerms(string _newtermsUrl) public
-```
-
-### termsUrl
-
-```solidity
-function termsUrl() public view returns (string)
-```
-
-### termsUrlWithPrefix
-
-```solidity
-function termsUrlWithPrefix(string prefix) public view returns (string)
-```
-
-### _termsUrlWithPrefix
-
-```solidity
-function _termsUrlWithPrefix(string prefix) public view returns (string)
-```
-
-## TermReader
-
-### GlobalTermAdded
-
-```solidity
-event GlobalTermAdded(bytes32 _term, bytes32 _value)
-```
-
-This event is fired when a token term is added.
-
-_Event when a new Global term is added to the contract_
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _term | bytes32 | - The term being added to the contract |
-| _value | bytes32 | - value of the term added to the contract |
-
-### globalTerm
-
-```solidity
-function globalTerm(string _key) external view returns (string _value)
-```
-
-This function is used to return the value of the term
-
-_Function to return the value of the term_
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _key | string | - The key of the term being returned |
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _value | string | The value of the term |
-
-## TermsableBase
-
-### _globalRenderer
-
-```solidity
-string _globalRenderer
-```
+_The default value of the global renderer._
 
 ### _globalDocTemplate
 
@@ -205,17 +18,29 @@ string _globalRenderer
 string _globalDocTemplate
 ```
 
+The default value of the global template.
+
+_The default value of the global template._
+
 ### _globalTerms
 
 ```solidity
 mapping(string => string) _globalTerms
 ```
 
+Mapping that store the global terms.
+
+_This mapping stores the global terms._
+
 ### _lastTermChange
 
 ```solidity
 uint256 _lastTermChange
 ```
+
+This is the latest block height at which the terms were updated.
+
+_This is the latest block height at which the terms were updated. 0 by default._
 
 ### setGlobalRenderer
 
@@ -828,6 +653,326 @@ _This function returns the value of a term given its term for a specific token._
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | _value | string | The value of the term. |
+
+## TermsableBase
+
+### _globalRenderer
+
+```solidity
+string _globalRenderer
+```
+
+### _globalDocTemplate
+
+```solidity
+string _globalDocTemplate
+```
+
+### _globalTerms
+
+```solidity
+mapping(string => string) _globalTerms
+```
+
+### _lastTermChange
+
+```solidity
+uint256 _lastTermChange
+```
+
+### setGlobalRenderer
+
+```solidity
+function setGlobalRenderer(string _newRenderer) external
+```
+
+Function to set the Global Renderer.
+
+_This function lets the owner of the contract set the global renderer of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _newRenderer | string | The new renderer to use for the terms. |
+
+### renderer
+
+```solidity
+function renderer() public view returns (string)
+```
+
+Function that returns the global renderer.
+
+_This function returns the global renderer of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | string | _globalRenderer The global renderer of the terms. |
+
+### setGlobalTemplate
+
+```solidity
+function setGlobalTemplate(string _newDocTemplate) external
+```
+
+Function to set the Global Document Template.
+
+_This function lets the owner of the contract set the global document template of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _newDocTemplate | string | The new document template to use for the terms. |
+
+### docTemplate
+
+```solidity
+function docTemplate() external view returns (string)
+```
+
+Function that returns the global document template.
+
+### setGlobalTerm
+
+```solidity
+function setGlobalTerm(string _key, string _value) external
+```
+
+### globalTerm
+
+```solidity
+function globalTerm(string _key) public view returns (string)
+```
+
+This function is used to return the value of the term
+
+_Function to return the value of the term_
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _key | string | - The key of the term being returned |
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | string |  |
+
+### currentTermsBlock
+
+```solidity
+function currentTermsBlock() public view returns (uint256)
+```
+
+## TermsableNoToken
+
+### AcceptedTerms
+
+```solidity
+event AcceptedTerms(address sender, string terms)
+```
+
+### _hasAcceptedTerms
+
+```solidity
+mapping(address => bool) _hasAcceptedTerms
+```
+
+### _acceptedTerms
+
+```solidity
+function _acceptedTerms(address _to) internal view returns (bool)
+```
+
+### acceptedTerms
+
+```solidity
+function acceptedTerms(address _address) external view returns (bool)
+```
+
+### acceptTerms
+
+```solidity
+function acceptTerms(string _newtermsUrl) public
+```
+
+### termsUrl
+
+```solidity
+function termsUrl() public view returns (string)
+```
+
+### termsUrlWithPrefix
+
+```solidity
+function termsUrlWithPrefix(string prefix) public view returns (string)
+```
+
+### _termsUrlWithPrefix
+
+```solidity
+function _termsUrlWithPrefix(string prefix) public view returns (string)
+```
+
+## TermReader
+
+### GlobalTermAdded
+
+```solidity
+event GlobalTermAdded(bytes32 _term, bytes32 _value)
+```
+
+This event is fired when a token term is added.
+
+_Event when a new Global term is added to the contract_
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _term | bytes32 | - The term being added to the contract |
+| _value | bytes32 | - value of the term added to the contract |
+
+### globalTerm
+
+```solidity
+function globalTerm(string _key) external view returns (string _value)
+```
+
+This function is used to return the value of the term
+
+_Function to return the value of the term_
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _key | string | - The key of the term being returned |
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _value | string | The value of the term |
+
+## TermsableBase
+
+### _globalRenderer
+
+```solidity
+string _globalRenderer
+```
+
+### _globalDocTemplate
+
+```solidity
+string _globalDocTemplate
+```
+
+### _globalTerms
+
+```solidity
+mapping(string => string) _globalTerms
+```
+
+### _lastTermChange
+
+```solidity
+uint256 _lastTermChange
+```
+
+### setGlobalRenderer
+
+```solidity
+function setGlobalRenderer(string _newRenderer) external
+```
+
+Function to set the Global Renderer.
+
+_This function lets the owner of the contract set the global renderer of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _newRenderer | string | The new renderer to use for the terms. |
+
+### renderer
+
+```solidity
+function renderer() public view returns (string)
+```
+
+Function that returns the global renderer.
+
+_This function returns the global renderer of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | string | _globalRenderer The global renderer of the terms. |
+
+### setGlobalTemplate
+
+```solidity
+function setGlobalTemplate(string _newDocTemplate) external
+```
+
+Function to set the Global Document Template.
+
+_This function lets the owner of the contract set the global document template of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _newDocTemplate | string | The new document template to use for the terms. |
+
+### docTemplate
+
+```solidity
+function docTemplate() external view returns (string)
+```
+
+Function that returns the global document template.
+
+_This function returns the global document template of the terms._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | string | _globalDocTemplate The global document template of the terms. |
+
+### setGlobalTerm
+
+```solidity
+function setGlobalTerm(string _term, string _value) external
+```
+
+Function to set the Global Term/// @notice Explain to an end user what this does
+
+_This function lets the owner of the contract set the global terms_
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _term | string | The term to set. |
+| _value | string | The value of the term to set. |
+
+### globalTerm
+
+```solidity
+function globalTerm(string _term) public view returns (string)
+```
+
+This function returns the global value of the term
+
+_This function returns the global value of the term_
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _term | string | The term to get. |
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | string | _globalTerms[_term] The global value of the term |
+
+### currentTermsBlock
+
+```solidity
+function currentTermsBlock() public view returns (uint256)
+```
+
+Function to get block of the latest term change.
+
+_This function returns the block number of the last term change._
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | uint256 | _lastTermChange The block number of the last term change. |
 
 ## TermsableBase
 
