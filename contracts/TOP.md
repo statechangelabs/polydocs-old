@@ -10,7 +10,7 @@
 * TermsableNoToken.sol - Abstract contract that inherits TermsableBase.sol and provides functionality for acceptance of Terms that are not token specific
 * TokenTermsable.sol - Abstract contract that inherits TermsableBase.sol , implements TokenTermReader interface and provides functionality for acceptance of terms that are token specific
 
-## Future directinos
+## Future directions
 * TemplateRegistery - list and ability to vote on the credibility of templates to start to build *reputation* management
 
 
