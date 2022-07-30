@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import dotenv from "dotenv";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-tracer";
+import 'solidity-docgen';
 dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.9",
@@ -28,6 +29,9 @@ const config: HardhatUserConfig = {
       polygon: process.env.POLYGON_API || "",
     },
   },
+  docgen: {
+    exclude:["reference-721/*.sol"]
+  }
 };
 if (!config.networks!.polygonMumbai) delete config.networks!.polygonMumbai;
 if (!config.networks!.polygon) delete config.networks!.polygon;

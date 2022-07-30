@@ -31,7 +31,8 @@
   "scripts": {
     "build:types": "yarn build:types:viewer && yarn build:types:composer",
     "build:types:viewer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../viewer-app/src/contracts",
-    "build:types:composer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../composer-app/src/contracts"
+    "build:types:composer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../composer-app/src/contracts",
+    "docs": "yarn hardhat docgen && cat TOP.md docs/index.md > README.md"
   },
   "files": [
     "*.sol",
