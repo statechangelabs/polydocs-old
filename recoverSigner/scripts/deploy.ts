@@ -6,22 +6,21 @@ async function main() {
   // const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
 
   // const lockedAmount = ethers.utils.parseEther("1");
-  const [signer_1]  = await ethers.getSigners();
+  const [signer_1] = await ethers.getSigners();
   console.log("Signers address is :", signer_1.address);
 
   const message = "Hello darkness my old friend";
   console.log("message: ", message);
-  
-  const hash = ethers.utils.keccak256(ethers.utils.formatBytes32String(message));
+
+  const hash = ethers.utils.hashMessage(message);
+
   console.log("hash of the message: ", hash);
-  
-  const signature = await signer_1.signMessage(hash);
+
+  const signature = await signer_1.signMessage(message);
   console.log("signature: ", signature);
 
-  const signer = ethers.utils.verifyMessage(hash, signature);
+  const signer = ethers.utils.verifyMessage(message, signature);
   console.log("signer:", signer);
-
-
 
   // const hash= '0x489d0c0409292d12e50fc968f10dfd181d773ce905a0e6a6d4be55ebd0b6f3f8';
   // const samplemsg = 'hi there!';
@@ -32,7 +31,7 @@ async function main() {
 
   console.log("Verify deployed to:", verify.address);
 
-  const txn = await verify.recoverSigner(hash, signature);
+  const txn = await verify.validateSigner(message, signature, signer_1.address);
   console.log("Transaction returned:", txn);
 }
 

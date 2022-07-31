@@ -3,6 +3,8 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import "./TermsableBase.sol";
 
 abstract contract TermsableNoToken is TermsableBase {
@@ -41,8 +43,23 @@ abstract contract TermsableNoToken is TermsableBase {
             keccak256(bytes(_newtermsUrl)) == keccak256(bytes(termsUrl())),
             "Terms Url does not match"
         );
+        _acceptTerms(msg.sender, _newtermsUrl);
+    }
+
+    function acceptTermsFor(
+        address _signer,
+        string memory _newtermsUrl,
+        bytes memory _signature
+    ) external {
+        bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(_newtermsUrl));
+        address _checkedSigner = ECDSA.recover(hash, _signature);
+        require(_checkedSigner == _signer);
+        _acceptedTerms(_signer, _newtermsUrl);
+    }
+
+    function _acceptTerms(address _signer, string memory termsUrl) internal {
         _hasAcceptedTerms[msg.sender] = true;
-        emit AcceptedTerms(msg.sender, termsUrl());
+        emit AcceptedTerms(msg.sender, _newtermsUrl);
     }
 
     /// @notice This function returns the url of the terms.

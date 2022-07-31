@@ -6,25 +6,14 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract Verify {
-    function recoverSigner(bytes32 message, bytes memory sig)
-        public
-        view
-        returns (address)
-    {
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-        // (v, r, s) = splitSignature(sig);
-        // console.log("message here!");
-        // console.log(message);
-        // console.logBytes32(message);
-        // console.log("message:", message);
-        // console.log("v:", v);
-        // console.logBytes("r:", r);
-        // console.logBytes("s:", s);
-        address signer = ECDSA.recover(message, sig);
-        console.log("signer:", signer);
-        return signer;
+    function validateSigner(
+        string memory url,
+        bytes memory sig,
+        address _signer
+    ) public view returns (address signer) {
+        bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(url));
+        signer = ECDSA.recover(hash, sig);
+        require(signer == _signer);
     }
 
     function splitSignature(bytes memory sig)
