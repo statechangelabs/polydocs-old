@@ -1,0 +1,42 @@
+Arguments: 
+  /Users/akshayrakheja/.nvm/versions/node/v16.13.2/bin/node /Users/akshayrakheja/.nvm/versions/node/v16.13.2/bin/yarn add @openzeppelin-contracts/contracts
+
+PATH: 
+  /Users/akshayrakheja/.nvm/versions/node/v16.13.2/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/local/bin:/opt/local/sbin:/Users/akshayrakheja/anaconda/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/Users/akshayrakheja/.cargo/bin:/Users/akshayrakheja/.nvm/versions/node/v16.13.2/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/local/bin:/opt/local/sbin:/Users/akshayrakheja/anaconda/bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  16.13.2
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@openzeppelin-contracts%2fcontracts: Not found
+      at Request.params.callback [as _callback] (/Users/akshayrakheja/.nvm/versions/node/v16.13.2/lib/node_modules/yarn/lib/cli.js:67029:18)
+      at Request.self.callback (/Users/akshayrakheja/.nvm/versions/node/v16.13.2/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/Users/akshayrakheja/.nvm/versions/node/v16.13.2/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (/Users/akshayrakheja/.nvm/versions/node/v16.13.2/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "hardhat-project",
+    "devDependencies": {
+      "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+      "hardhat": "^2.10.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
