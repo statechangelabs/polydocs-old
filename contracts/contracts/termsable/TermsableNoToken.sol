@@ -54,12 +54,14 @@ abstract contract TermsableNoToken is TermsableBase {
         bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(_newtermsUrl));
         address _checkedSigner = ECDSA.recover(hash, _signature);
         require(_checkedSigner == _signer);
-        _acceptedTerms(_signer, _newtermsUrl);
+        _acceptTerms(_signer, _newtermsUrl);
     }
 
-    function _acceptTerms(address _signer, string memory termsUrl) internal {
-        _hasAcceptedTerms[msg.sender] = true;
-        emit AcceptedTerms(msg.sender, _newtermsUrl);
+    function _acceptTerms(address _signer, string memory _newtermsUrl)
+        internal
+    {
+        _hasAcceptedTerms[_signer] = true;
+        emit AcceptedTerms(_signer, _newtermsUrl);
     }
 
     /// @notice This function returns the url of the terms.

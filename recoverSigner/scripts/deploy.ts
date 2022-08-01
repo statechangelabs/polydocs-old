@@ -12,9 +12,9 @@ async function main() {
   const message = "Hello darkness my old friend";
   console.log("message: ", message);
 
-  const hash = ethers.utils.hashMessage(message);
+  // const hash = ethers.utils.hashMessage(message);
 
-  console.log("hash of the message: ", hash);
+  // console.log("hash of the message: ", hash);
 
   const signature = await signer_1.signMessage(message);
   console.log("signature: ", signature);
