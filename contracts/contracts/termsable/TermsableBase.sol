@@ -21,6 +21,34 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @dev This is the latest block height at which the terms were updated. 0 by default.
     uint256 _lastTermChange = 0;
 
+    /// @notice Returns whether the address is allowed to accept terms on behalf of the signer.
+    /// @dev This function returns whether the address is allowed to accept terms on behalf of the signer.
+    mapping(address => bool) private _metaSigners;
+
+    modifier onlyMetaSigner(address _metaSigner) {
+        require(
+            _metaSigners[_metaSigner],
+            "Only meta signer can accept terms on behalf of other signers"
+        );
+        _;
+    }
+
+    /// @notice Adds a meta signer to the list of signers that can accept terms on behalf of the signer.
+    /// @dev This function adds a meta signer to the list of signers that can accept terms on behalf of the signer.
+    /// @dev This function is only available to the owner of the contract.
+    /// @param _signer The address of the signer that can accept terms on behalf of the signer.
+    function addMetaSigner(address _signer) external onlyOwner {
+        _metaSigners[_signer] = true;
+    }
+
+    /// @notice Removes a meta signer from the list of signers that can accept terms on behalf of the signer.
+    /// @dev This function removes a meta signer from the list of signers that can accept terms on behalf of the signer.
+    /// @dev This function is only available to the owner of the contract.
+    /// @param _signer The address of the signer that can no longer accept terms on behalf of the signer.
+    function removeMetaSigner(address _signer) external onlyOwner {
+        _metaSigners[_signer] = false;
+    }
+
     /// @notice Function to set the Global Renderer.
     /// @dev This function lets the owner of the contract set the global renderer of the terms.
     /// @param _newRenderer The new renderer to use for the terms.

@@ -18,34 +18,6 @@ abstract contract TermsableNoToken is TermsableBase {
     /// @dev This mapping returns a boolean value indicating whether the address has accepted terms.
     mapping(address => bool) _hasAcceptedTerms;
 
-    /// @notice Returns whether the address is allowed to accept terms on behalf of the signer.
-    /// @dev This function returns whether the address is allowed to accept terms on behalf of the signer.
-    mapping(address => bool) private _metaSigners;
-
-    modifier onlyMetaSigner(address _metaSigner) {
-        require(
-            _metaSigners[_metaSigner],
-            "Only meta signer can accept terms on behalf of other signers"
-        );
-        _;
-    }
-
-    /// @notice Adds a meta signer to the list of signers that can accept terms on behalf of the signer.
-    /// @dev This function adds a meta signer to the list of signers that can accept terms on behalf of the signer.
-    /// @dev This function is only available to the owner of the contract.
-    /// @param _signer The address of the signer that can accept terms on behalf of the signer.
-    function addMetaSigner(address _signer) external onlyOwner {
-        _metaSigners[_signer] = true;
-    }
-
-    /// @notice Removes a meta signer from the list of signers that can accept terms on behalf of the signer.
-    /// @dev This function removes a meta signer from the list of signers that can accept terms on behalf of the signer.
-    /// @dev This function is only available to the owner of the contract.
-    /// @param _signer The address of the signer that can no longer accept terms on behalf of the signer.
-    function removeMetaSigner(address _signer) external onlyOwner {
-        _metaSigners[_signer] = false;
-    }
-
     /// @notice This is an internal function that returns whether the address has accepted terms.
     /// @dev This function returns a boolean value indicating whether the address has accepted terms.
     /// @param _to The address to check.
@@ -116,7 +88,7 @@ abstract contract TermsableNoToken is TermsableBase {
     /// @param prefix The prefix of the url.
     /// @return _termsURL The url of the agreement with the prefix.
     function _termsUrlWithPrefix(string memory prefix)
-        public
+        internal
         view
         returns (string memory _termsURL)
     {
