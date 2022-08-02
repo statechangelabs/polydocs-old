@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { useIPFSText } from "./useIPFS";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, providers } from "ethers";
 import {
   TokenTermReader__factory,
   TokenTermsable__factory,
@@ -24,6 +24,10 @@ import Logo from "./logo.svg";
 import { FaClipboard } from "react-icons/fa";
 import useAsyncEffect from "./useAsyncEffect";
 import Loading from "./Loading";
+
+const POLYDOCS_URL =
+  "https://63fbwmz9da.execute-api.us-east-1.amazonaws.com/dev/sign";
+
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
@@ -121,7 +125,7 @@ const Renderer: FC<{
       const accepted = await contract.acceptedTerms(
         provider.getSigner().getAddress()
       );
-      if (accepted) provider.getSigner();
+      if (accepted) setIsSigned(true);
     }
   }, []);
   const template = useIPFSText(documentId);
@@ -141,50 +145,37 @@ const Renderer: FC<{
   }, [template, addTerm]);
   const sign = useCallback(async () => {
     if (!provider) return;
-
-    console.log("clicked");
-
     const url = window.location.pathname.replace(/\/ipfs\//gi, "");
-
     const message =
       "I agree to the terms in this document: ipfs://" +
       url +
       window.location.hash;
-    console.log(message);
-
     const signature = await provider.getSigner().signMessage(message);
     const address = await provider.getSigner().getAddress();
     setIsSigning(true);
 
-    console.log(signature);
-
-    console.log(await provider.getSigner().getAddress());
-
-    const POLYDOCS_URL =
-      "https://63fbwmz9da.execute-api.us-east-1.amazonaws.com/dev/sign";
-
-    const res = await fetch(POLYDOCS_URL, {
-      method: "post",
-      body: JSON.stringify({
-        message,
-        signature,
-        address,
-      }),
-    });
-
-    const obj = await res.json();
-
-    console.log(obj);
-
-    if ((obj.status = 200)) {
-      setIsSigned(true);
-      toast("Signature recorded!");
-    } else {
+    try {
+      const res = await fetch(POLYDOCS_URL, {
+        method: "post",
+        body: JSON.stringify({
+          message,
+          signature,
+          address,
+        }),
+      });
+      if (res.status === 200) {
+        setIsSigned(true);
+        toast("Signature recorded!");
+      } else {
+        toast("Oops! Something went wrong.", {
+          type: "error",
+        });
+      }
+    } catch (e) {
       toast("Oops! Something went wrong.", {
         type: "error",
       });
     }
-
     setIsSigning(false);
 
     // if (typeof tokenId !== "undefined") {
