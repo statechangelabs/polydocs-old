@@ -19,7 +19,16 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
     Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
-    constructor() ERC721("PolyDocs", "DOCS") {
+    // We want inputs to be:
+    // 1. address of the owner
+    // 2. Name of contract
+    // 3. Symbol of the contract
+    constructor(
+        address _newowner,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
+        _transferOwnership(_newowner);
         console.log("This is my NFT contract. Woah!");
     }
 
@@ -37,30 +46,30 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         super._safeMint(_to, _tokenId);
     }
 
-    function mint() public {
+    function mint(string memory _tokenURI) public onlyOwner {
         uint256 newItemId = _tokenIds.current();
 
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "',
-                        '"',
-                        '", "description": "A highly acclaimed collection of BLOCS.", "image": "data:image/svg+xml;base64,',
-                        Base64.encode(""),
-                        '"}'
-                    )
-                )
-            )
-        );
+        // string memory json = Base64.encode(
+        //     bytes(
+        //         string(
+        //             abi.encodePacked(
+        //                 '{"name": "',
+        //                 '"',
+        //                 '", "description": "A highly acclaimed collection of BLOCS.", "image": "data:image/svg+xml;base64,',
+        //                 Base64.encode(""),
+        //                 '"}'
+        //             )
+        //         )
+        //     )
+        // );
 
-        string memory finalTokenUri = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
+        // string memory finalTokenUri = string(
+        //     abi.encodePacked("data:application/json;base64,", json)
+        // );
 
         _safeMint(msg.sender, newItemId);
 
-        _setTokenURI(newItemId, finalTokenUri);
+        _setTokenURI(newItemId, _tokenURI);
 
         _tokenIds.increment();
         console.log(

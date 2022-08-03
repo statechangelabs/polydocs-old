@@ -2,10 +2,10 @@ import hre, { network, ethers } from "hardhat";
 import fs from "fs";
 import { execSync } from "child_process";
 async function main() {
-  const [signer_1, signer_2, signer_3] = await ethers.getSigners();
+  const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
 
   const Doc = await ethers.getContractFactory("ERC721Termsable");
-  const doc = await Doc.deploy();
+  const doc = await Doc.deploy(signer_4.address, "TEST CONTRACT", "TEST");
   await doc.deployed();
 
   console.log("721_NoToken deployed to:", doc.address);
@@ -31,56 +31,68 @@ async function main() {
 `,
     { flag: "a" }
   );
-  
-  try {
-  // should pass - as signer 1 is the owner of the contract
-  const assignMetaSigner = await doc.addMetaSigner(signer_2.address);
-  const addMetaSigner_receipt = await assignMetaSigner.wait();
-  console.log("Signer 1 (owner) added signer 2 as meta signer");
-  console.log("Metasigner's address (signer2): ", signer_2.address);
-  } catch (error) {
-    console.log("error:", error);
-  }
+  console.log("We assigned owner of the contract to:", signer_4.address);
+  console.log(await doc.name());
+  console.log(await doc.symbol());
+  console.log(await doc.owner());
 
-  try {
-  // should fail - signer2 is not the owner of the contract
-  const assignMetaSigner_2 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
-  const addMetaSigner_2_receipt = await assignMetaSigner_2.wait();
-  console.log("Signer 2 added signer 3 as meta signer");
-  } catch (error) {
-    console.log("error:", error);
-  }
-  
-  try{
-  // Printing signer_3's address
-  console.log("Signer 3 address:", signer_3.address);
+  // try {
+  // // should pass - as signer 1 is the owner of the contract
+  // const assignMetaSigner = await doc.addMetaSigner(signer_2.address);
+  // const addMetaSigner_receipt = await assignMetaSigner.wait();
+  // console.log("Signer 1 (owner) added signer 2 as meta signer");
+  // console.log("Metasigner's address (signer2): ", signer_2.address);
+  // } catch (error) {
+  //   console.log("error:", error);
+  // }
 
-  // Retrieving terms
-  const terms = await doc.termsUrl();
-  console.log("Terms url:", terms);
+  // try {
+  // // should fail - signer2 is not the owner of the contract
+  // const assignMetaSigner_2 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
+  // const addMetaSigner_2_receipt = await assignMetaSigner_2.wait();
+  // console.log("Signer 2 added signer 3 as meta signer");
+  // } catch (error) {
+  //   console.log("error:", error);
+  // }
   
-  // Signer 3 signs the terms
-  const signature = await signer_3.signMessage(terms);
-  console.log("signature: ", signature);
-  
-  // verifying the signer using ethers
-  const signer = ethers.utils.verifyMessage(terms, signature);
-  console.log("signer:", signer);
-  
-  // Signer2 signs on behalf of signer 3
-  const metasign_1 =  await doc.connect(signer_2).acceptTermsFor(signer_3.address, terms, signature);
-  const metasign_1_receipt = await metasign_1.wait();
-  console.log("Metasigner accepted terms on behalf of signer 3");
-  console.log("receipt:", metasign_1_receipt);
+  // try{
+  // // Printing signer_3's address
+  // console.log("Signer 3 address:", signer_3.address);
 
-  // signer3 tries to mint a token
-  const mint_1 = await doc.connect(signer_3).mint();
-  const mint_1_receipt = await mint_1.wait();
-  console.log("Signer 3 minted a token! YAYAYAYAY");
+  // // Retrieving terms
+  // const terms = await doc.termsUrl();
+  // console.log("Terms url:", terms);
+  
+  // // Signer 3 signs the terms
+  // const signature = await signer_3.signMessage(terms);
+  // console.log("signature: ", signature);
+  
+  // // verifying the signer using ethers
+  // const signer = ethers.utils.verifyMessage(terms, signature);
+  // console.log("signer:", signer);
+  
+  // // Signer2 signs on behalf of signer 3
+  // const metasign_1 =  await doc.connect(signer_2).acceptTermsFor(signer_3.address, terms, signature);
+  // const metasign_1_receipt = await metasign_1.wait();
+  // console.log("Metasigner accepted terms on behalf of signer 3");
+  // console.log("receipt:", metasign_1_receipt);
 
-  } catch (error) {
-    console.log("error:", error);
-  }
+  // // signer3 tries to mint a token
+  // const mint_1 = await doc.connect(signer_3).mint();
+  // const mint_1_receipt = await mint_1.wait();
+  // console.log("Signer 3 minted a token! YAYAYAYAY");
+
+  // } catch (error) {
+  //   console.log("error:", error);
+  // }
+
+
+
+
+
+
+
+
 //   const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
 //   const receipt_setTerms = await txn_setTerms.wait();
 //   console.log("Terms set!");
