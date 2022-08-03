@@ -19,6 +19,8 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
     Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
     event MintNFT(address sender, uint256 tokenId);
 
+    mapping(address => bool) private whitelist;
+
     // We want inputs to be:
     // 1. address of the owner
     // 2. Name of contract
@@ -28,8 +30,22 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
+        addToWhiteList(msg.sender);
         _transferOwnership(_newowner);
         console.log("This is my NFT contract. Woah!");
+    }
+
+    modifier onlyWhiteListed(address _to) {
+        require(whitelist[_to], "Only whitelisted addresses can mint NFTs");
+        _;
+    }
+
+    function addToWhiteList(address _to) public onlyOwner {
+        whitelist[_to] = true;
+    }
+
+    function removeFromWhiteList(address _to) public onlyOwner {
+        whitelist[_to] = false;
     }
 
     function _transfer(
@@ -46,7 +62,7 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         super._safeMint(_to, _tokenId);
     }
 
-    function mint(string memory _tokenURI) public onlyOwner {
+    function mint(string memory _tokenURI) public onlyWhiteListed(msg.sender) {
         uint256 newItemId = _tokenIds.current();
 
         // string memory json = Base64.encode(

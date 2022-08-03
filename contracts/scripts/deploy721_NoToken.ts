@@ -5,36 +5,52 @@ async function main() {
   const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
 
   const Doc = await ethers.getContractFactory("ERC721Termsable");
-  const doc = await Doc.deploy(signer_4.address, "TEST CONTRACT", "TEST");
+  const doc = await Doc.deploy(signer_2.address, "TEST CONTRACT", "TEST");
   await doc.deployed();
 
   console.log("721_NoToken deployed to:", doc.address);
 
-  let config = `
-  export const ERC721_NoToken address = "${doc.address}";
-  `;
-  const onThisNetwork = network.name;
-  if (onThisNetwork && onThisNetwork !== "hardhat") {
-    setTimeout(() => {
-      const cmd = `yarn hardhat verify ${doc.address} --network ${onThisNetwork}`;
-      console.log("Running", cmd);
-      execSync(cmd, {
-        stdio: "inherit",
-      });
-    }, 30000);
-  }
-  let data = JSON.stringify(config);
-  fs.writeFileSync("./config.ts", JSON.parse(data));
-  fs.writeFileSync(
-    "contracts.txt",
-    `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}
-`,
-    { flag: "a" }
-  );
-  console.log("We assigned owner of the contract to:", signer_4.address);
+//   let config = `
+//   export const ERC721_NoToken address = "${doc.address}";
+//   `;
+//   const onThisNetwork = network.name;
+//   if (onThisNetwork && onThisNetwork !== "hardhat") {
+//     setTimeout(() => {
+//       const cmd = `yarn hardhat verify ${doc.address} --network ${onThisNetwork}`;
+//       console.log("Running", cmd);
+//       execSync(cmd, {
+//         stdio: "inherit",
+//       });
+//     }, 30000);
+//   }
+//   let data = JSON.stringify(config);
+//   fs.writeFileSync("./config.ts", JSON.parse(data));
+//   fs.writeFileSync(
+//     "contracts.txt",
+//     `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}
+// `,
+//     { flag: "a" }
+//   );
+  // console.log("We assigned owner of the contract to:", signer_4.address);
   console.log(await doc.name());
   console.log(await doc.symbol());
   console.log(await doc.owner());
+
+  const addwhitelist = await doc.connect(signer_2).addToWhiteList(signer_3.address);
+  const addwhitelist_receipt = await addwhitelist.wait();
+  console.log("Added signer 3 to whitelist");
+
+  const terms = await doc.termsUrl();
+  console.log("Terms url:", terms);
+
+  const accept_terms = await doc.connect(signer_3).acceptTerms(terms);
+  const accept_terms_receipt = await accept_terms.wait();
+  console.log("Accepted terms by signer 3");
+
+  const mint = await doc.connect(signer_3).mint("sampleURI");
+  const mint_receipt = await mint.wait();
+  console.log("Minted token to signer_3");
+  console.log("signer 3 address is :", signer_3.address);
 
   // try {
   // // should pass - as signer 1 is the owner of the contract
