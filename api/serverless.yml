@@ -76,3 +76,15 @@
           "method": "post"
           "cors": true
           "private": false
+  "deployNFT":
+    "handler": "handlers.deployNFT"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/deploy"
+          "method": "post"
+          "cors": true
+          "private": false
+  "doDeploy":
+    "handler": "handlers.doDeploy"
+    "timeout": 300

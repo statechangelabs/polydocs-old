@@ -4,6 +4,7 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -26,11 +27,10 @@ import type {
   PromiseOrValue,
 } from "../common";
 
-export interface TermsableNoTokenInterface extends utils.Interface {
+export interface TokenTermsableInterface extends utils.Interface {
   functions: {
-    "_termsUrlWithPrefix(string)": FunctionFragment;
-    "acceptTerms(string)": FunctionFragment;
-    "acceptedTerms(address)": FunctionFragment;
+    "acceptTerms(uint256,string)": FunctionFragment;
+    "acceptedTerms(address,uint256)": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
@@ -40,14 +40,19 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
-    "termsUrl()": FunctionFragment;
-    "termsUrlWithPrefix(string)": FunctionFragment;
+    "setTokenRenderer(uint256,string)": FunctionFragment;
+    "setTokenTemplate(uint256,string)": FunctionFragment;
+    "setTokenTerm(string,uint256,string)": FunctionFragment;
+    "termsUrl(uint256)": FunctionFragment;
+    "termsUrlWithPrefix(uint256,string)": FunctionFragment;
+    "tokenRenderer(uint256)": FunctionFragment;
+    "tokenTemplate(uint256)": FunctionFragment;
+    "tokenTerm(string,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "_termsUrlWithPrefix"
       | "acceptTerms"
       | "acceptedTerms"
       | "currentTermsBlock"
@@ -59,22 +64,24 @@ export interface TermsableNoTokenInterface extends utils.Interface {
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
+      | "setTokenRenderer"
+      | "setTokenTemplate"
+      | "setTokenTerm"
       | "termsUrl"
       | "termsUrlWithPrefix"
+      | "tokenRenderer"
+      | "tokenTemplate"
+      | "tokenTerm"
       | "transferOwnership"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "_termsUrlWithPrefix",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "acceptTerms",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "acceptedTerms",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "currentTermsBlock",
@@ -106,20 +113,47 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "setGlobalTerm",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(functionFragment: "termsUrl", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "setTokenRenderer",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTokenTemplate",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTokenTerm",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "termsUrl",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "termsUrlWithPrefix",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenRenderer",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenTemplate",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenTerm",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "_termsUrlWithPrefix",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "acceptTerms",
     data: BytesLike
@@ -155,33 +189,57 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "setGlobalTerm",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenRenderer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenTemplate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenTerm",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "tokenRenderer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenTemplate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
 
   events: {
-    "AcceptedTerms(address,string)": EventFragment;
+    "AcceptedTerms(address,uint256,string)": EventFragment;
     "GlobalTermAdded(bytes32,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "TokenTermAdded(bytes32,uint256,bytes32)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AcceptedTerms"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTermAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTermAdded"): EventFragment;
 }
 
 export interface AcceptedTermsEventObject {
   sender: string;
+  tokenId: BigNumber;
   terms: string;
 }
 export type AcceptedTermsEvent = TypedEvent<
-  [string, string],
+  [string, BigNumber, string],
   AcceptedTermsEventObject
 >;
 
@@ -210,12 +268,24 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
-export interface TermsableNoToken extends BaseContract {
+export interface TokenTermAddedEventObject {
+  _term: string;
+  _tokenId: BigNumber;
+  _value: string;
+}
+export type TokenTermAddedEvent = TypedEvent<
+  [string, BigNumber, string],
+  TokenTermAddedEventObject
+>;
+
+export type TokenTermAddedEventFilter = TypedEventFilter<TokenTermAddedEvent>;
+
+export interface TokenTermsable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TermsableNoTokenInterface;
+  interface: TokenTermsableInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -237,18 +307,15 @@ export interface TermsableNoToken extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    _termsUrlWithPrefix(
-      prefix: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string] & { _termsURL: string }>;
-
     acceptTerms(
-      _newtermsUrl: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     acceptedTerms(
-      _address: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -285,10 +352,49 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    termsUrl(overrides?: CallOverrides): Promise<[string]>;
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newTokenTemplate: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    termsUrl(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     termsUrlWithPrefix(
+      tokenId: PromiseOrValue<BigNumberish>,
       prefix: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
@@ -298,18 +404,15 @@ export interface TermsableNoToken extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  _termsUrlWithPrefix(
-    prefix: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   acceptTerms(
-    _newtermsUrl: PromiseOrValue<string>,
+    tokenId: PromiseOrValue<BigNumberish>,
+    newtermsUrl: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   acceptedTerms(
-    _address: PromiseOrValue<string>,
+    to: PromiseOrValue<string>,
+    tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
@@ -346,10 +449,49 @@ export interface TermsableNoToken extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  termsUrl(overrides?: CallOverrides): Promise<string>;
+  setTokenRenderer(
+    tokenId: PromiseOrValue<BigNumberish>,
+    newRenderer: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokenTemplate(
+    tokenId: PromiseOrValue<BigNumberish>,
+    newTokenTemplate: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokenTerm(
+    _term: PromiseOrValue<string>,
+    _tokenId: PromiseOrValue<BigNumberish>,
+    _value: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  termsUrl(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   termsUrlWithPrefix(
+    tokenId: PromiseOrValue<BigNumberish>,
     prefix: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenRenderer(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenTemplate(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenTerm(
+    _term: PromiseOrValue<string>,
+    _tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -359,18 +501,15 @@ export interface TermsableNoToken extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    _termsUrlWithPrefix(
-      prefix: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     acceptTerms(
-      _newtermsUrl: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      newtermsUrl: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     acceptedTerms(
-      _address: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -405,10 +544,49 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    termsUrl(overrides?: CallOverrides): Promise<string>;
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newRenderer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newTokenTemplate: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    termsUrl(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     termsUrlWithPrefix(
+      tokenId: PromiseOrValue<BigNumberish>,
       prefix: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -419,11 +597,16 @@ export interface TermsableNoToken extends BaseContract {
   };
 
   filters: {
-    "AcceptedTerms(address,string)"(
+    "AcceptedTerms(address,uint256,string)"(
       sender?: null,
+      tokenId?: null,
       terms?: null
     ): AcceptedTermsEventFilter;
-    AcceptedTerms(sender?: null, terms?: null): AcceptedTermsEventFilter;
+    AcceptedTerms(
+      sender?: null,
+      tokenId?: null,
+      terms?: null
+    ): AcceptedTermsEventFilter;
 
     "GlobalTermAdded(bytes32,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
@@ -442,21 +625,29 @@ export interface TermsableNoToken extends BaseContract {
       previousOwner?: PromiseOrValue<string> | null,
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
+
+    "TokenTermAdded(bytes32,uint256,bytes32)"(
+      _term?: PromiseOrValue<BytesLike> | null,
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _value?: null
+    ): TokenTermAddedEventFilter;
+    TokenTermAdded(
+      _term?: PromiseOrValue<BytesLike> | null,
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _value?: null
+    ): TokenTermAddedEventFilter;
   };
 
   estimateGas: {
-    _termsUrlWithPrefix(
-      prefix: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     acceptTerms(
-      _newtermsUrl: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     acceptedTerms(
-      _address: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -493,10 +684,49 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    termsUrl(overrides?: CallOverrides): Promise<BigNumber>;
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setTokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newTokenTemplate: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setTokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    termsUrl(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     termsUrlWithPrefix(
+      tokenId: PromiseOrValue<BigNumberish>,
       prefix: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -507,18 +737,15 @@ export interface TermsableNoToken extends BaseContract {
   };
 
   populateTransaction: {
-    _termsUrlWithPrefix(
-      prefix: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     acceptTerms(
-      _newtermsUrl: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     acceptedTerms(
-      _address: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -555,10 +782,49 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    termsUrl(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    setTokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newRenderer: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      newTokenTemplate: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    termsUrl(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     termsUrlWithPrefix(
+      tokenId: PromiseOrValue<BigNumberish>,
       prefix: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenRenderer(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenTemplate(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenTerm(
+      _term: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -1,5 +1,4 @@
 import "./core";
-import "@ethersproject/shims";
 import {
   httpSuccess,
   makeAPIGatewayLambda,
@@ -22,7 +21,10 @@ import { Value } from "ion-js/dist/commonjs/es6/dom";
 import { Lambda } from "aws-sdk";
 import { get as registryGet } from "@raydeck/registry-manager";
 import { unlinkSync, writeFileSync } from "fs";
-import { TermsableNoToken__factory } from "./contracts/index";
+import {
+  TermsableNoToken__factory,
+  ERC721Termsable__factory,
+} from "./contracts/index";
 // import fetch from "cross-fetch";
 // import fetch from "node-fetch";
 
@@ -134,7 +136,7 @@ export const signDocument = makeAPIGatewayLambda({
   method: "post",
   cors: true,
   timeout: 30,
-  func: makeAPIFunc(async (event, context, callback) => {
+  func: async (event, context, callback) => {
     if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
       return sendHttpResult(500, "Environment keys not properly set up");
     if (!process.env.ALCHEMY_MUMBAI_KEY)
@@ -176,6 +178,12 @@ export const signDocument = makeAPIGatewayLambda({
     console.log("fragment is ", fragment);
     const [cid, chainId, contractAddress, blockNumber] = fragment.split("::");
     console.log("contractAddress is ", contractAddress);
+    console.log("We have pieces", {
+      cid,
+      chainId,
+      contractAddress,
+      blockNumber,
+    });
     const polydocs = TermsableNoToken__factory.connect(contractAddress, signer);
     // const result = await fetch("https://polydocs.xyz");
     // const text = await result.text();
@@ -185,12 +193,97 @@ export const signDocument = makeAPIGatewayLambda({
       await signer.getAddress(),
       await signer.getBalance()
     );
-    const txn = await polydocs.acceptTermsFor(address, message, signature);
-    // await txn.wait();
-    // console.log("transaction applied to chain");
-    console.log("Transaction complete");
-    return httpSuccess("signed");
-  }),
+    try {
+      await polydocs.acceptedTerms(address);
+      await polydocs.acceptTermsFor(address, message, signature);
+      // await txn.wait(); // We no longer wait for te transactions
+      // console.log("transaction applied to chain");
+      console.log("Transaction complete");
+      return httpSuccess("signed");
+    } catch (e) {
+      return sendHttpResult(
+        500,
+        "Could not sign document on contract " + contractAddress
+      );
+    }
+  },
 });
+export const deployNFT = makeAPIGatewayLambda({
+  path: "/deploy",
+  method: "post",
+  cors: true,
+  timeout: 30,
 
+  func: async (event, context, callback) => {
+    if (!event.body) return sendHttpResult(400, "No body provided");
+    //What do we need to have in the payload
+    // Eventual owner's ECSDA address
+    // document info?
+    //
+
+    const {
+      address,
+      name,
+      symbol,
+    }: { address: string; name: string; symbol: string } = JSON.parse(
+      event.body
+    );
+    if (!address || ethers.utils.isAddress(address) === false)
+      return sendHttpResult(400, "Invalid address");
+    if (!name) return sendHttpResult(400, "Invalid name");
+    if (!symbol) return sendHttpResult(400, "Invalid symbol");
+
+    const Payload = JSON.stringify({ address, name, symbol });
+    console.log("invoking makecontract", registryGet("MAKE_CONTRACT_FUNCTION"));
+    await new Lambda({ region: registryGet("AWS_REGION", "us-east-1") })
+      .invoke({
+        InvocationType: "Event",
+        FunctionName: registryGet("stackName") + "-doDeploy",
+        Payload,
+      })
+      .promise();
+
+    return httpSuccess({
+      message: "I got this party started",
+    });
+  },
+});
+export const doDeploy = makeLambda({
+  timeout: 300,
+  func: async (event) => {
+    console.log("my event is ", event);
+    const {
+      address,
+      name,
+      symbol,
+    }: { address: string; name: string; symbol: string } = event;
+    console.log("hello!!!");
+    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
+      return sendHttpResult(500, "Environment keys not properly set up");
+    if (!process.env.ALCHEMY_MUMBAI_KEY)
+      return sendHttpResult(500, "Environment keys not properly set up");
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+      process.env.ALCHEMY_MUMBAI_KEY
+      // "0x" + (80001).toString(16)
+    );
+    // const provider = ethers.getDefaultProvider(80001);
+    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
+    // console.log("provider", provider);
+    const signer = new ethers.Wallet(
+      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
+      provider
+    );
+    //time to deploy
+    const polyDocsFactory = new ERC721Termsable__factory(signer);
+    const hundredgwei = ethers.utils.parseUnits("200", "gwei");
+    console.log("A hundred gwei is", hundredgwei.toString());
+    const polyDocs = await polyDocsFactory.deploy(address, name, symbol, {
+      maxFeePerGas: hundredgwei,
+      maxPriorityFeePerGas: hundredgwei,
+    });
+    console.log("polyDocs is ", polyDocs.address);
+    await polyDocs.deployed();
+    console.log("I have a deployed polydocs");
+  },
+});
 //#endregion
