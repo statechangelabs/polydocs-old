@@ -32,7 +32,6 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
     ) ERC721(_name, _symbol) {
         addToWhiteList(msg.sender);
         _transferOwnership(_newowner);
-        console.log("This is my NFT contract. Woah!");
     }
 
     modifier onlyWhiteListed(address _to) {
@@ -88,11 +87,6 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         _setTokenURI(newItemId, _tokenURI);
 
         _tokenIds.increment();
-        console.log(
-            "An NFT w/ ID %s has been minted to %s",
-            newItemId,
-            msg.sender
-        );
 
         emit MintNFT(msg.sender, newItemId);
     }

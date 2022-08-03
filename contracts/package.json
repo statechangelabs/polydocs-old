@@ -29,8 +29,10 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "build:types": "yarn build:types:viewer && yarn build:types:composer",
-    "build:types:viewer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../viewer-app/src/contracts",
+    "build:types": "yarn build:types:viewer && yarn build:types:composer && yarn build:types:viewer-gasless && yarn build:types:api",
+    "build:types:viewer": "yarn typechain artifacts/contracts/termsable/TermsableNoToken.sol/TermsableNoToken.json --target ethers-v5 --out-dir ../viewer-app/src/contracts",
+    "build:types:viewer-gasless": "yarn typechain artifacts/contracts/termsable/TermsableNoToken.sol/TermsableNoToken.json --target ethers-v5 --out-dir ../viewer-gasless/src/contracts",
+    "build:types:api": "yarn hardhat typechain && rm -rf ../api/contracts ; cp -r typechain-types ../api/contracts",
     "build:types:composer": "yarn typechain    artifacts/contracts/TermReader.sol/TermReader.json     artifacts/contracts/TermReader.sol/TokenTermReader.json    artifacts/contracts/Termsable.sol/TermsableNoToken.json    artifacts/contracts/Termsable.sol/TokenTermsable.json    --target ethers-v5 --out-dir ../composer-app/src/contracts",
     "docs": "yarn hardhat docgen && cat TOP.md docs/index.md > README.md"
   },

@@ -26,10 +26,7 @@ abstract contract TermsableBase is Ownable, TermReader {
     mapping(address => bool) private _metaSigners;
 
     modifier onlyMetaSigner(address _metaSigner) {
-        require(
-            _metaSigners[_metaSigner],
-            "Only meta signer can accept terms on behalf of other signers"
-        );
+        require(_metaSigners[_metaSigner], "Not a metasigner");
         _;
     }
 
