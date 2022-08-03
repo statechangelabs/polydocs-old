@@ -61,6 +61,25 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         super._safeMint(_to, _tokenId);
     }
 
+    struct TermsInfo {
+        string key;
+        string value;
+    }
+
+    function setPolydocs(
+        string memory renderer,
+        string memory template,
+        TermsInfo[] memory terms
+    ) public onlyOwner {
+        _setGlobalRenderer(renderer);
+
+        _setGlobalTemplate(template);
+
+        for (uint i = 0; i < terms.length; i++) {
+            _setGlobalTerm(terms[i].key, terms[i].value);
+        }
+    }
+
     function mint(string memory _tokenURI) public onlyWhiteListed(msg.sender) {
         uint256 newItemId = _tokenIds.current();
 

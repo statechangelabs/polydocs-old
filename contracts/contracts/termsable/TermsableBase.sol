@@ -50,6 +50,10 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @dev This function lets the owner of the contract set the global renderer of the terms.
     /// @param _newRenderer The new renderer to use for the terms.
     function setGlobalRenderer(string memory _newRenderer) external onlyOwner {
+        _setGlobalRenderer(_newRenderer);
+    }
+
+    function _setGlobalRenderer(string memory _newRenderer) internal {
         _globalRenderer = _newRenderer;
         _lastTermChange = block.number;
     }
@@ -68,6 +72,10 @@ abstract contract TermsableBase is Ownable, TermReader {
         external
         onlyOwner
     {
+        _setGlobalTemplate(_newDocTemplate);
+    }
+
+    function _setGlobalTemplate(string memory _newDocTemplate) internal {
         _globalDocTemplate = _newDocTemplate;
         _lastTermChange = block.number;
     }
@@ -86,6 +94,12 @@ abstract contract TermsableBase is Ownable, TermReader {
     function setGlobalTerm(string memory _term, string memory _value)
         external
         onlyOwner
+    {
+        _setGlobalTerm(_term, _value);
+    }
+
+    function _setGlobalTerm(string memory _term, string memory _value)
+        internal
     {
         _globalTerms[_term] = _value;
         emit GlobalTermAdded(keccak256(bytes(_term)), keccak256(bytes(_value)));

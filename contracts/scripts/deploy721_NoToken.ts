@@ -52,6 +52,16 @@ async function main() {
   console.log("Minted token to signer_3");
   console.log("signer 3 address is :", signer_3.address);
 
+  const set_document = await doc.connect(signer_2).setPolydocs("RendererCID", "TemplateCID", [{"key":"key1", "value": "value1"},{"key":"key2", "value": "value2"}]);
+  const set_document_receipt = await set_document.wait();
+  console.log("Set document for the contract!");
+
+  const get_term_value_1 = await doc.globalTerm("key1");
+  console.log("key1's value is :", get_term_value_1);
+
+  const get_term_value_2 = await doc.globalTerm("key2");
+  console.log("key2's value is :", get_term_value_2);
+
   // try {
   // // should pass - as signer 1 is the owner of the contract
   // const assignMetaSigner = await doc.addMetaSigner(signer_2.address);
