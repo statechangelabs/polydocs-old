@@ -30,23 +30,24 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
-        addToWhiteList(msg.sender);
-        _addMetaSigner(_newowner); // @todo : think more about this
+        // addToWhiteList(msg.sender);
+        _addMetaSigner(_msgSender());
+        // _addMetaSigner(_newowner); // @todo : think more about this
         _transferOwnership(_newowner);
     }
 
-    modifier onlyWhiteListed(address _to) {
-        require(whitelist[_to], "Only whitelisted addresses can mint NFTs");
-        _;
-    }
+    // modifier onlyWhiteListed(address _to) {
+    //     require(whitelist[_to], "Only whitelisted addresses can mint NFTs");
+    //     _;
+    // }
 
-    function addToWhiteList(address _to) public onlyOwner {
-        whitelist[_to] = true;
-    }
+    // function addToWhiteList(address _to) public onlyOwner {
+    //     whitelist[_to] = true;
+    // }
 
-    function removeFromWhiteList(address _to) public onlyOwner {
-        whitelist[_to] = false;
-    }
+    // function removeFromWhiteList(address _to) public onlyOwner {
+    //     whitelist[_to] = false;
+    // }
 
     function _transfer(
         address from,
@@ -57,10 +58,10 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         super._transfer(from, to, tokenId);
     }
 
-    function _safeMint(address _to, uint256 _tokenId) internal override {
-        require(_acceptedTerms(_to), "Terms not accepted");
-        super._safeMint(_to, _tokenId);
-    }
+    // function _safeMint(address _to, uint256 _tokenId) internal override {
+    //     require(_acceptedTerms(_to), "Terms not accepted");
+    //     super._safeMint(_to, _tokenId);
+    // }
 
     struct TermsInfo {
         string key;
@@ -71,7 +72,7 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         string memory renderer,
         string memory template,
         TermsInfo[] memory terms
-    ) public onlyMetaSigner(msg.sender) {
+    ) public onlyMetaSigner {
         _setGlobalRenderer(renderer);
 
         _setGlobalTemplate(template);
@@ -81,7 +82,7 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         }
     }
 
-    function mint(string memory _tokenURI) public onlyWhiteListed(msg.sender) {
+    function mint(string memory _tokenURI) public onlyMetaSigner {
         uint256 newItemId = _tokenIds.current();
 
         // string memory json = Base64.encode(

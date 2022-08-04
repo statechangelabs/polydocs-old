@@ -25,8 +25,11 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @dev This function returns whether the address is allowed to accept terms on behalf of the signer.
     mapping(address => bool) private _metaSigners;
 
-    modifier onlyMetaSigner(address _metaSigner) {
-        require(_metaSigners[_metaSigner], "Not a metasigner");
+    modifier onlyMetaSigner() {
+        require(
+            _metaSigners[_msgSender()] || owner() == _msgSender(),
+            "Not a metasigner or Owner"
+        );
         _;
     }
 

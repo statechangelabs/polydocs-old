@@ -50,7 +50,7 @@ abstract contract TermsableNoToken is TermsableBase {
         address _signer,
         string memory _newtermsUrl,
         bytes memory _signature
-    ) external onlyMetaSigner(msg.sender) {
+    ) external onlyMetaSigner {
         bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(_newtermsUrl));
         address _checkedSigner = ECDSA.recover(hash, _signature);
         require(_checkedSigner == _signer);

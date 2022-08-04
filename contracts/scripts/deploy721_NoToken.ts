@@ -36,23 +36,23 @@ async function main() {
   console.log(await doc.symbol());
   console.log(await doc.owner());
 
-  const addwhitelist = await doc.connect(signer_2).addToWhiteList(signer_3.address);
-  const addwhitelist_receipt = await addwhitelist.wait();
-  console.log("Added signer 3 to whitelist");
+  // const addwhitelist = await doc.connect(signer_2).addToWhiteList(signer_3.address);
+  // const addwhitelist_receipt = await addwhitelist.wait();
+  // console.log("Added signer 3 to whitelist");
 
   const terms = await doc.termsUrl();
   console.log("Terms url:", terms);
 
-  const accept_terms = await doc.connect(signer_3).acceptTerms(terms);
-  const accept_terms_receipt = await accept_terms.wait();
-  console.log("Accepted terms by signer 3");
+  // const accept_terms = await doc.connect(signer_3).acceptTerms(terms);
+  // const accept_terms_receipt = await accept_terms.wait();
+  // console.log("Accepted terms by signer 3");
 
-  const mint = await doc.connect(signer_3).mint("sampleURI");
-  const mint_receipt = await mint.wait();
-  console.log("Minted token to signer_3");
-  console.log("signer 3 address is :", signer_3.address);
+  // const mint = await doc.connect(signer_3).mint("sampleURI");
+  // const mint_receipt = await mint.wait();
+  // console.log("Minted token to signer_3");
+  // console.log("signer 3 address is :", signer_3.address);
 
-  const set_document = await doc.connect(signer_2).setPolydocs("RendererCID", "TemplateCID", [{"key":"key1", "value": "value1"},{"key":"key2", "value": "value2"}]);
+  const set_document = await doc.setPolydocs("RendererCID", "TemplateCID", [{"key":"key1", "value": "value1"},{"key":"key2", "value": "value2"}]);
   const set_document_receipt = await set_document.wait();
   console.log("Set document for the contract!");
 
@@ -61,6 +61,34 @@ async function main() {
 
   const get_term_value_2 = await doc.globalTerm("key2");
   console.log("key2's value is :", get_term_value_2);
+
+
+  const set_signer3 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
+  const set_signer3_receipt = await set_signer3.wait();
+  console.log("Added signer 3 to metasigner list");
+
+  // const accept_terms_signer3 = await doc.connect(signer_3).acceptTerms(terms);
+  // const accept_terms_signer3_receipt = await accept_terms_signer3.wait();
+  // console.log("Accepted terms by signer 3");
+
+  const mint_signer3 = await doc.connect(signer_3).mint("sampleURI");
+  const mint_signer3_receipt = await mint_signer3.wait();
+  console.log("Minted token to signer_3");
+
+  // can signer3 set polydocs
+
+  const set_document_signer3 = await doc.connect(signer_3).setPolydocs("RendererCID2", "TemplateCID2", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
+  const set_document_signer3_receipt = await set_document_signer3.wait();
+  console.log("Set document for the contract by signer3!");
+
+  const get_term_value_12 = await doc.globalTerm("key1");
+  console.log("key1's value is :", get_term_value_12);
+
+  const get_term_value_21 = await doc.globalTerm("key2");
+  console.log("key2's value is :", get_term_value_21);
+
+  const renderer = await doc.renderer();
+  console.log("Renderer is :", renderer);
 
   // try {
   // // should pass - as signer 1 is the owner of the contract
