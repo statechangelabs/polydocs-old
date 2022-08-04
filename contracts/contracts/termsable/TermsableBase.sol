@@ -35,6 +35,10 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @dev This function is only available to the owner of the contract.
     /// @param _signer The address of the signer that can accept terms on behalf of the signer.
     function addMetaSigner(address _signer) external onlyOwner {
+        _addMetaSigner(_signer);
+    }
+
+    function _addMetaSigner(address _signer) internal {
         _metaSigners[_signer] = true;
     }
 

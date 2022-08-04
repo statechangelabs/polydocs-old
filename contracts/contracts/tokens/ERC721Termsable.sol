@@ -31,7 +31,7 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         string memory _symbol
     ) ERC721(_name, _symbol) {
         addToWhiteList(msg.sender);
-        addMetaSigner(_newowner); // @todo : think more about this
+        _addMetaSigner(_newowner); // @todo : think more about this
         _transferOwnership(_newowner);
     }
 
@@ -76,7 +76,7 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
 
         _setGlobalTemplate(template);
 
-        for (uint i = 0; i < terms.length; i++) {
+        for (uint256 i = 0; i < terms.length; i++) {
             _setGlobalTerm(terms[i].key, terms[i].value);
         }
     }
