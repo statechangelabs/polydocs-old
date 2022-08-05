@@ -14,7 +14,7 @@ import { Agent } from "https";
 import { QldbDriver, RetryConfig } from "amazon-qldb-driver-nodejs";
 import { v4 as uuid } from "uuid";
 import { getAssetPath } from "@raydeck/local-assets";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { join } from "path";
 import { execSync } from "child_process";
 import { Value } from "ion-js/dist/commonjs/es6/dom";
@@ -27,7 +27,10 @@ import {
 } from "./contracts/index";
 // import fetch from "cross-fetch";
 // import fetch from "node-fetch";
-
+const DEFAULT_RENDERER =
+  "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy";
+const DEFAULT_TEMPLATE =
+  "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md";
 //#region QLDB intialization
 const maxConcurrentTransactions = 10;
 const retryLimit = 4;
@@ -256,7 +259,17 @@ export const doDeploy = makeLambda({
       address,
       name,
       symbol,
-    }: { address: string; name: string; symbol: string } = event;
+      renderer = DEFAULT_RENDERER,
+      template = DEFAULT_TEMPLATE,
+      terms = {},
+    }: {
+      address: string;
+      name: string;
+      symbol: string;
+      renderer: string;
+      template: string;
+      terms: Record<string, string>;
+    } = event;
     console.log("hello!!!");
     if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
       return sendHttpResult(500, "Environment keys not properly set up");
@@ -275,14 +288,25 @@ export const doDeploy = makeLambda({
     );
     //time to deploy
     const polyDocsFactory = new ERC721Termsable__factory(signer);
-    const hundredgwei = ethers.utils.parseUnits("200", "gwei");
+    const hundredgwei = ethers.utils.parseUnits("50", "gwei");
     console.log("A hundred gwei is", hundredgwei.toString());
+    console.log("Deploying with", address, name, symbol);
     const polyDocs = await polyDocsFactory.deploy(address, name, symbol, {
       maxFeePerGas: hundredgwei,
       maxPriorityFeePerGas: hundredgwei,
+      gasLimit: BigNumber.from(6_500_000),
     });
     console.log("polyDocs is ", polyDocs.address);
     await polyDocs.deployed();
+    const pdtxn = await polyDocs.setPolydocs(
+      renderer,
+      template,
+      Object.entries(terms).map(([key, value]) => ({
+        key,
+        value,
+      }))
+    );
+    await pdtxn.wait();
     console.log("I have a deployed polydocs");
   },
 });

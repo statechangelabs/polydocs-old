@@ -27,6 +27,18 @@ import type {
   PromiseOrValue,
 } from "../../common";
 
+export declare namespace ERC721Termsable {
+  export type TermsInfoStruct = {
+    key: PromiseOrValue<string>;
+    value: PromiseOrValue<string>;
+  };
+
+  export type TermsInfoStructOutput = [string, string] & {
+    key: string;
+    value: string;
+  };
+}
+
 export interface ERC721TermsableInterface extends utils.Interface {
   functions: {
     "_tokenIds()": FunctionFragment;
@@ -34,7 +46,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
     "acceptTermsFor(address,string,bytes)": FunctionFragment;
     "acceptedTerms(address)": FunctionFragment;
     "addMetaSigner(address)": FunctionFragment;
-    "addToWhiteList(address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
@@ -46,7 +57,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
-    "removeFromWhiteList(address)": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -56,6 +66,7 @@ export interface ERC721TermsableInterface extends utils.Interface {
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
+    "setPolydocs(string,string,(string,string)[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "termsUrl()": FunctionFragment;
@@ -72,7 +83,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
       | "acceptTermsFor"
       | "acceptedTerms"
       | "addMetaSigner"
-      | "addToWhiteList"
       | "approve"
       | "balanceOf"
       | "currentTermsBlock"
@@ -84,7 +94,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
       | "name"
       | "owner"
       | "ownerOf"
-      | "removeFromWhiteList"
       | "removeMetaSigner"
       | "renderer"
       | "renounceOwnership"
@@ -94,6 +103,7 @@ export interface ERC721TermsableInterface extends utils.Interface {
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
+      | "setPolydocs"
       | "supportsInterface"
       | "symbol"
       | "termsUrl"
@@ -122,10 +132,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "addMetaSigner",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "addToWhiteList",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -165,10 +171,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeFromWhiteList",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeMetaSigner",
@@ -211,6 +213,14 @@ export interface ERC721TermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setGlobalTerm",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPolydocs",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      ERC721Termsable.TermsInfoStruct[]
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -256,10 +266,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
     functionFragment: "addMetaSigner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "addToWhiteList",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
@@ -283,10 +289,6 @@ export interface ERC721TermsableInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "removeFromWhiteList",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "removeMetaSigner",
     data: BytesLike
@@ -318,6 +320,10 @@ export interface ERC721TermsableInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setGlobalTerm",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPolydocs",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -490,11 +496,6 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    addToWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -539,11 +540,6 @@ export interface ERC721Termsable extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    removeFromWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     removeMetaSigner(
       _signer: PromiseOrValue<string>,
@@ -590,6 +586,13 @@ export interface ERC721Termsable extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setPolydocs(
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721Termsable.TermsInfoStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -649,11 +652,6 @@ export interface ERC721Termsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  addToWhiteList(
-    _to: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   approve(
     to: PromiseOrValue<string>,
     tokenId: PromiseOrValue<BigNumberish>,
@@ -698,11 +696,6 @@ export interface ERC721Termsable extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  removeFromWhiteList(
-    _to: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   removeMetaSigner(
     _signer: PromiseOrValue<string>,
@@ -749,6 +742,13 @@ export interface ERC721Termsable extends BaseContract {
   setGlobalTerm(
     _term: PromiseOrValue<string>,
     _value: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setPolydocs(
+    renderer: PromiseOrValue<string>,
+    template: PromiseOrValue<string>,
+    terms: ERC721Termsable.TermsInfoStruct[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -808,11 +808,6 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    addToWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -858,11 +853,6 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    removeFromWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     removeMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -906,6 +896,13 @@ export interface ERC721Termsable extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setPolydocs(
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721Termsable.TermsInfoStruct[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1031,11 +1028,6 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    addToWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1079,11 +1071,6 @@ export interface ERC721Termsable extends BaseContract {
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    removeFromWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     removeMetaSigner(
@@ -1131,6 +1118,13 @@ export interface ERC721Termsable extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setPolydocs(
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721Termsable.TermsInfoStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1191,11 +1185,6 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    addToWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1239,11 +1228,6 @@ export interface ERC721Termsable extends BaseContract {
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    removeFromWhiteList(
-      _to: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     removeMetaSigner(
@@ -1291,6 +1275,13 @@ export interface ERC721Termsable extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPolydocs(
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721Termsable.TermsInfoStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
