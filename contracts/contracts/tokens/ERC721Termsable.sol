@@ -26,14 +26,14 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
     // 2. Name of contract
     // 3. Symbol of the contract
     constructor(
-        address _newowner,
+        address _newOwner,
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
         // addToWhiteList(msg.sender);
-        _addMetaSigner(_msgSender());
+        // _addMetaSigner(_msgSender());
         // _addMetaSigner(_newowner); // @todo : think more about this
-        _transferOwnership(_newowner);
+        // _transferOwnership(_newowner);
     }
 
     // modifier onlyWhiteListed(address _to) {
