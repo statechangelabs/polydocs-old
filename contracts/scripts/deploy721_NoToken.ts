@@ -5,10 +5,11 @@ async function main() {
   const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
 
   const Doc = await ethers.getContractFactory("ERC721Termsable");
-  const doc = await Doc.deploy(signer_2.address, "TEST CONTRACT", "TEST");
+  const doc = await Doc.deploy("0xa591453bC3d01E248e1284340477dc9Fd0f46849","TESTNAME", "TEST");
   await doc.deployed();
 
   console.log("721_NoToken deployed to:", doc.address);
+  console.log("Signer2 address:", signer_2.address);
 
 //   let config = `
 //   export const ERC721_NoToken address = "${doc.address}";
