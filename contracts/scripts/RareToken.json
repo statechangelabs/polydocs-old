@@ -1,0 +1,14 @@
+{
+  "attributes": [
+    { "trait_type": "Tier", "value": "PLATINUM" },
+    { "trait_type": "Edition", "value": "Rare" },
+    { "trait_type": "Song", "value": "Rare" },
+    { "display_type": "number", "trait_type": "Token Number", "value": 167 },
+    { "trait_type": "Artist", "value": "Nas" },
+    { "triat_type": "Royalty Share", "value": "~0.066%" }
+  ],
+  "description": "[167/400] Keeping the post-Grammy momentum, Nas and Hit-boy return with the lead single \"Rare\" off of King's Disease II. The song shows that Nas is in rare form, cementing his spot as a veteran that's still at the top of his game.\n\nLearn more: https://royal.io/\n\nView the contract: https://royal.io/editions/nas-rare/contract\n\nImportant: This token may contain extra benefits. You can find them on the royal listing page for this token. Please note that some token extras may be non-transferable.\n\nTo claim your token extras, you will need an account on royal.io associated with the wallet that owns this token. After that, you'll receive further instructions from the artist in your email.\n\nLearn more about token extras: https://support.royal.io/hc/en-us/articles/4415637778451",
+  "external_url": "https://royal.io/editions/nas-rare",
+  "image": "https://api.royal.io/assets/7566816e-1fb1-4741-bd1a-47a06cfc9644",
+  "name": "#167 Nas 'Rare' Royal LDA"
+}
