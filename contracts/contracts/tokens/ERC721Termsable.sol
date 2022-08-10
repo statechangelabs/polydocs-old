@@ -31,9 +31,9 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         string memory _symbol
     ) ERC721(_name, _symbol) {
         // addToWhiteList(msg.sender);
-        // _addMetaSigner(_msgSender());
+        _addMetaSigner(_msgSender());
         // _addMetaSigner(_newowner); // @todo : think more about this
-        // _transferOwnership(_newowner);
+        _transferOwnership(_newOwner);
     }
 
     // modifier onlyWhiteListed(address _to) {
@@ -82,7 +82,11 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         }
     }
 
-    function mint(string memory _tokenURI) public onlyMetaSigner {
+    function mint(string memory _tokenURI)
+        public
+        onlyMetaSigner
+        returns (uint256)
+    {
         uint256 newItemId = _tokenIds.current();
 
         // string memory json = Base64.encode(
@@ -110,5 +114,6 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         _tokenIds.increment();
 
         emit MintNFT(msg.sender, newItemId);
+        return newItemId;
     }
 }
