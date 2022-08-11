@@ -11,13 +11,21 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "../termsable/TermsableNoToken.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
-contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
+contract ERC721Termsable is
+    ERC721URIStorage,
+    Ownable,
+    TermsableNoToken,
+    ERC2981
+{
     using Counters for Counters.Counter;
     Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
+    string private _uri;
     event MintNFT(address sender, uint256 tokenId);
+    event UpdatedURI(string uri);
 
     mapping(address => bool) private whitelist;
 
@@ -34,6 +42,26 @@ contract ERC721Termsable is ERC721URIStorage, Ownable, TermsableNoToken {
         _addMetaSigner(_msgSender());
         // _addMetaSigner(_newowner); // @todo : think more about this
         _transferOwnership(_newOwner);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC2981, ERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function setURI(string memory _newURI) external onlyMetaSigner {
+        _uri = _newURI;
+        _lastTermChange = block.number;
+        emit UpdatedURI(_uri);
+    }
+
+    function URI() public view returns (string memory) {
+        return _uri;
     }
 
     // modifier onlyWhiteListed(address _to) {
