@@ -9,7 +9,7 @@ async function main() {
   await doc.deployed();
 
   console.log("721_NoToken deployed to:", doc.address);
-  console.log("Signer2 address:", signer_2.address);
+  // console.log("Signer2 address:", signer_2.address);
 
 //   let config = `
 //   export const ERC721_NoToken address = "${doc.address}";
@@ -64,21 +64,21 @@ async function main() {
   console.log("key2's value is :", get_term_value_2);
 
 
-  const set_signer3 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
-  const set_signer3_receipt = await set_signer3.wait();
-  console.log("Added signer 3 to metasigner list");
+  // const set_signer3 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
+  // const set_signer3_receipt = await set_signer3.wait();
+  // console.log("Added signer 3 to metasigner list");
 
   // const accept_terms_signer3 = await doc.connect(signer_3).acceptTerms(terms);
   // const accept_terms_signer3_receipt = await accept_terms_signer3.wait();
   // console.log("Accepted terms by signer 3");
 
-  const mint_signer3 = await doc.connect(signer_3).mint("sampleURI");
-  const mint_signer3_receipt = await mint_signer3.wait();
-  console.log("Minted token to signer_3");
+  // const mint_signer3 = await doc.connect(signer_3).mint("sampleURI");
+  // const mint_signer3_receipt = await mint_signer3.wait();
+  // console.log("Minted token to signer_3");
 
   // can signer3 set polydocs
 
-  const set_document_signer3 = await doc.connect(signer_3).setPolydocs("RendererCID2", "TemplateCID2", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
+  const set_document_signer3 = await doc.setPolydocs("bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy", "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
   const set_document_signer3_receipt = await set_document_signer3.wait();
   console.log("Set document for the contract by signer3!");
 
@@ -90,6 +90,14 @@ async function main() {
 
   const renderer = await doc.renderer();
   console.log("Renderer is :", renderer);
+  
+  const URI = 'https://ipfs.io/ipfs/bafkreiarb26zlmmcjjgryezyn5h2few75bwsscb4rr7mj4cixkkylt4sce';
+
+  const setURI = await doc.setURI(URI);
+  const setURI_receipt = await setURI.wait();
+
+  const getURI = await doc.URI();
+  console.log("URI is :", getURI);
 
   // try {
   // // should pass - as signer 1 is the owner of the contract

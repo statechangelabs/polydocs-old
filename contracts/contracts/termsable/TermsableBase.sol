@@ -62,6 +62,7 @@ abstract contract TermsableBase is Ownable, TermReader {
 
     function _setGlobalRenderer(string memory _newRenderer) internal {
         _globalRenderer = _newRenderer;
+        emit GlobalRendererChanged(_newRenderer);
         _lastTermChange = block.number;
     }
 
@@ -84,6 +85,7 @@ abstract contract TermsableBase is Ownable, TermReader {
 
     function _setGlobalTemplate(string memory _newDocTemplate) internal {
         _globalDocTemplate = _newDocTemplate;
+        emit GlobalTemplateChanged(_newDocTemplate);
         _lastTermChange = block.number;
     }
 
@@ -109,7 +111,10 @@ abstract contract TermsableBase is Ownable, TermReader {
         internal
     {
         _globalTerms[_term] = _value;
-        emit GlobalTermAdded(keccak256(bytes(_term)), keccak256(bytes(_value)));
+        emit GlobalTermChanged(
+            keccak256(bytes(_term)),
+            keccak256(bytes(_value))
+        );
         _lastTermChange = block.number;
     }
 

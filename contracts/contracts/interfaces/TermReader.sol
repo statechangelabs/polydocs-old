@@ -6,7 +6,11 @@ interface TermReader {
     /// @dev Event when a new Global term is added to the contract
     /// @param _term The term being added to the contract
     /// @param _value value of the term added to the contract
-    event GlobalTermAdded(bytes32 indexed _term, bytes32 _value);
+    event GlobalTermChanged(bytes32 indexed _term, bytes32 _value);
+
+    event GlobalRendererChanged(string indexed _renderer);
+
+    event GlobalTemplateChanged(string indexed _template);
 
     /// @notice This function is used to return the value of the term
     /// @dev Function to return the value of the term
