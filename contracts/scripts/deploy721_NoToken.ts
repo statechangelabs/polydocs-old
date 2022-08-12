@@ -91,7 +91,7 @@ async function main() {
   const renderer = await doc.renderer();
   console.log("Renderer is :", renderer);
   
-  const URI = 'https://ipfs.io/ipfs/bafkreiarb26zlmmcjjgryezyn5h2few75bwsscb4rr7mj4cixkkylt4sce';
+  const URI = 'ipfs://bafkreiarb26zlmmcjjgryezyn5h2few75bwsscb4rr7mj4cixkkylt4sce';
 
   const setURI = await doc.setURI(URI);
   const setURI_receipt = await setURI.wait();
