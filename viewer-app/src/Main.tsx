@@ -30,6 +30,54 @@ export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
   : undefined;
+const useSign = (contractAddress: string, tokenId?: string) => {
+  const [isSigning, setIsSigning] = useState(false);
+  const sign = useCallback(async () => {
+    if (!provider) return;
+    if (typeof tokenId !== "undefined") {
+      const contract = TokenTermsable__factory.connect(
+        contractAddress,
+        provider.getSigner()
+      );
+
+      const href = await contract.termsUrl(tokenId);
+      setIsSigning(true);
+      toast("Please approve your signature...");
+      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
+        try {
+          const txn = await contract.acceptTerms(tokenId, href);
+          toast("Waiting for chain to record your signature...");
+          await txn.wait();
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        toast("This is not the correct page to sign the terms!", {
+          type: "error",
+        });
+      }
+    } else {
+      const contract = TermsableNoToken__factory.connect(
+        contractAddress,
+        provider.getSigner()
+      );
+
+      const href = await contract.termsUrl();
+
+      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
+        const txn = await contract.acceptTerms(href);
+        toast("Waiting for chain to record your signature...");
+        await txn.wait();
+      } else {
+        toast("This is not the correct page to sign the terms!", {
+          type: "error",
+        });
+      }
+    }
+    setIsSigning(false);
+  }, [contractAddress, tokenId]);
+  return { isSigning, sign };
+};
 export const useTerms = (
   address: string,
   block: string,
@@ -88,7 +136,7 @@ export const useTerms = (
         console.error("My life is so hard", e);
       }
     },
-    [address, token]
+    [address, token, block]
   );
 
   //http://localhost:3000/
@@ -113,7 +161,6 @@ const Renderer: FC<{
   tokenId?: string;
 }> = ({ block, contractAddress, documentId, tokenId }) => {
   const [isSigned, setIsSigned] = useState(false);
-  const [isSigning, setIsSigning] = useState(false);
   useAsyncEffect(async () => {
     if (!provider) return;
     if (typeof tokenId !== "undefined") {
@@ -179,54 +226,12 @@ const Renderer: FC<{
       tokens.forEach(addTerm);
     }
   }, [template, addTerm]);
+  const { isSigning, sign: _sign } = useSign(contractAddress, tokenId);
   const sign = useCallback(async () => {
-    if (!provider) return;
-    if (typeof tokenId !== "undefined") {
-      const contract = TokenTermsable__factory.connect(
-        contractAddress,
-        provider.getSigner()
-      );
-
-      const href = await contract.termsUrl(tokenId);
-      setIsSigning(true);
-      toast("Please approve your signature...");
-      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-        try {
-          const txn = await contract.acceptTerms(tokenId, href);
-          toast("Waiting for chain to record your signature...");
-          await txn.wait();
-          toast("Signature recorded!");
-          setIsSigned(true);
-        } catch (e) {
-          console.error(e);
-        }
-      } else {
-        toast("This is not the correct page to sign the terms!", {
-          type: "error",
-        });
-      }
-    } else {
-      const contract = TermsableNoToken__factory.connect(
-        contractAddress,
-        provider.getSigner()
-      );
-
-      const href = await contract.termsUrl();
-
-      if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-        const txn = await contract.acceptTerms(href);
-        toast("Waiting for chain to record your signature...");
-        await txn.wait();
-        toast("Signature recorded!");
-        setIsSigned(true);
-      } else {
-        toast("This is not the correct page to sign the terms!", {
-          type: "error",
-        });
-      }
-    }
-    setIsSigning(false);
-  }, [contractAddress, tokenId]);
+    await _sign();
+    toast("Signature recorded!");
+    setIsSigned(true);
+  }, [_sign]);
   if (!template) return <Loading />;
   if (!provider) return <div>"No provider"</div>;
   const overrideTerms = Object.entries(terms)
