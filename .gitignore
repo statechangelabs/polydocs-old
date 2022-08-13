@@ -2,3 +2,5 @@
 viewer-app/.env
 composer-app/.env
 node_modules
+src/contracts
+api/contracts
