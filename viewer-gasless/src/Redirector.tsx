@@ -1,9 +1,6 @@
 import { FC, useState } from "react";
 import { BigNumber, ethers } from "ethers";
-import {
-  TermsableNoToken__factory,
-  TokenTermsable__factory,
-} from "./contracts";
+import { Signable__factory } from "./contracts";
 import useAsyncEffect from "./useAsyncEffect";
 const providers: Record<string, string> = {
   "137": process.env.REACT_APP_POLYGON_RPC || "",
@@ -45,7 +42,7 @@ const Redirector: FC = () => {
           fragment;
         window.location.reload();
       } else {
-        const contract = TermsableNoToken__factory.connect(address, provider);
+        const contract = Signable__factory.connect(address, provider);
         const termsUrl = await contract.termsUrl();
         const [, fragmentBase] = termsUrl.split("://");
         const [renderer, fragment] = fragmentBase.split("/#/");

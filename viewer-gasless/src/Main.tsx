@@ -8,13 +8,12 @@ import {
   useState,
 } from "react";
 import { useIPFSText, useIPFSDataUri } from "./useIPFS";
-import { BigNumber, ethers, providers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   TokenTermReader__factory,
-  TokenTermsable__factory,
-  TermsableNoToken__factory,
   TermReader__factory,
-  ERC721Termsable__factory,
+  MetadataURI__factory,
+  Signable__factory,
 } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
@@ -27,7 +26,7 @@ import useAsyncEffect from "./useAsyncEffect";
 import Loading from "./Loading";
 
 const POLYDOCS_URL =
-  "https://63fbwmz9da.execute-api.us-east-1.amazonaws.com/dev/sign";
+  "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev/sign";
 
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
@@ -155,20 +154,22 @@ const Renderer: FC<{
   tokenId?: string;
 }> = ({ block, contractAddress, documentId, tokenId }) => {
   const [isSigned, setIsSigned] = useState(false);
+  const [isHighlight, setIsHighlight] = useState(false);
   useAsyncEffect(async () => {
     if (!provider) return;
     if (typeof tokenId !== "undefined") {
-      const contract = TokenTermsable__factory.connect(
-        contractAddress,
-        provider
-      );
-      const accepted = await contract.acceptedTerms(
-        provider.getSigner().getAddress(),
-        tokenId
-      );
-      if (accepted) setIsSigned(true);
+      // const contract = TokenTermsable__factory.connect(
+      //   contractAddress,
+      //   provider
+      // );
+      // const accepted = await contract.acceptedTerms(
+      //   provider.getSigner().getAddress(),
+      //   tokenId
+      // );
+      // if (accepted) setIsSigned(true);
+      //@TODO FIX THIS PART
     } else {
-      const contract = TermsableNoToken__factory.connect(
+      const contract = Signable__factory.connect(
         contractAddress,
         provider.getSigner()
       );
@@ -183,7 +184,7 @@ const Renderer: FC<{
   const [lastURIBlock, setLastURIBlock] = useState(0);
   useAsyncEffect(async () => {
     if (!provider) return;
-    const contract = ERC721Termsable__factory.connect(
+    const contract = MetadataURI__factory.connect(
       contractAddress,
       provider.getSigner()
     );
@@ -204,6 +205,10 @@ const Renderer: FC<{
   const image = useIPFSDataUri(
     (obj.image && obj.image.split("://").pop()) || obj.image
   );
+  const cover = useIPFSDataUri(
+    (obj.cover && obj.cover.split("://").pop()) || obj.cover
+  );
+  const title = obj.title || "";
   const jsonTerms = obj.terms as Record<string, string>;
   const template = useIPFSText(documentId);
   const { terms, addTerm, termBlocks } = useTerms(
@@ -222,9 +227,10 @@ const Renderer: FC<{
   }, [template, addTerm]);
   const { isSigning, sign: _sign } = useSign(contractAddress, tokenId);
   const sign = useCallback(async () => {
-    await _sign();
-    toast("Signature recorded!");
-    setIsSigned(true);
+    if (await _sign()) {
+      toast("Signature recorded!");
+      setIsSigned(true);
+    }
   }, [_sign]);
   if (!template) return <Loading />;
   if (!provider) return <div>"No provider"</div>;
@@ -238,8 +244,16 @@ const Renderer: FC<{
       acc[key] = value;
       return acc;
     }, {} as Record<string, string>);
-  const output = Mustache.render(template, { ...jsonTerms, overrideTerms });
-  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
+  const baseValues = Object.entries({ ...jsonTerms, ...overrideTerms });
+  const values = baseValues
+    .map(([key, value]) => [key, isHighlight ? `**${value}**` : value])
+    .reduce(
+      (acc, [key, value]) => ({ ...acc, [key]: value }),
+      {} as Record<string, string>
+    );
+  const output = Mustache.render(template, values);
+  const baseOutput = Mustache.render(template, baseValues);
+  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(baseOutput));
 
   return (
     <Fragment>
@@ -267,13 +281,29 @@ const Renderer: FC<{
             </div>
           </header>
           <div className="scrollable flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll print:overflow-visible print:shadow-none">
+            {
+              //#region Header to style @TODO
+            }
             {image && (
               <img
                 src={image}
                 alt="Contract Image"
-                className="h-64 object-contain"
+                className="h-32 w-32 object-cover
+                 rounded-full"
               />
             )}
+            {cover && (
+              <img
+                src={cover}
+                alt="Contract Image"
+                className="h-64 w-full object-cover
+                 rounded-full"
+              />
+            )}
+            {title && <div className="text-xl">{title}</div>}
+            {
+              //#endregion
+            }
             <div className="p-6 lg:p-8">
               <Markdown>{output}</Markdown>
             </div>
@@ -282,6 +312,12 @@ const Renderer: FC<{
           <div className="py-4">
             <div className="prose mx-auto flex flex-row justify-end mt-4">
               <div className=" flex flex-row  print:hidden gap-4">
+                <button
+                  className="btn btn-gradient"
+                  onClick={() => setIsHighlight((old) => !old)}
+                >
+                  {isHighlight ? "Unhighlight terms" : "Highlight terms"}
+                </button>
                 <button
                   className="btn btn-gradient"
                   onClick={() => window.print()}
