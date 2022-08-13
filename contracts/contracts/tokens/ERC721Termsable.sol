@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "../termsable/TermsableNoToken.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
+import "../interfaces/MetadataURI.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
@@ -19,13 +20,13 @@ contract ERC721Termsable is
     ERC721URIStorage,
     Ownable,
     TermsableNoToken,
+    MetadataURI,
     ERC2981
 {
     using Counters for Counters.Counter;
     Counters.Counter public _tokenIds; // Changed to public to test for the timebeing
     string private _uri;
     event MintNFT(address sender, uint256 tokenId);
-    event UpdatedURI(string uri);
 
     mapping(address => bool) private whitelist;
 

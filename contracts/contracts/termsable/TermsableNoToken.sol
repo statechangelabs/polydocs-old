@@ -4,16 +4,10 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
 import "./TermsableBase.sol";
+import "../interfaces/Signable.sol";
 
-abstract contract TermsableNoToken is TermsableBase {
-    /// @notice Event that is emitted when a terms are accepted.
-    /// @dev This event is emitted when a terms are accepted.
-    /// @param sender The address that accepted the terms.
-    /// @param terms The terms that were accepted.
-    event AcceptedTerms(address sender, string terms);
-
+abstract contract TermsableNoToken is TermsableBase, Signable {
     /// @notice Mapping that stores whether the address has accepted terms.
     /// @dev This mapping returns a boolean value indicating whether the address has accepted terms.
     mapping(address => bool) _hasAcceptedTerms;
@@ -75,7 +69,7 @@ abstract contract TermsableNoToken is TermsableBase {
     /// @param prefix The prefix of the url.
     /// return _termsUrlWithPrefix(prefix) The url of the terms with the prefix.
     function termsUrlWithPrefix(string memory prefix)
-        public
+        external
         view
         returns (string memory)
     {
