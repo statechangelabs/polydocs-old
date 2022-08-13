@@ -14,13 +14,15 @@ import "react-toastify/dist/ReactToastify.css";
 import Main from "./Main";
 import WrongChain from "./WrongChain";
 import Disconnected from "./Disconnected";
+import ContractFinder from "./ContractFinder";
+import Redirector from "./Redirector";
 let fragment = window.location.hash;
 if (fragment.startsWith("#/")) fragment = fragment.substring(2);
 else if (fragment.startsWith("#")) fragment = fragment.substring(1);
 const [documentId, chainId, contractAddress, block, tokenId] =
   fragment.split("::");
-const base16Chain = "0x" + Number.parseInt(chainId).toString(16);
-
+const base16Chain = chainId && "0x" + Number.parseInt(chainId).toString(16);
+console.log({ documentId, chainId, contractAddress, block, tokenId });
 function App() {
   useReloadOnChainChange();
   return (
@@ -31,16 +33,20 @@ function App() {
       <MetamaskDisconnected>
         <Disconnected />
       </MetamaskDisconnected>
-      <MetamaskWrongChain chainIds={[base16Chain]}>
+      <MetamaskWrongChain chainIds={base16Chain ? [base16Chain] : undefined}>
         <WrongChain />
       </MetamaskWrongChain>
-      <MetamaskConnected chainIds={[base16Chain]}>
-        <Main
-          block={block}
-          contractAddress={contractAddress}
-          documentId={documentId}
-          tokenId={tokenId}
-        />
+      <MetamaskConnected chainIds={base16Chain ? [base16Chain] : undefined}>
+        {base16Chain && documentId !== "redirect" && (
+          <Main
+            block={block}
+            contractAddress={contractAddress}
+            documentId={documentId}
+            tokenId={tokenId}
+          />
+        )}
+        {documentId === "redirect" && <Redirector />}
+        {!base16Chain && documentId !== "redirect" && <ContractFinder />}
       </MetamaskConnected>
       <ToastContainer />
     </Fragment>
