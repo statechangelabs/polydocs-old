@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useIPFSText } from "./useIPFS";
+import { useIPFSText, useIPFSDataUri } from "./useIPFS";
 import { BigNumber, ethers, providers } from "ethers";
 import {
   TokenTermReader__factory,
