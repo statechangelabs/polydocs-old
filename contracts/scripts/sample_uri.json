@@ -3,10 +3,6 @@
   "title": "Sample NFT Collection",
   "description": "This is a sample NFT collection. Not scammy at all.",
   "terms": {
-    "ShortCompanyName": "State Change Labs",
-    "LongCompanyName": "State Change Labs, Inc.",
-    "Website": "https://www.example.com",
-    "Email": "random@gmail.com",
-    "Address": "Earth, Milky Way"
+    "name": "State Change Labs"
   }
 }

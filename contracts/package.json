@@ -57,5 +57,8 @@
     "ethereum",
     "smart",
     "contracts"
-  ]
+  ],
+  "dependencies": {
+    "@types/mocha": "^9.1.1"
+  }
 }
