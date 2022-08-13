@@ -7,13 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { useIPFSText } from "./useIPFS";
+import { useIPFSText, useIPFSDataUri } from "./useIPFS";
 import { BigNumber, ethers, providers } from "ethers";
 import {
   TokenTermReader__factory,
   TokenTermsable__factory,
   TermsableNoToken__factory,
   TermReader__factory,
+  ERC721Termsable__factory,
 } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
@@ -32,12 +33,52 @@ export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
   : undefined;
+
+const useSign = (contractAddress: string, tokenId?: string) => {
+  const [isSigning, setIsSigning] = useState(false);
+  const sign = useCallback(async () => {
+    if (!provider) return;
+    const url = window.location.pathname.replace(/\/ipfs\//gi, "");
+    const message =
+      "I agree to the terms in this document: ipfs://" +
+      url +
+      window.location.hash;
+    const signature = await provider.getSigner().signMessage(message);
+    const address = await provider.getSigner().getAddress();
+    setIsSigning(true);
+    try {
+      const res = await fetch(POLYDOCS_URL, {
+        method: "post",
+        body: JSON.stringify({
+          message,
+          signature,
+          address,
+        }),
+      });
+      if (res.status === 200) {
+        return true;
+      } else {
+        toast("Oops! Something went wrong.", {
+          type: "error",
+        });
+      }
+    } catch (e) {
+      toast("Oops! Something went wrong.", {
+        type: "error",
+      });
+    }
+    setIsSigning(false);
+  }, [contractAddress, tokenId]);
+  return { sign, isSigning };
+};
+
 export const useTerms = (
   address: string,
   block: string,
   token?: ethers.BigNumber
 ) => {
   const [terms, setTerms] = useState<Record<string, string>>({});
+  const [termBlocks, setTermBlocks] = useState<Record<string, number>>({});
   const termRef = useRef(terms);
   termRef.current = terms;
   const addTerm = useCallback(
@@ -64,6 +105,15 @@ export const useTerms = (
                 blockTag,
               });
           if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
+
+          const events = await contract.queryFilter(
+            contract.filters.GlobalTermChanged(ethers.utils.keccak256(realKey)),
+            0,
+            blockTag
+          );
+          const lastEvent = events.pop()?.blockNumber;
+          if (lastEvent)
+            setTermBlocks((prev) => ({ ...prev, [key]: lastEvent }));
         } else {
           const contract = TokenTermReader__factory.connect(address, provider);
           const term = isNaN(blockTag)
@@ -73,12 +123,14 @@ export const useTerms = (
               });
           if (term.startsWith(""))
             if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
+
+          //@TODO Missing blocktags for token-based terms
         }
       } catch (e) {
         console.error("My life is so hard", e);
       }
     },
-    [address, token]
+    [address, token, block]
   );
 
   //http://localhost:3000/
@@ -92,8 +144,8 @@ export const useTerms = (
     setTerms((old) => ({ ...old, [term]: term }));
   }, []);
   return useMemo(
-    () => ({ terms, addTerm, reset, setTerm }),
-    [terms, addTerm, reset, setTerm]
+    () => ({ terms, addTerm, reset, setTerm, termBlocks }),
+    [terms, addTerm, reset, setTerm, termBlocks]
   );
 };
 const Renderer: FC<{
@@ -103,7 +155,6 @@ const Renderer: FC<{
   tokenId?: string;
 }> = ({ block, contractAddress, documentId, tokenId }) => {
   const [isSigned, setIsSigned] = useState(false);
-  const [isSigning, setIsSigning] = useState(false);
   useAsyncEffect(async () => {
     if (!provider) return;
     if (typeof tokenId !== "undefined") {
@@ -125,11 +176,37 @@ const Renderer: FC<{
       const accepted = await contract.acceptedTerms(
         provider.getSigner().getAddress()
       );
-      if (accepted) setIsSigned(true);
+      if (accepted) provider.getSigner();
     }
   }, []);
+  const [URI, setURI] = useState("");
+  const [lastURIBlock, setLastURIBlock] = useState(0);
+  useAsyncEffect(async () => {
+    if (!provider) return;
+    const contract = ERC721Termsable__factory.connect(
+      contractAddress,
+      provider.getSigner()
+    );
+    const uri = (await contract.URI({ blockTag: parseInt(block) })) as string;
+    const strippedUri = uri.split("://").pop() || uri;
+    setURI(strippedUri);
+    const events = await contract.queryFilter(
+      contract.filters.UpdatedURI(),
+      0,
+      parseInt(block)
+    );
+    const lastEvent = events.pop()?.blockNumber;
+    if (lastEvent) setLastURIBlock(lastEvent);
+  }, [contractAddress, provider]);
+  console.log("Last URI block is", lastURIBlock);
+  const json = useIPFSText(URI);
+  const obj = json ? JSON.parse(json) : {};
+  const image = useIPFSDataUri(
+    (obj.image && obj.image.split("://").pop()) || obj.image
+  );
+  const jsonTerms = obj.terms as Record<string, string>;
   const template = useIPFSText(documentId);
-  const { terms, addTerm } = useTerms(
+  const { terms, addTerm, termBlocks } = useTerms(
     contractAddress,
     block,
     typeof tokenId === "undefined" ? undefined : BigNumber.from(tokenId)
@@ -143,90 +220,25 @@ const Renderer: FC<{
       tokens.forEach(addTerm);
     }
   }, [template, addTerm]);
+  const { isSigning, sign: _sign } = useSign(contractAddress, tokenId);
   const sign = useCallback(async () => {
-    if (!provider) return;
-    const url = window.location.pathname.replace(/\/ipfs\//gi, "");
-    const message =
-      "I agree to the terms in this document: ipfs://" +
-      url +
-      window.location.hash;
-    const signature = await provider.getSigner().signMessage(message);
-    const address = await provider.getSigner().getAddress();
-    setIsSigning(true);
-
-    try {
-      const res = await fetch(POLYDOCS_URL, {
-        method: "post",
-        body: JSON.stringify({
-          message,
-          signature,
-          address,
-        }),
-      });
-      if (res.status === 200) {
-        setIsSigned(true);
-        toast("Signature recorded!");
-      } else {
-        toast("Oops! Something went wrong.", {
-          type: "error",
-        });
-      }
-    } catch (e) {
-      toast("Oops! Something went wrong.", {
-        type: "error",
-      });
-    }
-    setIsSigning(false);
-
-    // if (typeof tokenId !== "undefined") {
-    //   const contract = TokenTermsable__factory.connect(
-    //     contractAddress,
-    //     provider.getSigner()
-    //   );
-
-    //   const href = await contract.termsUrl(tokenId);
-    //   setIsSigning(true);
-    //   toast("Please approve your signature...");
-    //   if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-    //     try {
-    //       const txn = await contract.acceptTerms(tokenId, href);
-    //       toast("Waiting for chain to record your signature...");
-    //       await txn.wait();
-    //       toast("Signature recorded!");
-    //       setIsSigned(true);
-    //     } catch (e) {
-    //       console.error(e);
-    //     }
-    //   } else {
-    //     toast("This is not the correct page to sign the terms!", {
-    //       type: "error",
-    //     });
-    //   }
-    // } else {
-    //   const contract = TermsableNoToken__factory.connect(
-    //     contractAddress,
-    //     provider.getSigner()
-    //   );
-
-    //   const href = await contract.termsUrl();
-
-    //   if (window.location.href.endsWith(href.substring("ipfs://".length))) {
-    //     const txn = await contract.acceptTerms(href);
-    //     toast("Waiting for chain to record your signature...");
-    //     await txn.wait();
-    //     toast("Signature recorded!");
-    //     setIsSigned(true);
-    //   } else {
-    //     toast("This is not the correct page to sign the terms!", {
-    //       type: "error",
-    //     });
-    //   }
-    // }
-    setIsSigning(false);
-  }, [contractAddress, tokenId]);
+    await _sign();
+    toast("Signature recorded!");
+    setIsSigned(true);
+  }, [_sign]);
   if (!template) return <Loading />;
   if (!provider) return <div>"No provider"</div>;
-  const output = Mustache.render(template, terms);
+  const overrideTerms = Object.entries(terms)
+    .filter(([key]) => {
+      if (!jsonTerms[key] || termBlocks[key] > lastURIBlock) {
+        return true;
+      }
+    })
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+  const output = Mustache.render(template, { ...jsonTerms, overrideTerms });
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(output));
 
   return (
@@ -254,8 +266,14 @@ const Renderer: FC<{
               </button>
             </div>
           </header>
-
           <div className="scrollable flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll print:overflow-visible print:shadow-none">
+            {image && (
+              <img
+                src={image}
+                alt="Contract Image"
+                className="h-64 object-contain"
+              />
+            )}
             <div className="p-6 lg:p-8">
               <Markdown>{output}</Markdown>
             </div>
