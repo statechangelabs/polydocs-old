@@ -1,5 +1,5 @@
 import { FC, Fragment, useCallback, useEffect, useState } from "react";
-import { Formik, Form, Field, validateYupSchema } from "formik";
+import { Formik, Form, Field } from "formik";
 import Renderer from "./Renderer";
 import { useMain } from "./Main";
 import { upload } from "./upload";

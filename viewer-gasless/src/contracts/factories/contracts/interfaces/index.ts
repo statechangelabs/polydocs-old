@@ -4,4 +4,5 @@
 export { MetadataURI__factory } from "./MetadataURI__factory";
 export { Signable__factory } from "./Signable__factory";
 export { TermReader__factory } from "./TermReader__factory";
+export { TokenSignable__factory } from "./TokenSignable__factory";
 export { TokenTermReader__factory } from "./TokenTermReader__factory";

@@ -121,7 +121,7 @@ const _abi = [
         type: "bytes32",
       },
     ],
-    name: "TokenTermAdded",
+    name: "TokenTermChanged",
     type: "event",
   },
   {
@@ -138,6 +138,34 @@ const _abi = [
       },
     ],
     name: "acceptTerms",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_signer",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "_newtermsUrl",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "acceptTermsFor",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

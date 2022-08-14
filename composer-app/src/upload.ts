@@ -1,24 +1,28 @@
-const NFTSTORAGE_APIKEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGRkYzA3NkIzRDU3YzFhRDhBMzVjMWFjMGJBNDAyQzkwQTUyN2I5MzciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NzQwMTUwNDI5MywibmFtZSI6ImZpcnN0dGVzdCJ9.4BKFOMYWx-Fy1ldGW9vfYQKxzHuEVlL6WRUeHLuqzr8";
+const ucanURL =
+  "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev/ucan-token";
+const getUCAN = async () => {
+  const response = await fetch(ucanURL);
+  const json = (await response.json()) as { token: string; did: string };
+  return json;
+};
 export const upload = async (newText: string) => {
   //   const cid = "bafkreiaeppbzsvhoxifxq3dgwmiidto2p3j3agfb3vn5e3ur2rlhg5rqj4";
+  //get the new id from the backend
+  const { token, did } = await getUCAN();
   const formData = new FormData();
-  formData.append(
-    "file",
-    new Blob([newText], { type: "text/plain" }),
-    "template.md"
-  );
+  formData.append("file", new Blob([newText], { type: "text/plain" }));
   console.log(process.env);
   const result = await fetch("https://api.nft.storage/upload", {
     headers: {
-      Authorization: "Bearer " + NFTSTORAGE_APIKEY,
+      Authorization: "Bearer " + token,
+      "x-agent-did": did,
     },
     method: "POST",
     body: formData,
   });
   const obj = await result.json();
   console.log("obj result is ", obj);
-  return obj.value.cid + "/template.md";
+  return obj.value.cid;
   //   const cid = await nftStorage.storeBlob(new Blob([buf]), {});
   //   return cid;
 };

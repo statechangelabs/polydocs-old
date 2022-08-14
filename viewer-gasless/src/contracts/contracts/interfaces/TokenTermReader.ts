@@ -40,23 +40,24 @@ export interface TokenTermReaderInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
 
   events: {
-    "TokenTermAdded(bytes32,uint256,bytes32)": EventFragment;
+    "TokenTermChanged(bytes32,uint256,bytes32)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "TokenTermAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTermChanged"): EventFragment;
 }
 
-export interface TokenTermAddedEventObject {
+export interface TokenTermChangedEventObject {
   _term: string;
   _tokenId: BigNumber;
   _value: string;
 }
-export type TokenTermAddedEvent = TypedEvent<
+export type TokenTermChangedEvent = TypedEvent<
   [string, BigNumber, string],
-  TokenTermAddedEventObject
+  TokenTermChangedEventObject
 >;
 
-export type TokenTermAddedEventFilter = TypedEventFilter<TokenTermAddedEvent>;
+export type TokenTermChangedEventFilter =
+  TypedEventFilter<TokenTermChangedEvent>;
 
 export interface TokenTermReader extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -107,16 +108,16 @@ export interface TokenTermReader extends BaseContract {
   };
 
   filters: {
-    "TokenTermAdded(bytes32,uint256,bytes32)"(
+    "TokenTermChanged(bytes32,uint256,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
       _value?: null
-    ): TokenTermAddedEventFilter;
-    TokenTermAdded(
+    ): TokenTermChangedEventFilter;
+    TokenTermChanged(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
       _value?: null
-    ): TokenTermAddedEventFilter;
+    ): TokenTermChangedEventFilter;
   };
 
   estimateGas: {

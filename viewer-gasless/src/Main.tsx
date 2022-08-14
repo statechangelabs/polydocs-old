@@ -14,6 +14,7 @@ import {
   TermReader__factory,
   MetadataURI__factory,
   Signable__factory,
+  TokenSignable__factory,
 } from "./contracts";
 import Mustache from "mustache";
 import Markdown from "react-markdown";
@@ -127,8 +128,18 @@ export const useTerms = (
               });
           if (term.startsWith(""))
             if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
-
-          //@TODO Missing blocktags for token-based terms
+          const events = await contract.queryFilter(
+            contract.filters.TokenTermChanged(
+              ethers.utils.keccak256(realKey),
+              token
+            ),
+            0,
+            blockTag
+          );
+          const lastEvent = events.pop()?.blockNumber;
+          if (lastEvent)
+            setTermBlocks((prev) => ({ ...prev, [key]: lastEvent }));
+          //@TODO CONFIRM blocktags for token-based terms
         }
       } catch (e) {
         console.error("My life is so hard", e);
@@ -163,16 +174,15 @@ const Renderer: FC<{
   useAsyncEffect(async () => {
     if (!provider) return;
     if (typeof tokenId !== "undefined") {
-      // const contract = TokenTermsable__factory.connect(
-      //   contractAddress,
-      //   provider
-      // );
-      // const accepted = await contract.acceptedTerms(
-      //   provider.getSigner().getAddress(),
-      //   tokenId
-      // );
-      // if (accepted) setIsSigned(true);
-      //@TODO FIX THIS PART
+      const contract = TokenSignable__factory.connect(
+        contractAddress,
+        provider
+      );
+      const accepted = await contract.acceptedTerms(
+        provider.getSigner().getAddress(),
+        tokenId
+      );
+      if (accepted) setIsSigned(true);
     } else {
       const contract = Signable__factory.connect(
         contractAddress,
