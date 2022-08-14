@@ -65,19 +65,6 @@ contract ERC721Termsable is
         return _uri;
     }
 
-    // modifier onlyWhiteListed(address _to) {
-    //     require(whitelist[_to], "Only whitelisted addresses can mint NFTs");
-    //     _;
-    // }
-
-    // function addToWhiteList(address _to) public onlyOwner {
-    //     whitelist[_to] = true;
-    // }
-
-    // function removeFromWhiteList(address _to) public onlyOwner {
-    //     whitelist[_to] = false;
-    // }
-
     function _transfer(
         address from,
         address to,
@@ -117,24 +104,6 @@ contract ERC721Termsable is
         returns (uint256)
     {
         uint256 newItemId = _tokenIds.current();
-
-        // string memory json = Base64.encode(
-        //     bytes(
-        //         string(
-        //             abi.encodePacked(
-        //                 '{"name": "',
-        //                 '"',
-        //                 '", "description": "A highly acclaimed collection of BLOCS.", "image": "data:image/svg+xml;base64,',
-        //                 Base64.encode(""),
-        //                 '"}'
-        //             )
-        //         )
-        //     )
-        // );
-
-        // string memory finalTokenUri = string(
-        //     abi.encodePacked("data:application/json;base64,", json)
-        // );
 
         _safeMint(msg.sender, newItemId);
 
