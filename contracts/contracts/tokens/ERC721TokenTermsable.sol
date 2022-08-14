@@ -20,7 +20,6 @@ contract ERC721TokenTermsable is
     ERC721URIStorage,
     Ownable,
     TokenTermsable,
-    MetadataURI,
     ERC2981
 {
     using Counters for Counters.Counter;
@@ -47,16 +46,6 @@ contract ERC721TokenTermsable is
         return super.supportsInterface(interfaceId);
     }
 
-    function setURI(string memory _newURI) external onlyMetaSigner {
-        _uri = _newURI;
-        _lastTermChange = block.number;
-        emit UpdatedURI(_uri);
-    }
-
-    function URI() public view returns (string memory) {
-        return _uri;
-    }
-
     function _transfer(
         address from,
         address to,
@@ -80,10 +69,25 @@ contract ERC721TokenTermsable is
         return super.tokenTerm(_term, _tokenId);
     }
 
-    // function _safeMint(address _to, uint256 _tokenId) internal override {
-    //     require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
-    //     super._safeMint(_to, _tokenId);
-    // }
+    struct TermsInfo {
+        string key;
+        string value;
+    }
+
+    function setPolydocs(
+        uint256 _tokenId,
+        string memory renderer,
+        string memory template,
+        TermsInfo[] memory terms
+    ) public onlyMetaSigner {
+        _setTokenRenderer(_tokenId, renderer);
+
+        _setTokenTemplate(_tokenId, template);
+
+        for (uint256 i = 0; i < terms.length; i++) {
+            _setTokenTerm(terms[i].key, _tokenId, terms[i].value);
+        }
+    }
 
     function mint(string memory _tokenURI)
         public

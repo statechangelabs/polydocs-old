@@ -163,6 +163,13 @@ abstract contract TokenTermsable is
         external
         onlyMetaSigner
     {
+        _setTokenTemplate(tokenId, newTokenTemplate);
+    }
+
+    function _setTokenTemplate(uint256 tokenId, string memory newTokenTemplate)
+        internal
+        virtual
+    {
         _tokenDocTemplates[tokenId] = newTokenTemplate;
         _lastTermChange = block.number;
         emit TokenTemplateChanged(tokenId, newTokenTemplate);
@@ -187,6 +194,13 @@ abstract contract TokenTermsable is
     function setTokenRenderer(uint256 tokenId, string memory newRenderer)
         external
         onlyMetaSigner
+    {
+        _setTokenRenderer(tokenId, newRenderer);
+    }
+
+    function _setTokenRenderer(uint256 tokenId, string memory newRenderer)
+        internal
+        virtual
     {
         _tokenRenderers[tokenId] = newRenderer;
         emit TokenRendererChanged(tokenId, newRenderer);
@@ -243,6 +257,14 @@ abstract contract TokenTermsable is
         uint256 _tokenId,
         string memory _value
     ) external onlyMetaSigner {
+        _setTokenTerm(_term, _tokenId, _value);
+    }
+
+    function _setTokenTerm(
+        string memory _term,
+        uint256 _tokenId,
+        string memory _value
+    ) internal virtual {
         _tokenTerms[_term][_tokenId] = _value;
         emit TokenTermChanged(
             keccak256(bytes(_term)),

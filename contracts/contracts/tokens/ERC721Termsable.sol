@@ -20,7 +20,6 @@ contract ERC721Termsable is
     ERC721URIStorage,
     Ownable,
     TermsableNoToken,
-    MetadataURI,
     ERC2981
 {
     using Counters for Counters.Counter;
@@ -47,16 +46,6 @@ contract ERC721Termsable is
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    function setURI(string memory _newURI) external onlyMetaSigner {
-        _uri = _newURI;
-        _lastTermChange = block.number;
-        emit UpdatedURI(_uri);
-    }
-
-    function URI() public view returns (string memory) {
-        return _uri;
     }
 
     function _transfer(
