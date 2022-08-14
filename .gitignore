@@ -3,3 +3,4 @@ viewer-app/.env
 composer-app/.env
 node_modules
 api/contracts
+viewer-gasless/.env

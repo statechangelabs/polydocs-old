@@ -89,6 +89,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
+      name: "MetadataURI",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MetadataURI__factory>;
+    getContractFactory(
+      name: "Signable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Signable__factory>;
+    getContractFactory(
       name: "TermReader",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TermReader__factory>;
@@ -224,6 +232,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
+    getContractAt(
+      name: "MetadataURI",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MetadataURI>;
+    getContractAt(
+      name: "Signable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Signable>;
     getContractAt(
       name: "TermReader",
       address: string,

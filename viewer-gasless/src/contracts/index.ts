@@ -44,6 +44,10 @@ export type { ERC165 } from "./@openzeppelin/contracts/utils/introspection/ERC16
 export { ERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/ERC165__factory";
 export type { IERC165 } from "./@openzeppelin/contracts/utils/introspection/IERC165";
 export { IERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/IERC165__factory";
+export type { MetadataURI } from "./contracts/interfaces/MetadataURI";
+export { MetadataURI__factory } from "./factories/contracts/interfaces/MetadataURI__factory";
+export type { Signable } from "./contracts/interfaces/Signable";
+export { Signable__factory } from "./factories/contracts/interfaces/Signable__factory";
 export type { TermReader } from "./contracts/interfaces/TermReader";
 export { TermReader__factory } from "./factories/contracts/interfaces/TermReader__factory";
 export type { TokenTermReader } from "./contracts/interfaces/TokenTermReader";
