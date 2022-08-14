@@ -110,7 +110,7 @@ export const useTerms = (
                 blockTag,
               });
           if (term) setTerms((prev) => ({ ...prev, [key]: `${term}` }));
-
+          console.log("Realkey is ", realKey);
           const events = await contract.queryFilter(
             contract.filters.GlobalTermChanged(ethers.utils.keccak256(realKey)),
             0,
@@ -192,7 +192,7 @@ const Renderer: FC<{
       const accepted = await contract.acceptedTerms(
         provider.getSigner().getAddress()
       );
-      if (accepted) provider.getSigner();
+      if (accepted) setIsSigned(true);
     }
   }, []);
   const [URI, setURI] = useState("");
