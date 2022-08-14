@@ -2,6 +2,8 @@ import { FC, useState } from "react";
 import { BigNumber, ethers } from "ethers";
 import { Signable__factory, TokenSignable__factory } from "./contracts";
 import useAsyncEffect from "./useAsyncEffect";
+import Title from "./Title";
+import Topography from "./topography.svg";
 const providers: Record<string, string> = {
   "137": process.env.REACT_APP_POLYGON_RPC || "",
   "80001": process.env.REACT_APP_MUMBAI_RPC || "",
@@ -69,7 +71,16 @@ const Redirector: FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   } else {
-    return <div>LOading...</div>;
+    return (
+      <div
+        className="h-screen w-full flex flex-col justify-center items-center"
+        style={{ background: `url(${Topography})` }}
+      >
+        <div className="flex flex-col space-y-8">
+          <Title />
+        </div>
+      </div>
+    );
   }
 };
 export default Redirector;

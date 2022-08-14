@@ -25,6 +25,10 @@ const base16Chain = chainId && "0x" + Number.parseInt(chainId).toString(16);
 console.log({ documentId, chainId, contractAddress, block, tokenId });
 function App() {
   useReloadOnChainChange();
+  if (documentId === "redirect") return <Redirector />;
+
+  if (!base16Chain && documentId !== "redirect") return <ContractFinder />;
+
   return (
     <Fragment>
       <MetamaskNotInstalled>
@@ -37,16 +41,12 @@ function App() {
         <WrongChain />
       </MetamaskWrongChain>
       <MetamaskConnected chainIds={base16Chain ? [base16Chain] : undefined}>
-        {base16Chain && documentId !== "redirect" && (
-          <Main
-            block={block}
-            contractAddress={contractAddress}
-            documentId={documentId}
-            tokenId={tokenId}
-          />
-        )}
-        {documentId === "redirect" && <Redirector />}
-        {!base16Chain && documentId !== "redirect" && <ContractFinder />}
+        <Main
+          block={block}
+          contractAddress={contractAddress}
+          documentId={documentId}
+          tokenId={tokenId}
+        />
       </MetamaskConnected>
       <ToastContainer />
     </Fragment>
