@@ -8,8 +8,14 @@ interface TermReader {
     /// @param _value value of the term added to the contract
     event GlobalTermChanged(bytes32 indexed _term, bytes32 _value);
 
+    /// @notice This event is emitted when the global renderer is updated.
+    /// @dev This event is emitted when the global renderer is updated.
+    /// @param _renderer The new renderer.
     event GlobalRendererChanged(string indexed _renderer);
 
+    /// @notice This event is emitted when the global template is updated.
+    /// @dev This event is emitted when the global template is updated.
+    /// @param _template The new template.
     event GlobalTemplateChanged(string indexed _template);
 
     /// @notice This function is used to return the value of the term
