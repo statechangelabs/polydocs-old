@@ -16,6 +16,7 @@ interface TokenTermReader {
     /// @notice This event is emitted when the global renderer is updated.
     /// @dev This event is emitted when the global renderer is updated.
     /// @param _renderer The new renderer.
+    /// @param _tokenId The token id of the token for which the renderer is being updated.
     event TokenRendererChanged(
         uint256 indexed _tokenId,
         string indexed _renderer
@@ -24,6 +25,7 @@ interface TokenTermReader {
     /// @notice This event is emitted when the global template is updated.
     /// @dev This event is emitted when the global template is updated.
     /// @param _template The new template.
+    /// @param _tokenId The token id of the token for which the template is being updated.
     event TokenTemplateChanged(
         uint256 indexed _tokenId,
         string indexed _template
