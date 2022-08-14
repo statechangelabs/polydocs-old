@@ -1,44 +1,64 @@
 import hre, { network, ethers } from "hardhat";
 import fs from "fs";
 import { execSync } from "child_process";
+import { docItemTypes } from "solidity-docgen/dist/doc-item";
 async function main() {
-  // const [signer_1, signer_2, signer_3] = await ethers.getSigners();
-
-  const Doc = await ethers.getContractFactory("Test721_Token");
-  const doc = await Doc.deploy();
+  
+  const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
+  const Doc = await ethers.getContractFactory("ERC721TokenTermsable");
+  const doc = await Doc.deploy(signer_2.address, "TEST-CONTRACT", "TEST");
   await doc.deployed();
 
   console.log("721_Token deployed to:", doc.address);
 
-  let config = `
-  export const ERC721_Token address = "${doc.address}";
-  `;
-  const onThisNetwork = network.name;
-  if (onThisNetwork && onThisNetwork !== "hardhat") {
-    setTimeout(() => {
-      const cmd = `yarn hardhat verify ${doc.address} --network ${onThisNetwork}`;
-      console.log("Running", cmd);
-      execSync(cmd, {
-        stdio: "inherit",
-      });
-    }, 30000);
-  }
-  let data = JSON.stringify(config);
-  fs.writeFileSync("./config.ts", JSON.parse(data));
-  fs.writeFileSync(
-    "contracts.txt",
-    `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}
-`,
-    { flag: "a" }
-  );
+  console.log("Signer_2 address is :", signer_2.address);
+  console.log("Signer_3 address is :", signer_3.address);
 
-  // const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
-  // const receipt_setTerms = await txn_setTerms.wait();
-  // console.log("Terms set!");
+  console.log(await doc.name());
+  console.log(await doc.symbol());
+  console.log(await doc.owner());
 
-  // const txn = await doc.connect(signer_1).mint();
-  // const receipt = await txn.wait();
-  // console.log("Minted 1 token to:", signer_1.address);
+
+  const txn_setTerms = await doc.setTokenTerm("Name", 0, "Akshay");
+  const receipt_setTerms = await txn_setTerms.wait();
+  console.log("Terms set!");
+
+  // Metasigner mints nft
+  const txn = await doc.mint("sampleURI");
+  const receipt = await txn.wait();
+  console.log("Minted 1 token to:", signer_1.address);
+
+  // getting terms for token 0 that was just minted
+  const terms = await doc.termsUrl(0);
+  console.log("Terms url:", terms);
+
+  const txn_acceptTerms = await doc.connect(signer_3).acceptTerms(0,terms);
+  const receipt_acceptTerms = await txn_acceptTerms.wait();
+  console.log("Accepted terms by signer 3");
+
+  const approve_signer_3 = await doc.approve(signer_3.address, 0);
+  const approve_signer_3_receipt = await approve_signer_3.wait();
+  console.log("Signer 1 Approves signer 3 for token 0");
+
+  const transfer_to_signer_3 = await doc.connect(signer_3).transferFrom(signer_1.address, signer_3.address,0);
+  const transfer_to_signer_3_receipt = await transfer_to_signer_3.wait();
+  console.log("Transferred token from signer_1 to signer_3");
+
+  const check_owner = await doc.ownerOf(0);
+  console.log("Owner of token 0 is:", check_owner);
+  console.log("Is owner of token 0 signer_3?", check_owner === signer_3.address);
+
+
+  const set_document_signer3 = await doc.setPolydocs(0, "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy", "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
+  const set_document_signer3_receipt = await set_document_signer3.wait();
+  console.log("Set document for the contract by metasigner!");
+
+  const tokenRenderer = await doc.tokenRenderer(0);
+  console.log("Token renderer:", tokenRenderer);
+  
+  const tokenTerm = await doc.tokenTerm('key1',0);
+  console.log("Token value for term key1 for token 0 is :", tokenTerm);
+
   // console.log("I'm about ot get terms. Let's see how this works...");
   // const terms = await doc.connect(signer_1).termsURL(0);
   // console.log("Terms URL:", terms);

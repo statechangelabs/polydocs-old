@@ -80,7 +80,7 @@ async function main() {
 
   const set_document_signer3 = await doc.setPolydocs("bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy", "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
   const set_document_signer3_receipt = await set_document_signer3.wait();
-  console.log("Set document for the contract by signer3!");
+  console.log("Set document for the contract by signer1!");
 
   const get_term_value_12 = await doc.globalTerm("key1");
   console.log("key1's value is :", get_term_value_12);

@@ -3,8 +3,10 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/TermReader.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
+import "../interfaces/MetadataURI.sol";
 
-abstract contract TermsableBase is Ownable, TermReader {
+abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @notice The default value of the global renderer.
     /// @dev The default value of the global renderer.
     string _globalRenderer = "";
@@ -12,6 +14,8 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @notice The default value of the global template.
     /// @dev The default value of the global template.
     string _globalDocTemplate = "";
+
+    string private _uri;
 
     /// @notice Mapping that store the global terms.
     /// @dev This mapping stores the global terms.
@@ -50,7 +54,15 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @dev This function is only available to the owner of the contract.
     /// @param _signer The address of the signer that can no longer accept terms on behalf of the signer.
     function removeMetaSigner(address _signer) external onlyOwner {
+        _removeMetaSigner(_signer);
+    }
+
+    function _removeMetaSigner(address _signer) internal {
         _metaSigners[_signer] = false;
+    }
+
+    function isMetaSigner(address _signer) public view returns (bool) {
+        return _metaSigners[_signer];
     }
 
     /// @notice Function to set the Global Renderer.
@@ -135,5 +147,15 @@ abstract contract TermsableBase is Ownable, TermReader {
     /// @return _lastTermChange The block number of the last term change.
     function currentTermsBlock() public view returns (uint256) {
         return _lastTermChange;
+    }
+
+    function setURI(string memory _newURI) external onlyMetaSigner {
+        _uri = _newURI;
+        _lastTermChange = block.number;
+        emit UpdatedURI(_uri);
+    }
+
+    function URI() public view returns (string memory) {
+        return _uri;
     }
 }
