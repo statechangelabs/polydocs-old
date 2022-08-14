@@ -17,6 +17,11 @@ interface Signable {
         view
         returns (string memory);
 
+    /// @notice This function returns the terms url.
+    /// @dev This function returns the terms url.
+    /// @return The terms url.
+    function termsUrl() external view returns (string memory);
+
     /// @notice This function is used to accept the terms at certain url
     /// @dev This function is called by a user that wants to accepts terms.
     /// @param _newtermsUrl The url of the terms.

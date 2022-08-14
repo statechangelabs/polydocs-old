@@ -60,7 +60,7 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
 
     /// @notice This function returns the url of the terms.
     /// @dev This function returns the url of the terms with the prefix "ipfs://".
-    function termsUrl() public view returns (string memory) {
+    function termsUrl() external view returns (string memory) {
         return _termsUrlWithPrefix("ipfs://");
     }
 
