@@ -31,6 +31,7 @@ export interface SignableInterface extends utils.Interface {
     "acceptTerms(string)": FunctionFragment;
     "acceptTermsFor(address,string,bytes)": FunctionFragment;
     "acceptedTerms(address)": FunctionFragment;
+    "termsUrl()": FunctionFragment;
     "termsUrlWithPrefix(string)": FunctionFragment;
   };
 
@@ -39,6 +40,7 @@ export interface SignableInterface extends utils.Interface {
       | "acceptTerms"
       | "acceptTermsFor"
       | "acceptedTerms"
+      | "termsUrl"
       | "termsUrlWithPrefix"
   ): FunctionFragment;
 
@@ -58,6 +60,7 @@ export interface SignableInterface extends utils.Interface {
     functionFragment: "acceptedTerms",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(functionFragment: "termsUrl", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "termsUrlWithPrefix",
     values: [PromiseOrValue<string>]
@@ -75,6 +78,7 @@ export interface SignableInterface extends utils.Interface {
     functionFragment: "acceptedTerms",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
     data: BytesLike
@@ -142,6 +146,8 @@ export interface Signable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    termsUrl(overrides?: CallOverrides): Promise<[string]>;
+
     termsUrlWithPrefix(
       prefix: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -165,6 +171,8 @@ export interface Signable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  termsUrl(overrides?: CallOverrides): Promise<string>;
+
   termsUrlWithPrefix(
     prefix: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -187,6 +195,8 @@ export interface Signable extends BaseContract {
       _address: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    termsUrl(overrides?: CallOverrides): Promise<string>;
 
     termsUrlWithPrefix(
       prefix: PromiseOrValue<string>,
@@ -220,6 +230,8 @@ export interface Signable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    termsUrl(overrides?: CallOverrides): Promise<BigNumber>;
+
     termsUrlWithPrefix(
       prefix: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -243,6 +255,8 @@ export interface Signable extends BaseContract {
       _address: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    termsUrl(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     termsUrlWithPrefix(
       prefix: PromiseOrValue<string>,
