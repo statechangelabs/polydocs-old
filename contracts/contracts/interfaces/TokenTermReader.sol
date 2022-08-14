@@ -13,6 +13,24 @@ interface TokenTermReader {
         bytes32 _value
     );
 
+    /// @notice This event is emitted when the global renderer is updated.
+    /// @dev This event is emitted when the global renderer is updated.
+    /// @param _renderer The new renderer.
+    /// @param _tokenId The token id of the token for which the renderer is being updated.
+    event TokenRendererChanged(
+        uint256 indexed _tokenId,
+        string indexed _renderer
+    );
+
+    /// @notice This event is emitted when the global template is updated.
+    /// @dev This event is emitted when the global template is updated.
+    /// @param _template The new template.
+    /// @param _tokenId The token id of the token for which the template is being updated.
+    event TokenTemplateChanged(
+        uint256 indexed _tokenId,
+        string indexed _template
+    );
+
     /// @notice This function is used to return the value of the term for a specific token.
     /// @dev This function returns the value of a term given its term for a specific token.
     /// @param _term The term to get

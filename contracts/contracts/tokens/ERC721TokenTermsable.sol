@@ -11,16 +11,50 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "../termsable/TokenTermsable.sol";
+import "../interfaces/MetadataURI.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
 // import {Base64} from "./libraries/Base64.sol";
 
-contract ERC721TokenTermsable is ERC721URIStorage, Ownable, TokenTermsable {
+contract ERC721TokenTermsable is
+    ERC721URIStorage,
+    Ownable,
+    TokenTermsable,
+    MetadataURI,
+    ERC2981
+{
     using Counters for Counters.Counter;
     Counters.Counter public _tokenIds; //  Made public to test for the timebeing
+    string private _uri;
     event MintNFT(address sender, uint256 tokenId);
 
-    constructor() ERC721("PolyDocs", "DOCS") {
-        console.log("This is my NFT contract. Woah!");
+    constructor(
+        address _newOwner,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
+        _addMetaSigner(_msgSender());
+        _transferOwnership(_newOwner);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC2981, ERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function setURI(string memory _newURI) external onlyMetaSigner {
+        _uri = _newURI;
+        _lastTermChange = block.number;
+        emit UpdatedURI(_uri);
+    }
+
+    function URI() public view returns (string memory) {
+        return _uri;
     }
 
     function _transfer(
@@ -46,50 +80,24 @@ contract ERC721TokenTermsable is ERC721URIStorage, Ownable, TokenTermsable {
         return super.tokenTerm(_term, _tokenId);
     }
 
-    function _safeMint(address _to, uint256 _tokenId) internal override {
-        require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
-        super._safeMint(_to, _tokenId);
-    }
+    // function _safeMint(address _to, uint256 _tokenId) internal override {
+    //     require(_acceptedTerms(_to, _tokenId), "Terms not accepted");
+    //     super._safeMint(_to, _tokenId);
+    // }
 
-    function setTokenURI(uint256 _tokenId, string memory _uri)
-        external
-        onlyOwner
+    function mint(string memory _tokenURI)
+        public
+        onlyMetaSigner
+        returns (uint256)
     {
-        _setTokenURI(_tokenId, _uri);
-    }
-
-    function mint() public {
         uint256 newItemId = _tokenIds.current();
-
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "',
-                        '"',
-                        '", "description": "A highly acclaimed collection of BLOCS.", "image": "data:image/svg+xml;base64,',
-                        Base64.encode(""),
-                        '"}'
-                    )
-                )
-            )
-        );
-
-        string memory finalTokenUri = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
 
         _safeMint(msg.sender, newItemId);
 
-        _setTokenURI(newItemId, finalTokenUri);
+        _setTokenURI(newItemId, _tokenURI);
 
         _tokenIds.increment();
-        console.log(
-            "An NFT w/ ID %s has been minted to %s",
-            newItemId,
-            msg.sender
-        );
-
         emit MintNFT(msg.sender, newItemId);
+        return newItemId;
     }
 }
