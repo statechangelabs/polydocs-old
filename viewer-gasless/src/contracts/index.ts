@@ -50,6 +50,8 @@ export type { Signable } from "./contracts/interfaces/Signable";
 export { Signable__factory } from "./factories/contracts/interfaces/Signable__factory";
 export type { TermReader } from "./contracts/interfaces/TermReader";
 export { TermReader__factory } from "./factories/contracts/interfaces/TermReader__factory";
+export type { TokenSignable } from "./contracts/interfaces/TokenSignable";
+export { TokenSignable__factory } from "./factories/contracts/interfaces/TokenSignable__factory";
 export type { TokenTermReader } from "./contracts/interfaces/TokenTermReader";
 export { TokenTermReader__factory } from "./factories/contracts/interfaces/TokenTermReader__factory";
 export type { TermsableBase } from "./contracts/termsable/TermsableBase";

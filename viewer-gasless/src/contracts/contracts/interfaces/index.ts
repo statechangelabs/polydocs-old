@@ -4,4 +4,5 @@
 export type { MetadataURI } from "./MetadataURI";
 export type { Signable } from "./Signable";
 export type { TermReader } from "./TermReader";
+export type { TokenSignable } from "./TokenSignable";
 export type { TokenTermReader } from "./TokenTermReader";

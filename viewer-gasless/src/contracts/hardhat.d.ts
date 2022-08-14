@@ -101,6 +101,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TermReader__factory>;
     getContractFactory(
+      name: "TokenSignable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TokenSignable__factory>;
+    getContractFactory(
       name: "TokenTermReader",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TokenTermReader__factory>;
@@ -247,6 +251,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.TermReader>;
+    getContractAt(
+      name: "TokenSignable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TokenSignable>;
     getContractAt(
       name: "TokenTermReader",
       address: string,

@@ -31,6 +31,7 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
   functions: {
     "_tokenIds()": FunctionFragment;
     "acceptTerms(uint256,string)": FunctionFragment;
+    "acceptTermsFor(address,string,uint256,bytes)": FunctionFragment;
     "acceptedTerms(address,uint256)": FunctionFragment;
     "addMetaSigner(address)": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
@@ -73,6 +74,7 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "_tokenIds"
       | "acceptTerms"
+      | "acceptTermsFor"
       | "acceptedTerms"
       | "addMetaSigner"
       | "balanceOf"
@@ -115,6 +117,15 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "acceptTerms",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "acceptTermsFor",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "acceptedTerms",
@@ -279,6 +290,10 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "acceptTermsFor",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "acceptedTerms",
     data: BytesLike
   ): Result;
@@ -392,7 +407,7 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "MintNFT(address,uint256,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "TokenTermAdded(bytes32,uint256,bytes32)": EventFragment;
+    "TokenTermChanged(bytes32,uint256,bytes32)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
@@ -405,7 +420,7 @@ export interface ERC1155TokenTermsableInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TokenTermAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
@@ -493,17 +508,18 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
-export interface TokenTermAddedEventObject {
+export interface TokenTermChangedEventObject {
   _term: string;
   _tokenId: BigNumber;
   _value: string;
 }
-export type TokenTermAddedEvent = TypedEvent<
+export type TokenTermChangedEvent = TypedEvent<
   [string, BigNumber, string],
-  TokenTermAddedEventObject
+  TokenTermChangedEventObject
 >;
 
-export type TokenTermAddedEventFilter = TypedEventFilter<TokenTermAddedEvent>;
+export type TokenTermChangedEventFilter =
+  TypedEventFilter<TokenTermChangedEvent>;
 
 export interface TransferBatchEventObject {
   operator: string;
@@ -575,6 +591,14 @@ export interface ERC1155TokenTermsable extends BaseContract {
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    acceptTermsFor(
+      _signer: PromiseOrValue<string>,
+      _newtermsUrl: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -772,6 +796,14 @@ export interface ERC1155TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  acceptTermsFor(
+    _signer: PromiseOrValue<string>,
+    _newtermsUrl: PromiseOrValue<string>,
+    _tokenId: PromiseOrValue<BigNumberish>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   acceptedTerms(
     to: PromiseOrValue<string>,
     tokenId: PromiseOrValue<BigNumberish>,
@@ -963,6 +995,14 @@ export interface ERC1155TokenTermsable extends BaseContract {
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    acceptTermsFor(
+      _signer: PromiseOrValue<string>,
+      _newtermsUrl: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1212,16 +1252,16 @@ export interface ERC1155TokenTermsable extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
-    "TokenTermAdded(bytes32,uint256,bytes32)"(
+    "TokenTermChanged(bytes32,uint256,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
       _value?: null
-    ): TokenTermAddedEventFilter;
-    TokenTermAdded(
+    ): TokenTermChangedEventFilter;
+    TokenTermChanged(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
       _value?: null
-    ): TokenTermAddedEventFilter;
+    ): TokenTermChangedEventFilter;
 
     "TransferBatch(address,address,address,uint256[],uint256[])"(
       operator?: PromiseOrValue<string> | null,
@@ -1266,6 +1306,14 @@ export interface ERC1155TokenTermsable extends BaseContract {
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    acceptTermsFor(
+      _signer: PromiseOrValue<string>,
+      _newtermsUrl: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1461,6 +1509,14 @@ export interface ERC1155TokenTermsable extends BaseContract {
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    acceptTermsFor(
+      _signer: PromiseOrValue<string>,
+      _newtermsUrl: PromiseOrValue<string>,
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

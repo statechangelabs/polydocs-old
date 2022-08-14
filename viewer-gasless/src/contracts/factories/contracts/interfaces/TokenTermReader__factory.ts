@@ -32,7 +32,7 @@ const _abi = [
         type: "bytes32",
       },
     ],
-    name: "TokenTermAdded",
+    name: "TokenTermChanged",
     type: "event",
   },
   {

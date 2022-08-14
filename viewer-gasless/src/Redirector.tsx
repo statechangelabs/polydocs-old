@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-import { ethers } from "ethers";
-import { Signable__factory } from "./contracts";
+import { BigNumber, ethers } from "ethers";
+import { Signable__factory, TokenSignable__factory } from "./contracts";
 import useAsyncEffect from "./useAsyncEffect";
 const providers: Record<string, string> = {
   "137": process.env.REACT_APP_POLYGON_RPC || "",
@@ -30,18 +30,17 @@ const Redirector: FC = () => {
     try {
       const provider = new ethers.providers.JsonRpcProvider(providers[chain]);
       if (token) {
-        // const contract = TokenTermsable__factory.connect(address, provider);
-        // const termsUrl = await contract.termsUrl(BigNumber.from(token));
-        // const [, fragment] = termsUrl.split("://");
-        // console.log("in token view", fragment);
-        // window.location.href =
-        //   window.location.protocol +
-        //   "//" +
-        //   window.location.host +
-        //   "/#/" +
-        //   fragment;
-        // window.location.reload();
-        //@TODO Fix this section
+        const contract = TokenSignable__factory.connect(address, provider);
+        const termsUrl = await contract.termsUrl(BigNumber.from(token));
+        const [, fragment] = termsUrl.split("://");
+        console.log("in token view", fragment);
+        window.location.href =
+          window.location.protocol +
+          "//" +
+          window.location.host +
+          "/#/" +
+          fragment;
+        window.location.reload();
       } else {
         const contract = Signable__factory.connect(address, provider);
         const termsUrl = await contract.termsUrl();
