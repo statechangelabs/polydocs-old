@@ -7,7 +7,7 @@ interface TokenTermReader {
     /// @param _term The term being added to the contract.
     /// @param _tokenId The token id of the token for which the term is being added.
     /// @param _value The value of the term being added to the contract.
-    event TokenTermAdded(
+    event TokenTermChanged(
         bytes32 indexed _term,
         uint256 indexed _tokenId,
         bytes32 _value

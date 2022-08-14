@@ -242,7 +242,7 @@ abstract contract TokenTermsable is
         string memory _value
     ) external onlyOwner {
         _tokenTerms[_term][_tokenId] = _value;
-        emit TokenTermAdded(
+        emit TokenTermChanged(
             keccak256(bytes(_term)),
             _tokenId,
             keccak256(bytes(_value))
