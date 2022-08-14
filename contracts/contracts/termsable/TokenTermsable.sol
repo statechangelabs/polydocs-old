@@ -75,7 +75,7 @@ abstract contract TokenTermsable is
         string memory _newtermsUrl,
         uint256 _tokenId,
         bytes memory _signature
-    ) external {
+    ) external onlyMetaSigner {
         bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(_newtermsUrl));
         address _checkedSigner = ECDSA.recover(hash, _signature);
         require(_checkedSigner == _signer);
@@ -161,7 +161,7 @@ abstract contract TokenTermsable is
     /// @param newTokenTemplate The CID of the template for a specific token.
     function setTokenTemplate(uint256 tokenId, string memory newTokenTemplate)
         external
-        onlyOwner
+        onlyMetaSigner
     {
         _tokenDocTemplates[tokenId] = newTokenTemplate;
         _lastTermChange = block.number;
@@ -186,7 +186,7 @@ abstract contract TokenTermsable is
     /// @param newRenderer The CID of the renderer for a specific token.
     function setTokenRenderer(uint256 tokenId, string memory newRenderer)
         external
-        onlyOwner
+        onlyMetaSigner
     {
         _tokenRenderers[tokenId] = newRenderer;
         emit TokenRendererChanged(tokenId, newRenderer);
@@ -242,7 +242,7 @@ abstract contract TokenTermsable is
         string memory _term,
         uint256 _tokenId,
         string memory _value
-    ) external onlyOwner {
+    ) external onlyMetaSigner {
         _tokenTerms[_term][_tokenId] = _value;
         emit TokenTermChanged(
             keccak256(bytes(_term)),
