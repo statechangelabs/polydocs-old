@@ -40,6 +40,12 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
         _acceptTerms(msg.sender, _newtermsUrl);
     }
 
+    /// @notice This function is used to accept the terms at certain url on behalf of the user (metasigner)
+    /// @dev This function is called by a metasigner to accept terms on behalf of the signer that wants to accepts terms.
+    /// @dev It uses ECDSA to recover the signer from the signature and the hash of the termsurl and checks if they match.
+    /// @param _signer The address of the signer that wants to accept terms.
+    /// @param _newtermsUrl The url of the terms.
+    /// @param _signature The signature of the signer that wants to accept terms.
     function acceptTermsFor(
         address _signer,
         string memory _newtermsUrl,
@@ -51,6 +57,11 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
         _acceptTerms(_signer, _newtermsUrl);
     }
 
+    /// @notice This is an internal function called by a user that wants to accepts the agreement at certain url
+    /// @dev This function is called by a the external function which is called by a user that wants to accepts terms.
+    /// @dev It updates the mapping _hasAcceptedTerms and emits the AcceptedTerms event.
+    /// @param _newtermsUrl The url of the terms.
+    /// @param _signer The address of the signer that wants to accept terms.
     function _acceptTerms(address _signer, string memory _newtermsUrl)
         internal
     {

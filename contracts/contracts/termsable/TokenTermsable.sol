@@ -5,15 +5,14 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./TermsableBase.sol";
 import "../interfaces/TokenTermReader.sol";
+import "../interfaces/TokenSignable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-abstract contract TokenTermsable is TermsableBase, TokenTermReader {
-    /// @notice Event that is emitted when a terms are accepted.
-    /// @dev This event is emitted when a terms are accepted by an address for a specific token and terms agreement
-    /// @param sender The address that accepted the terms.
-    /// @param terms The terms that were accepted.
-    /// @param tokenId The token id for which the terms are accepted.
-    event AcceptedTerms(address sender, uint256 tokenId, string terms);
-
+abstract contract TokenTermsable is
+    TermsableBase,
+    TokenTermReader,
+    TokenSignable
+{
     /// @notice Mapping that stores whether the address has accepted terms for a specific token.
     /// @dev This mapping returns a boolean value indicating whether the address has accepted terms for a specific token.
     mapping(address => mapping(uint256 => bool)) hasAcceptedTerms;
@@ -64,6 +63,25 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
         _acceptTerms(tokenId, newtermsUrl);
     }
 
+    /// @notice This function is used to accept the terms at certain url on behalf of the user (metasigner) for a specific token.
+    /// @dev This function is called by a metasigner to accept terms on behalf of the signer that wants to accepts terms for a specific token.
+    /// @dev It uses ECDSA to recover the signer from the signature and the hash of the termsurl and checks if they match.
+    /// @param _signer The address of the signer that wants to accept terms.
+    /// @param _newtermsUrl The url of the terms.
+    /// @param _signature The signature of the signer that wants to accept terms.
+    /// @param _tokenId The token id for which the terms are accepted.
+    function acceptTermsFor(
+        address _signer,
+        string memory _newtermsUrl,
+        uint256 _tokenId,
+        bytes memory _signature
+    ) external {
+        bytes32 hash = ECDSA.toEthSignedMessageHash(bytes(_newtermsUrl));
+        address _checkedSigner = ECDSA.recover(hash, _signature);
+        require(_checkedSigner == _signer);
+        _acceptTerms(_tokenId, _newtermsUrl);
+    }
+
     /// @notice This is an internal function that the user can call to accept specific terms for a specific token.
     /// @dev This function accepts specific terms agreement on a URL for a specific token.
     /// @dev It first checks if the terms the user is accepting are the latest terms for the token.
@@ -76,16 +94,22 @@ abstract contract TokenTermsable is TermsableBase, TokenTermReader {
     {
         require(
             keccak256(bytes(_newtermsUrl)) ==
-                keccak256(bytes(termsUrl(_tokenId))),
+                keccak256(bytes(_termsUrl(_tokenId))),
             "Terms Url does not match"
         );
         hasAcceptedTerms[msg.sender][_tokenId] = true;
-        emit AcceptedTerms(msg.sender, _tokenId, termsUrl(_tokenId));
+        emit AcceptedTerms(msg.sender, _tokenId, _termsUrl(_tokenId));
     }
 
-    /// @notice This is an public function that returns the URL for the agreement for a specific token.
+    /// @notice This is an external function that returns the URL for the agreement for a specific token.
     /// @dev This function returns the URL for the agreement for a specific token with prefix "ipfs://".
-    function termsUrl(uint256 tokenId) public view returns (string memory) {
+    function termsUrl(uint256 tokenId) external view returns (string memory) {
+        return _termsUrlWithPrefix(tokenId, "ipfs://");
+    }
+
+    /// @notice This is an internal function that returns the URL for the agreement for a specific token.
+    /// @dev This function returns the URL for the agreement for a specific token with prefix "ipfs://".
+    function _termsUrl(uint256 tokenId) internal view returns (string memory) {
         return _termsUrlWithPrefix(tokenId, "ipfs://");
     }
 
