@@ -18,10 +18,6 @@ provider:
 
   environment:
     stackName: "${self:custom.config.name}-${opt:stage, self:provider.stage, 'dev'}"
-    ALCHEMY_MUMBAI_KEY: ${env:ALCHEMY_MUMBAI_KEY}
-    ALCHEMY_POLYGON_KEY: ${env:ALCHEMY_POLYGON_KEY}
-    METASIGNER_POLYGON_PRIVATE_KEY: ${env:METASIGNER_POLYGON_PRIVATE_KEY}
-    METASIGNER_MUMBAI_PRIVATE_KEY: ${env:METASIGNER_MUMBAI_PRIVATE_KEY}
     BASE_URL:
       {
         "Fn::Join":
@@ -34,9 +30,11 @@ provider:
             ],
           ],
       }
+    HOME: "/tmp"
     ledgerName:
       Ref: QLDB
-
+  layers:
+    - arn:aws:lambda:us-east-1:210049126456:layer:hardhat-lambda-layer:2
 plugins:
   - serverless-webpack
   - serverless-api-gateway-throttling

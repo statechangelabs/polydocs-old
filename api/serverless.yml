@@ -17,10 +17,6 @@
           "Resource": "*"
   "environment":
     "stackName": "${self:custom.config.name}-${opt:stage, self:provider.stage, 'dev'}"
-    "ALCHEMY_MUMBAI_KEY": "${env:ALCHEMY_MUMBAI_KEY}"
-    "ALCHEMY_POLYGON_KEY": "${env:ALCHEMY_POLYGON_KEY}"
-    "METASIGNER_POLYGON_PRIVATE_KEY": "${env:METASIGNER_POLYGON_PRIVATE_KEY}"
-    "METASIGNER_MUMBAI_PRIVATE_KEY": "${env:METASIGNER_MUMBAI_PRIVATE_KEY}"
     "BASE_URL":
       "Fn::Join":
         - ""
@@ -28,8 +24,11 @@
           - "Ref": "ApiGatewayRestApi"
           - ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.sta\
             ge}/"
+    "HOME": "/tmp"
     "ledgerName":
       "Ref": "QLDB"
+  "layers":
+    - "arn:aws:lambda:us-east-1:210049126456:layer:hardhat-lambda-layer:2"
 "plugins":
   - "serverless-webpack"
   - "serverless-api-gateway-throttling"
@@ -88,3 +87,21 @@
   "doDeploy":
     "handler": "handlers.doDeploy"
     "timeout": 300
+  "hhDeploy":
+    "handler": "handlers.hhDeploy"
+    "timeout": 300
+  "testHH":
+    "handler": "handlers.testHH"
+    "timeout": 300
+  "mintNFT":
+    "handler": "handlers.mintNFT"
+    "timeout": 300
+  "getUCANToken":
+    "handler": "handlers.getUCANToken"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/ucan-token"
+          "method": "get"
+          "cors": true
+          "private": false

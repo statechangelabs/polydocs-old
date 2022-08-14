@@ -9,7 +9,7 @@ module.exports = (async () => {
     mode: "development",
     entry: slsw.lib.entries,
     target: "node",
-    externals: [awsExternals()],
+    externals: [awsExternals(), "hardhat"],
     plugins: [
       new webpack.DefinePlugin({
         AWS_ACCOUNT_ID: `${accountId}`,
