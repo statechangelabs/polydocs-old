@@ -34,7 +34,7 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
     /// @param _newtermsUrl The url of the terms.
     function acceptTerms(string memory _newtermsUrl) external {
         require(
-            keccak256(bytes(_newtermsUrl)) == keccak256(bytes(termsUrl())),
+            keccak256(bytes(_newtermsUrl)) == keccak256(bytes(_termsUrl())),
             "Terms Url does not match"
         );
         _acceptTerms(msg.sender, _newtermsUrl);
@@ -61,6 +61,12 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
     /// @notice This function returns the url of the terms.
     /// @dev This function returns the url of the terms with the prefix "ipfs://".
     function termsUrl() external view returns (string memory) {
+        return _termsUrlWithPrefix("ipfs://");
+    }
+
+    /// @notice This internal function returns the url of the terms.
+    /// @dev This internal function returns the url of the terms with the prefix "ipfs://".
+    function _termsUrl() internal view returns (string memory) {
         return _termsUrlWithPrefix("ipfs://");
     }
 
