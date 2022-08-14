@@ -165,6 +165,7 @@ abstract contract TokenTermsable is
     {
         _tokenDocTemplates[tokenId] = newTokenTemplate;
         _lastTermChange = block.number;
+        emit TokenTemplateChanged(tokenId, newTokenTemplate);
     }
 
     /// @notice This function returns the CID of the template for a specific token.
@@ -188,6 +189,7 @@ abstract contract TokenTermsable is
         onlyOwner
     {
         _tokenRenderers[tokenId] = newRenderer;
+        emit TokenRendererChanged(tokenId, newRenderer);
     }
 
     /// @notice This function returns the CID of the renderer for a specific token.
