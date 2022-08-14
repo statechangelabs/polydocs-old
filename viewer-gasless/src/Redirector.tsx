@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Signable__factory } from "./contracts";
 import useAsyncEffect from "./useAsyncEffect";
 const providers: Record<string, string> = {
@@ -10,7 +10,7 @@ const providers: Record<string, string> = {
 let fragment = window.location.hash;
 if (fragment.startsWith("#/")) fragment = fragment.substring(2);
 else if (fragment.startsWith("#")) fragment = fragment.substring(1);
-const [documentId, chain, address, token] = fragment.split("::");
+const [, chain, address, token] = fragment.split("::");
 const validGaslessRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
@@ -30,17 +30,18 @@ const Redirector: FC = () => {
     try {
       const provider = new ethers.providers.JsonRpcProvider(providers[chain]);
       if (token) {
-        const contract = TokenTermsable__factory.connect(address, provider);
-        const termsUrl = await contract.termsUrl(BigNumber.from(token));
-        const [, fragment] = termsUrl.split("://");
-        console.log("in token view", fragment);
-        window.location.href =
-          window.location.protocol +
-          "//" +
-          window.location.host +
-          "/#/" +
-          fragment;
-        window.location.reload();
+        // const contract = TokenTermsable__factory.connect(address, provider);
+        // const termsUrl = await contract.termsUrl(BigNumber.from(token));
+        // const [, fragment] = termsUrl.split("://");
+        // console.log("in token view", fragment);
+        // window.location.href =
+        //   window.location.protocol +
+        //   "//" +
+        //   window.location.host +
+        //   "/#/" +
+        //   fragment;
+        // window.location.reload();
+        //@TODO Fix this section
       } else {
         const contract = Signable__factory.connect(address, provider);
         const termsUrl = await contract.termsUrl();

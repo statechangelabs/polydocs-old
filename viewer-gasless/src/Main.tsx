@@ -37,14 +37,19 @@ const useSign = (contractAddress: string, tokenId?: string) => {
   const [isSigning, setIsSigning] = useState(false);
   const sign = useCallback(async () => {
     if (!provider) return;
-    const url = window.location.pathname.replace(/\/ipfs\//gi, "");
-    const message =
-      "I agree to the terms in this document: ipfs://" +
-      url +
-      window.location.hash;
-    const signature = await provider.getSigner().signMessage(message);
     const address = await provider.getSigner().getAddress();
+    const contract = Signable__factory.connect(contractAddress, provider);
+    const termsUrl = await contract.termsUrl();
+    if (!termsUrl.endsWith(window.location.hash)) {
+      toast(
+        "There is a mismatch between this document and the smart contract. Do not sign this version",
+        { type: "error" }
+      );
+      return false;
+    }
     setIsSigning(true);
+    const message = "I agree to the terms in this document: " + termsUrl;
+    const signature = await provider.getSigner().signMessage(message);
     try {
       const res = await fetch(POLYDOCS_URL, {
         method: "post",
