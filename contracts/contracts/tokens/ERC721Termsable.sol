@@ -30,18 +30,12 @@ contract ERC721Termsable is
 
     mapping(address => bool) private whitelist;
 
-    // We want inputs to be:
-    // 1. address of the owner
-    // 2. Name of contract
-    // 3. Symbol of the contract
     constructor(
         address _newOwner,
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
-        // addToWhiteList(msg.sender);
         _addMetaSigner(_msgSender());
-        // _addMetaSigner(_newowner); // @todo : think more about this
         _transferOwnership(_newOwner);
     }
 
@@ -73,11 +67,6 @@ contract ERC721Termsable is
         require(_acceptedTerms(to), "Terms not accepted");
         super._transfer(from, to, tokenId);
     }
-
-    // function _safeMint(address _to, uint256 _tokenId) internal override {
-    //     require(_acceptedTerms(_to), "Terms not accepted");
-    //     super._safeMint(_to, _tokenId);
-    // }
 
     struct TermsInfo {
         string key;
