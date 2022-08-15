@@ -8,6 +8,7 @@ import {
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
+  Callback,
   Handler,
 } from "aws-lambda";
 import { Agent } from "https";
@@ -33,6 +34,7 @@ import FormData from "form-data";
 import { KeyPair } from "ucan-storage-commonjs/keypair";
 import { build, validate } from "ucan-storage-commonjs/ucan-storage";
 import { getContractAddress } from "ethers/lib/utils";
+import JSBI from "jsbi";
 const DEFAULT_RENDERER =
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy";
 const DEFAULT_TEMPLATE =
@@ -54,6 +56,25 @@ const serviceConfigurationOptions = {
 };
 const retryConfig: RetryConfig = new RetryConfig(retryLimit);
 const ledgerName = process.env.ledgerName || "myLedger";
+
+const chainInfo: Record<string, { privateKey: string; url: string }> = {
+  "80001": {
+    privateKey: process.env.METASIGNER_MUMBAI_PRIVATE_KEY || "",
+    url: process.env.ALCHEMY_MUMBAI_KEY || "",
+  },
+  "137": {
+    privateKey: process.env.METASIGNER_POLYGON_PRIVATE_KEY || "",
+    url: process.env.ALCHEMY_POLYGON_KEY || "",
+  },
+};
+const getChainInfo = (chainId: string) => {
+  const _chainInfo = chainInfo[chainId];
+  if (!_chainInfo) {
+    throw new Error(`Chain ${chainId} not found`);
+  }
+  return _chainInfo;
+};
+
 const qldbDriver: QldbDriver = new QldbDriver(
   ledgerName,
   serviceConfigurationOptions,
@@ -154,8 +175,15 @@ const getSignerFromHeader = <T extends { exp: number }>(
   }
   return undefined;
 };
+
 const makeAuthenticatedFunc = (
-  func: Handler<APIGatewayProxyEvent, APIGatewayProxyResult>
+  func: (args: {
+    event: APIGatewayProxyEvent;
+    context: any;
+    callback: Callback<APIGatewayProxyResult>;
+    user: Value;
+    accounts: Value[];
+  }) => void
 ) => <Handler<APIGatewayProxyEvent, APIGatewayProxyResult>>(async (
     event,
     context,
@@ -165,34 +193,59 @@ const makeAuthenticatedFunc = (
     if (!payload) {
       return sendHttpResult(401, "Unauthorized");
     }
+    const user = await getUser(payload.address);
+    if (!user) {
+      return sendHttpResult(401, "Unauthorized");
+    }
+    await qldbDriver.executeLambda(async (txn) => {
+      await txn.execute(
+        "INSERT INTO Users (id, accounts) VALUES ($1, $2)",
+        payload.address,
+        [payload.address]
+      );
+      await txn.execute(
+        "INSERT INTO Accounts (id) VALUES ($1)",
+        payload.address
+      );
+    });
+    const accounts = (
+      await Promise.all(
+        await (
+          await getAccountsForUser(payload.address)
+        ).map(async (id) => await getAccount(id))
+      )
+    )
+      .filter(Boolean)
+      .reduce(
+        (acc, account) => ({
+          ...acc,
+          [account?.get("id")?.stringValue() || ""]: account,
+        }),
+        {}
+      );
+
+    if (!accounts.length) {
+      return sendHttpResult(401, "Unauthorized");
+    }
     // const { address, message } = payload;
     // await makeTables();
-    return func({ event, context, callback });
+    return func({
+      event,
+      context,
+      callback,
+      user,
+      accounts: accounts as Value[],
+    });
   });
 //#endregion
-//#region API Endpoints
+//#region Unsecured API Endpoints
 export const signDocument = makeAPIGatewayLambda({
   path: "/sign",
   method: "post",
   cors: true,
   timeout: 30,
   func: async (event, context, callback) => {
-    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
-    if (!process.env.ALCHEMY_MUMBAI_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
     if (!event.body) return sendHttpResult(400, "No body provided");
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      process.env.ALCHEMY_MUMBAI_KEY
-      // "0x" + (80001).toString(16)
-    );
-    // const provider = ethers.getDefaultProvider(80001);
-    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
-    // console.log("provider", provider);
-    const signer = new ethers.Wallet(
-      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
-      provider
-    );
     const {
       address,
       signature,
@@ -200,10 +253,6 @@ export const signDocument = makeAPIGatewayLambda({
     }: { address: string; signature: string; message: string } = JSON.parse(
       event.body
     );
-    console.log("I have stuff from body");
-    console.log("Address", address);
-    console.log("Signuature", signature);
-    console.log("message", message);
     if (!ethers.utils.verifyMessage(message, signature)) {
       return sendHttpResult(400, "Invalid signature");
     }
@@ -211,34 +260,15 @@ export const signDocument = makeAPIGatewayLambda({
       message.indexOf(": "),
       message.length
     );
-    console.log("polydocsURI is ", polydocsURI);
-    // const polydocsUri = new URL(polydocsURI);
-    // const fragment = polydocsUri.hash.substring(1);
     const fragment = polydocsURI.substring(polydocsURI.indexOf("#") + 1);
-    console.log("fragment is ", fragment);
-    const [cid, chainId, contractAddress, blockNumber] = fragment.split("::");
-    console.log("contractAddress is ", contractAddress);
-    console.log("We have pieces", {
-      cid,
-      chainId,
-      contractAddress,
-      blockNumber,
-    });
+    const [, chainId, contractAddress, blockNumber] = fragment.split("::");
+    //check the chainID
+    const { url, privateKey } = getChainInfo(chainId);
+    const provider = new ethers.providers.StaticJsonRpcProvider(url);
+    const signer = new ethers.Wallet(privateKey, provider);
     const polydocs = TermsableNoToken__factory.connect(contractAddress, signer);
-    // const result = await fetch("https://polydocs.xyz");
-    // const text = await result.text();
-    // console.log("text is ", text);
-    console.log(
-      "now transaction time",
-      await signer.getAddress(),
-      await signer.getBalance()
-    );
     try {
-      await polydocs.acceptedTerms(address);
       await polydocs.acceptTermsFor(address, message, signature);
-      // await txn.wait(); // We no longer wait for te transactions
-      // console.log("transaction applied to chain");
-      console.log("Transaction complete");
       return httpSuccess("signed");
     } catch (e) {
       return sendHttpResult(
@@ -248,6 +278,33 @@ export const signDocument = makeAPIGatewayLambda({
     }
   },
 });
+//#endregion
+export const registerUser = makeAPIGatewayLambda({
+  path: "/register",
+  method: "post",
+  cors: true,
+  timeout: 30,
+  func: async (event, context, callback) => {
+    if (!event.body) return sendHttpResult(400, "No body provided");
+    const {
+      address,
+      signature,
+      message,
+    }: { address: string; signature: string; message: string } = JSON.parse(
+      event.body
+    );
+    await qldbDriver.executeLambda(async (txn) => {
+      await txn.execute(
+        "INSERT INTO Users (id, accounts) VALUES ($1, $2)",
+        address,
+        [address]
+      );
+      await txn.execute("INSERT INTO Accounts (id) VALUES ($1)", address);
+    });
+    return httpSuccess("registered");
+  },
+});
+//#region Secured API Endpoints
 export const deployNFT = makeAPIGatewayLambda({
   path: "/deploy",
   method: "post",
@@ -558,71 +615,62 @@ const issuerKeyPair = new KeyPair(
 //   Buffer.from(PrivateKey, "base64"),
 //   Buffer.from(PublicKey, "base64")
 // );
-
+export const sentImage = makeAPIGatewayLambda({
+  timeout: 30,
+  method: "post",
+  cors: true,
+  path: "sentImage",
+  func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
+    if (!event.body) return sendHttpResult(400, "No body");
+    const {
+      contract,
+      account,
+      cid,
+      type,
+    }: {
+      contract: string;
+      account: string;
+      cid: string;
+      type: "image" | "cover";
+    } = JSON.parse(event.body);
+    if (!accounts.includes(account))
+      return sendHttpResult(400, "This is not a valid account");
+  }),
+});
 export const getUCANToken = makeAPIGatewayLambda({
   timeout: 30,
   method: "get",
   cors: true,
   path: "/ucan-token",
-  func: async (event, context, callback) => {
-    //#region get root token
-    // console.log("My publick and private keys", {
-    //   _PublicKey,
-    //   PublicKey,
-    //   _PrivateKey,
-    //   PrivateKey,
-    // });
+  func: makeAuthenticatedFunc(async () => {
     if (!rootToken.length) {
-      console.log("my event is ", event);
-      //generate a token
       const url = "https://api.nft.storage/ucan/token";
       const response = await fetch(url, {
-        // body,
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.NFTSTORAGE_API_KEY}`,
         },
       });
       const retJSON = await response.json();
-      console.log(retJSON);
-
       rootToken = retJSON.value;
     }
     //#endregion
-    console.log("I am working now with rootToken of ", rootToken);
-    // validate the parent UCAN and extract the payload
     const { payload } = await validate(rootToken);
-    console.log("Payload is ", payload);
-    // the `att` field contains the capabilities
     const { att } = payload;
-    console.log("Att is", att);
-    // for each capability in the parent, keep everything except the
-    // resource path, to which we append the DID for the new token's audience
     const capabilities = att.map((capability) => ({
       ...capability,
       with: [capability.with, nsServiceKey].join("/"),
     }));
-    console.log("My capabilities are", capabilities);
-    // include the parent UCAN JWT string in the proofs array
     const proofs = [rootToken];
-    // console.log({ did: issuerKeyPair.did(), _did: _issuerKeyPair.did() });
     const token = await build({
       issuer: issuerKeyPair,
       audience: nsServiceKey,
       capabilities: capabilities as any,
       proofs,
       lifetimeInSeconds: 100,
-      // capabilities: [
-      //   {
-      //     with: `storage://${kp.did()}/public`,
-      //     can: "upload/IMPORT",
-      //     mh: "",
-      //   },
-      // ],
     });
-    console.log("my ucan token is ", token);
     return httpSuccess({ token, did: process.env.DID });
-  },
+  }),
 });
 
 interface MimeBuffer extends Buffer {
