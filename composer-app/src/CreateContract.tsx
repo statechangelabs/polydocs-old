@@ -129,6 +129,7 @@ export const CreateContract: FC = () => {
                         type="text"
                         name="symbole"
                         id="symbol"
+                        uppercase
                         autoComplete="name"
                         className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
                       />

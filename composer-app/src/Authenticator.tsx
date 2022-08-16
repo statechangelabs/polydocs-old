@@ -32,10 +32,9 @@ const Authenticator: FC<{ children: ReactElement }> = ({ children }) => {
     if (localToken) {
       const tokenObj = JSON.parse(atob(localToken));
       const messageObj = JSON.parse(tokenObj.message);
-      const now = new Date(messageObj.now);
-      if (now) {
-        const expires = now.valueOf() + TOKENLIFETIME;
-        if (expires > Date.now()) {
+      const exp = new Date(messageObj.exp).valueOf();
+      if (exp) {
+        if (exp > Date.now()) {
           setToken(localToken);
           setIsAuthenticated(true);
         }
