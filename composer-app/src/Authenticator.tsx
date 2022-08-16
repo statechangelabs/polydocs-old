@@ -104,6 +104,7 @@ const useAuthToken = () => {
 };
 export const useAuthenticatedFetch = () => {
   const token = useAuthToken();
+  const { logout } = useAuthenticator();
   return (async (path: string, info: RequestInit = {}) => {
     const res = await fetch(POLYDOCS_BASE + path, {
       headers: {
@@ -121,6 +122,8 @@ export const useAuthenticatedFetch = () => {
     }
   }) as typeof fetch;
 };
-function logout() {
-  throw new Error("Function not implemented.");
-}
+export const useAddress = () => {
+  const { token } = useContext(context);
+  const address = JSON.parse(atob(token)).address;
+  return address;
+};
