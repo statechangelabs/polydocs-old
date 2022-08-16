@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import Main from "./Main";
 import "inter-ui";
 import Redirector from "./Redirector";
+import Authenticator from "./Authenticator";
 const App: FC = () => {
   return (
     <HashRouter>
@@ -38,8 +39,11 @@ const RestOfApp: FC = () => {
         <WrongChain />
       </MetamaskWrongChain>
       <MetamaskConnected>
-        <Main />
+        <Authenticator>
+          <Main />
+        </Authenticator>
       </MetamaskConnected>
+      <ToastContainer />
     </Fragment>
   );
 };
