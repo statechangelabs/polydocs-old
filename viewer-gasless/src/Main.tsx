@@ -26,6 +26,16 @@ import { FaClipboard } from "react-icons/fa";
 import useAsyncEffect from "./useAsyncEffect";
 import Loading from "./Loading";
 
+const MYJSON: any = {
+  image: "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
+  cover: "ipfs://bafkreie4pck53sp62rezde2h5z4uw7e4gqzwmj7aeysybbr23zm3jzz73q",
+  title: "Sample NFT Collection, Drew!",
+  description: "This is a sample NFT collection. Not scammy at all.",
+  terms: {
+    name: "State Change Labs",
+  },
+};
+
 const POLYDOCS_URL =
   "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev/sign";
 
@@ -215,14 +225,23 @@ const Renderer: FC<{
     if (lastEvent) setLastURIBlock(lastEvent);
   }, [contractAddress, provider]);
   console.log("Last URI block is", lastURIBlock);
+  //@TODO Move back to using contract JSON
   const json = useIPFSText(URI);
-  const obj = json ? JSON.parse(json) : {};
+  // const obj = json ? JSON.parse(json) : {};
+  const obj = MYJSON;
   const image = useIPFSDataUri(
     (obj.image && obj.image.split("://").pop()) || obj.image
   );
   const cover = useIPFSDataUri(
     (obj.cover && obj.cover.split("://").pop()) || obj.cover
   );
+  const contractBg = useIPFSDataUri(
+    (obj.background && obj.background.split("://").pop()) || obj.background
+  );
+  const [bg, setBg] = useState(Topography);
+  useEffect(() => {
+    if (contractBg) setBg(contractBg);
+  }, [contractBg]);
   const title = obj.title || "";
   const jsonTerms = obj.terms as Record<string, string>;
   const template = useIPFSText(documentId);
@@ -269,10 +288,10 @@ const Renderer: FC<{
   const output = Mustache.render(template, values);
   const baseOutput = Mustache.render(template, baseValues);
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(baseOutput));
-
+  console.log("Bg is", bg);
   return (
     <Fragment>
-      <div style={{ background: `url(${Topography})` }}>
+      <div style={{ background: `url(${bg})` }}>
         <div className="relative max-w-[760px] mx-auto flex flex-col h-screen">
           <header className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
