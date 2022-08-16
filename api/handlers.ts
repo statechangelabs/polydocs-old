@@ -13,15 +13,13 @@ import {
 } from "aws-lambda";
 import { Agent } from "https";
 import { QldbDriver, RetryConfig } from "amazon-qldb-driver-nodejs";
-import { v4 as uuid } from "uuid";
 import { getAssetPath } from "@raydeck/local-assets";
 import { BigNumber, ContractFactory, ethers } from "ethers";
-import { join } from "path";
-import { exec, execSync } from "child_process";
-import { Value } from "ion-js/dist/commonjs/es6/dom";
+import { exec } from "child_process";
+import { List, Value } from "ion-js/dist/commonjs/es6/dom";
 import { Lambda } from "aws-sdk";
 import { get as registryGet } from "@raydeck/registry-manager";
-import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from "fs";
+import { copyFileSync, readFileSync, writeFileSync } from "fs";
 import {
   TermsableNoToken__factory,
   ERC721Termsable__factory,
@@ -88,7 +86,7 @@ const makeTables = async () => {
   if (madeTables) return;
   const tableNames = await qldbDriver.getTableNames();
   console.log(tableNames);
-  if (!tableNames.includes("Nodes")) {
+  if (!tableNames.includes("Contracts")) {
     //Build transmissions table
     await qldbDriver.executeLambda(async (txn) => {
       await txn.execute(`CREATE TABLE Contracts`);
@@ -140,18 +138,27 @@ const getAccount = async (id: string) => getRecord("Accounts", id);
 const getAccountsForUser = async (address: string) => {
   const user = await getUser(address);
   if (user) {
-    const output = user
-      .get("accounts")
-      ?.getAll()
-      ?.map((v) => v.stringValue())
-      ?.filter(Boolean);
+    const accounts = user.get("accounts") as List;
+    console.log("accounts as list", accounts);
+    console.log("length of accounts", accounts.length);
+    console.log("first account", accounts.get(0));
+    const accountArr: Value[] = [];
+    for (let i = 0; i < accounts.length; i++) {
+      const a = accounts.get(i);
+      if (a) {
+        console.log("account", a);
+        accountArr.push(a);
+      }
+    }
+
+    const output = accountArr.map((v) => v.stringValue()).filter(Boolean);
+    console.log("Outputs");
     if (output && output.length) return output as string[];
   }
   return [];
 };
 const getSignerFromHeader = <T extends { exp: number }>(
-  event: APIGatewayProxyEvent,
-  apiKey?: string
+  event: APIGatewayProxyEvent
 ) => {
   //check for the header
   //check the header for my signature
@@ -193,42 +200,39 @@ const makeAuthenticatedFunc = (
     if (!payload) {
       return sendHttpResult(401, "Unauthorized");
     }
-    const user = await getUser(payload.address);
+    let user = await getUser(payload.address);
     if (!user) {
-      return sendHttpResult(401, "Unauthorized");
+      await qldbDriver.executeLambda(async (txn) => {
+        await txn.execute("INSERT INTO Users ?", {
+          id: payload.address.toLowerCase(),
+          accounts: [payload.address.toLowerCase()],
+        });
+        await txn.execute("INSERT INTO Accounts ?", {
+          id: payload.address.toLowerCase(),
+        });
+      });
+      user = await getUser(payload.address);
+      if (!user) {
+        return sendHttpResult(500, "Error creating user");
+      }
     }
-    await qldbDriver.executeLambda(async (txn) => {
-      await txn.execute(
-        "INSERT INTO Users (id, accounts) VALUES ($1, $2)",
-        payload.address,
-        [payload.address]
-      );
-      await txn.execute(
-        "INSERT INTO Accounts (id) VALUES ($1)",
-        payload.address
-      );
-    });
-    const accounts = (
-      await Promise.all(
-        await (
-          await getAccountsForUser(payload.address)
-        ).map(async (id) => await getAccount(id))
-      )
-    )
-      .filter(Boolean)
-      .reduce(
-        (acc, account) => ({
-          ...acc,
-          [account?.get("id")?.stringValue() || ""]: account,
-        }),
-        {}
-      );
-
-    if (!accounts.length) {
-      return sendHttpResult(401, "Unauthorized");
+    const accountIds = await getAccountsForUser(payload.address);
+    console.log("accountIds", accountIds);
+    const accountList = (
+      await Promise.all(accountIds.map(async (id) => await getAccount(id)))
+    ).filter(Boolean);
+    console.log("accountList", accountList);
+    const accounts = accountList.reduce(
+      (acc, account) => ({
+        ...acc,
+        [account?.get("id")?.stringValue() || ""]: account,
+      }),
+      {}
+    );
+    console.log("accounts", accounts);
+    if (!Object.keys(accounts).length) {
+      return sendHttpResult(401, "No Authorized accounts");
     }
-    // const { address, message } = payload;
-    // await makeTables();
     return func({
       event,
       context,
@@ -278,32 +282,32 @@ export const signDocument = makeAPIGatewayLambda({
     }
   },
 });
+// export const registerUser = makeAPIGatewayLambda({
+//   path: "/register",
+//   method: "post",
+//   cors: true,
+//   timeout: 30,
+//   func: async (event, context, callback) => {
+//     if (!event.body) return sendHttpResult(400, "No body provided");
+//     const {
+//       address,
+//       signature,
+//       message,
+//     }: { address: string; signature: string; message: string } = JSON.parse(
+//       event.body
+//     );
+//     await qldbDriver.executeLambda(async (txn) => {
+//       await txn.execute(
+//         "INSERT INTO Users (id, accounts) VALUES ($1, $2)",
+//         address,
+//         [address]
+//       );
+//       await txn.execute("INSERT INTO Accounts (id) VALUES ($1)", address);
+//     });
+//     return httpSuccess("registered");
+//   },
+// });
 //#endregion
-export const registerUser = makeAPIGatewayLambda({
-  path: "/register",
-  method: "post",
-  cors: true,
-  timeout: 30,
-  func: async (event, context, callback) => {
-    if (!event.body) return sendHttpResult(400, "No body provided");
-    const {
-      address,
-      signature,
-      message,
-    }: { address: string; signature: string; message: string } = JSON.parse(
-      event.body
-    );
-    await qldbDriver.executeLambda(async (txn) => {
-      await txn.execute(
-        "INSERT INTO Users (id, accounts) VALUES ($1, $2)",
-        address,
-        [address]
-      );
-      await txn.execute("INSERT INTO Accounts (id) VALUES ($1)", address);
-    });
-    return httpSuccess("registered");
-  },
-});
 //#region Secured API Endpoints
 export const deployNFT = makeAPIGatewayLambda({
   path: "/deploy",
@@ -615,28 +619,28 @@ const issuerKeyPair = new KeyPair(
 //   Buffer.from(PrivateKey, "base64"),
 //   Buffer.from(PublicKey, "base64")
 // );
-export const sentImage = makeAPIGatewayLambda({
-  timeout: 30,
-  method: "post",
-  cors: true,
-  path: "sentImage",
-  func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
-    if (!event.body) return sendHttpResult(400, "No body");
-    const {
-      contract,
-      account,
-      cid,
-      type,
-    }: {
-      contract: string;
-      account: string;
-      cid: string;
-      type: "image" | "cover";
-    } = JSON.parse(event.body);
-    if (!accounts.includes(account))
-      return sendHttpResult(400, "This is not a valid account");
-  }),
-});
+// export const sentImage = makeAPIGatewayLambda({
+//   timeout: 30,
+//   method: "post",
+//   cors: true,
+//   path: "sentImage",
+//   func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
+//     if (!event.body) return sendHttpResult(400, "No body");
+//     const {
+//       contract,
+//       account,
+//       cid,
+//       type,
+//     }: {
+//       contract: string;
+//       account: string;
+//       cid: string;
+//       type: "image" | "cover";
+//     } = JSON.parse(event.body);
+//     if (!accounts.find((a) => a.get("id")?.stringValue() === account))
+//       return sendHttpResult(400, "This is not a valid account");
+//   }),
+// });
 export const getUCANToken = makeAPIGatewayLambda({
   timeout: 30,
   method: "get",
