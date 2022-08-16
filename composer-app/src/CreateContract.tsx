@@ -1,7 +1,7 @@
 import { Field, Form, Formik, useFormikContext } from "formik";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { useUpload } from "./upload";
+import { useUpload } from "./useIPFSUpload";
 import { useMain } from "./Main";
 
 export const DropFile: FC<{ name: string }> = ({ name }) => {
