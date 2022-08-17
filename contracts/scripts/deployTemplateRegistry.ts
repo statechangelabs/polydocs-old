@@ -48,10 +48,11 @@ async function main() {
   const get_template_by_cid = await doc.templatebyCID("randomcid_3");
   console.log("Getting Template 3 by CID:", get_template_by_cid);
 
-  // should return true
+
   const index_of_template_3 = await doc.indexOf("randomcid_3");
   console.log(ethers.BigNumber.from(2));
   console.log(index_of_template_3);
+    // should return true but it returns false
   console.log("Index of template 3 is 2:", index_of_template_3 ==ethers.BigNumber.from("2"));
 
   const upvote_template_1 = await doc.upvote("randomcid_1",{value: ethers.utils.parseEther("0.5")});
@@ -67,6 +68,9 @@ async function main() {
 
   const score_template_2 = await doc.score("randomcid_2");
   console.log("Score of template 2:", score_template_2);
+
+  const score_template_3 = await doc.score("randomcid_3");
+  console.log("Score of template 3:", score_template_3);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
