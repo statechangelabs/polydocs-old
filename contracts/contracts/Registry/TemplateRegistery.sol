@@ -27,7 +27,7 @@ contract TemplateRegistry is Ownable, TermsableNoToken {
         emit TemplateAdded(_template.owner, index);
     }
 
-    function tempalate(uint256 _index) public view returns (Template memory) {
+    function template(uint256 _index) public view returns (Template memory) {
         return templates[_index];
     }
 
