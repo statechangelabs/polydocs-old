@@ -8,7 +8,7 @@ contract TemplateRegistry is Ownable, TermsableNoToken {
     struct Template {
         string name;
         string cid;
-        uint score;
+        int score;
         string MetadataURI;
         address owner;
     }
@@ -47,27 +47,36 @@ contract TemplateRegistry is Ownable, TermsableNoToken {
         return indexes[_cid];
     }
 
-    function upvoteTemplate(string memory _cid) public payable {
+    function upvote(string memory _cid) public payable {
         require(
             msg.value >= minfee,
             "You must pay at least the minimum fee to upvote"
         );
         for (uint256 i = 0; i < templates.length; i++) {
             if (keccak256(bytes(templates[i].cid)) == keccak256(bytes(_cid))) {
-                templates[i].score += msg.value;
+                templates[i].score += int(msg.value);
             }
         }
     }
 
-    function downvoteTemplate(string memory _cid) public payable {
+    function downvote(string memory _cid) public payable {
         require(
             msg.value >= minfee,
             "You must pay at least the minimum fee to downvote"
         );
         for (uint256 i = 0; i < templates.length; i++) {
             if (keccak256(bytes(templates[i].cid)) == keccak256(bytes(_cid))) {
-                templates[i].score -= msg.value;
+                templates[i].score -= int(msg.value);
             }
         }
+    }
+
+    function score(string memory _cid) public view returns (int) {
+        for (uint256 i = 0; i < templates.length; i++) {
+            if (keccak256(bytes(templates[i].cid)) == keccak256(bytes(_cid))) {
+                return templates[i].score;
+            }
+        }
+        return 0;
     }
 }
