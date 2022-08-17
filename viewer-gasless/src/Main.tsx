@@ -30,7 +30,8 @@ const MYJSON: any = {
   image: "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
   cover: "ipfs://bafkreie4pck53sp62rezde2h5z4uw7e4gqzwmj7aeysybbr23zm3jzz73q",
   title: "Sample NFT Collection, Drew!",
-  description: "This is a sample NFT collection. Not scammy at all.",
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   terms: {
     name: "State Change Labs",
   },
@@ -243,6 +244,7 @@ const Renderer: FC<{
     if (contractBg) setBg(contractBg);
   }, [contractBg]);
   const title = obj.title || "";
+  const description = obj.description || "";
   const jsonTerms = obj.terms as Record<string, string>;
   const template = useIPFSText(documentId);
   const { terms, addTerm, termBlocks } = useTerms(
@@ -291,9 +293,13 @@ const Renderer: FC<{
   console.log("Bg is", bg);
   return (
     <Fragment>
-      <div style={{ background: `url(${bg})` }}>
-        <div className="relative max-w-[760px] mx-auto flex flex-col h-screen">
-          <header className="flex justify-between items-center py-4">
+      <div>
+        <div
+          className="fixed w-full h-screen"
+          style={{ background: `url(${bg})` }}
+        />
+        <div className="relative  mx-auto flex flex-col">
+          <header className="flex justify-between items-center p-4">
             <div className="flex items-center space-x-2">
               <img src={Logo} alt="Logo" className="w-6" />
               <h1 className="text-lg font-bold text-purple-default">
@@ -314,78 +320,83 @@ const Renderer: FC<{
               </button>
             </div>
           </header>
-          <div className="scrollable flex-grow w-full prose mx-auto  bg-white doc-shadow overflow-y-scroll print:overflow-visible print:shadow-none">
-            {
-              //#region Header to style @TODO
-            }
-            {image && (
-              <img
-                src={image}
-                alt="Contract Image"
-                className="h-32 w-32 object-cover
-                 rounded-full"
-              />
-            )}
-            {cover && (
-              <img
-                src={cover}
-                alt="Contract Image"
-                className="h-64 w-full object-cover
-                 rounded-full"
-              />
-            )}
-            {title && <div className="text-xl">{title}</div>}
-            {
-              //#endregion
-            }
-            <div className="p-6 lg:p-8">
-              <Markdown>{output}</Markdown>
-            </div>
-          </div>
+          <div className="max-w-[760px] mx-auto">
+            <div className="flex-grow w-full prose mx-auto  bg-white doc-shadow print:shadow-none">
+              <div className="relative overflow-hidden">
+                {cover && (
+                  <img
+                    src={cover}
+                    alt="Contract Image"
+                    className="absolute z-0 my-0 h-40 w-full object-cover"
+                  />
+                )}
+                <div className="mt-32 top-0 z-50 p-6">
+                  {image && (
+                    <img
+                      src={image}
+                      alt="Contract Image"
+                      className="h-24 w-24 object-cover
+                 rounded-full left-0 border-2 border-white shadow-md absolute ml-6 -mt-6"
+                    />
+                  )}
 
-          <div className="py-4">
-            <div className="prose mx-auto flex flex-row justify-end mt-4">
-              <div className=" flex flex-row  print:hidden gap-4">
-                <button
-                  className="btn btn-gradient"
-                  onClick={() => setIsHighlight((old) => !old)}
-                >
-                  {isHighlight ? "Unhighlight terms" : "Highlight terms"}
-                </button>
-                <button
-                  className="btn btn-gradient"
-                  onClick={() => window.print()}
-                  disabled={isSigned || isSigning}
-                >
-                  Print
-                </button>
-                <button
-                  className="btn btn-gradient"
-                  onClick={() => {
-                    copy(window.location.href);
-                    toast("Copied to clipboard");
-                  }}
-                  disabled={isSigned || isSigning}
-                >
-                  Copy Unique URL
-                </button>
-                <button
-                  className={[
-                    "btn ",
-                    isSigning || isSigned
-                      ? "text-black border bg-gradient-to-r from-gray-200 to-gray-400 hover:background-gray-200"
-                      : "btn-primary",
-                  ].join(" ")}
-                  onClick={() => {
-                    if (!isSigned && !isSigning) sign();
-                  }}
-                >
-                  {isSigned
-                    ? "You're all set!"
-                    : isSigning
-                    ? "Signing..."
-                    : terms["signatureLabel"] || "Agree To Terms"}
-                </button>
+                  <div className=" ml-32 mt-6">
+                    {title && <p className="my-0">{title}</p>}{" "}
+                    {description && (
+                      <p className="text-sm opacity-75 my-0">{description}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 lg:p-8">
+                <Markdown>{output}</Markdown>
+              </div>
+            </div>
+
+            <div className="py-4">
+              <div className="prose mx-auto flex flex-row justify-end mt-4">
+                <div className=" flex flex-row  print:hidden gap-4">
+                  <button
+                    className="btn btn-gradient"
+                    onClick={() => setIsHighlight((old) => !old)}
+                  >
+                    {isHighlight ? "Unhighlight terms" : "Highlight terms"}
+                  </button>
+                  <button
+                    className="btn btn-gradient"
+                    onClick={() => window.print()}
+                    disabled={isSigned || isSigning}
+                  >
+                    Print
+                  </button>
+                  <button
+                    className="btn btn-gradient"
+                    onClick={() => {
+                      copy(window.location.href);
+                      toast("Copied to clipboard");
+                    }}
+                    disabled={isSigned || isSigning}
+                  >
+                    Copy Unique URL
+                  </button>
+                  <button
+                    className={[
+                      "btn ",
+                      isSigning || isSigned
+                        ? "text-black border bg-gradient-to-r from-gray-200 to-gray-400 hover:background-gray-200"
+                        : "btn-primary",
+                    ].join(" ")}
+                    onClick={() => {
+                      if (!isSigned && !isSigning) sign();
+                    }}
+                  >
+                    {isSigned
+                      ? "You're all set!"
+                      : isSigning
+                      ? "Signing..."
+                      : terms["signatureLabel"] || "Agree To Terms"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
