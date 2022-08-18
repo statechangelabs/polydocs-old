@@ -21,7 +21,7 @@ import Markdown from "react-markdown";
 import copy from "clipboard-copy";
 import { toast } from "react-toastify";
 import Topography from "./topography.svg";
-import Logo from "./logo.svg";
+import Logo from "./PolydocsLogo.svg";
 import { FaClipboard } from "react-icons/fa";
 import useAsyncEffect from "./useAsyncEffect";
 import Loading from "./Loading";
@@ -301,15 +301,13 @@ const Renderer: FC<{
         <div className="relative  mx-auto flex flex-col">
           <header className="flex justify-between items-center p-4">
             <div className="flex items-center space-x-2">
-              <img src={Logo} alt="Logo" className="w-6" />
-              <h1 className="text-lg font-bold text-purple-default">
-                PolyDocs
-              </h1>
+              <img src={Logo} alt="Logo" className="w-12" />
+              <h1 className="text-lg font-bold text-black">PolyDocs</h1>
             </div>
 
             <div className="flex flex-row justify-end print:hidden">
               <button
-                className=" text-purple-600 hover:text-gray-800 transition font-medium text-xs"
+                className=" text-primary-light hover:text-teal-light transition font-medium text-xs"
                 onClick={() => {
                   copy(hash);
                   toast("Copied to clipboard");

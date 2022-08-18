@@ -8,14 +8,14 @@ module.exports = {
         sans: ["IBM Plex Sans Devanagari", "sans-serif"],
       },
       colors: {
-        purple: {
-          light: "#C971FF",
-          default: "#A050D2",
-          dark: "#7C2AAD",
+        primary: {
+          light: "#0049C9",
+          default: "#012470",
+          dark: "#00173F",
         },
         teal: {
-          light: "#66FFC8",
-          dark: "#509E8C",
+          light: "#00E2B7",
+          dark: "#009377",
         },
         black: "#202020",
       },
