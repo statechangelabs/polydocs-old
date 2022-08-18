@@ -5,7 +5,7 @@ import Title from "./Title";
 import Topography from "./topography.svg";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { ethers } from "ethers";
-import Logo from "./logo.svg";
+import Logo from "./PolydocsLogo.svg";
 const supportedChains = [
   { chainId: 137, name: "Polygon Mainnet" },
   { chainId: 80001, name: "Polygon Mumbai Testnet" },
@@ -18,7 +18,7 @@ const ContractFinder: FC = () => {
     >
       <div className="flex flex-col space-y-8 items-center p-4 lg:p-0">
         <div className="flex items-center space-x-6">
-          <img src={Logo} alt="Logo" className="w-12 lg:w-20" />
+          <img src={Logo} alt="Logo" className="w-12 lg:w-32" />
           <h1 className="text-4xl lg:text-7xl font-bold ">PolyDocs</h1>
         </div>
         <div className="flex flex-row justify-center">
