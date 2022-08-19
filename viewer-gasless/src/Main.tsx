@@ -35,9 +35,13 @@ const MYJSON: any = {
   terms: {
     name: "State Change Labs",
   },
+  backgroundColor: "#0000FF",
+  background:
+    "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
 };
 
 const POLYDOCS_URL =
+  process.env.REACT_APP_POLYDOCS_URL ??
   "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev/sign";
 
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
@@ -293,10 +297,16 @@ const Renderer: FC<{
   console.log("Bg is", bg);
   return (
     <Fragment>
-      <div>
+      <div
+        style={
+          obj.backgroundColor
+            ? { backgroundColor: obj.backgroundColor }
+            : undefined
+        }
+      >
         <div
-          className="fixed w-full h-screen"
-          style={{ background: `url(${bg})` }}
+          className="fixed w-full h-screen bg-cover"
+          style={{ backgroundImage: `url(${bg})` }}
         />
         <div className="relative  mx-auto flex flex-col">
           <header className="flex justify-between items-center p-4">
@@ -351,7 +361,7 @@ const Renderer: FC<{
               </div>
             </div>
 
-            <div className="py-4">
+            <div className="py-4 bg-white border-t-2 border-gray-200">
               <div className="prose mx-auto flex flex-row justify-end mt-4">
                 <div className=" flex flex-row  print:hidden gap-4">
                   <button

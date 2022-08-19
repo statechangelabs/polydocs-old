@@ -54,6 +54,8 @@ export type { TokenSignable } from "./contracts/interfaces/TokenSignable";
 export { TokenSignable__factory } from "./factories/contracts/interfaces/TokenSignable__factory";
 export type { TokenTermReader } from "./contracts/interfaces/TokenTermReader";
 export { TokenTermReader__factory } from "./factories/contracts/interfaces/TokenTermReader__factory";
+export type { TemplateRegistry } from "./contracts/Registry/TemplateRegistery.sol/TemplateRegistry";
+export { TemplateRegistry__factory } from "./factories/contracts/Registry/TemplateRegistery.sol/TemplateRegistry__factory";
 export type { TermsableBase } from "./contracts/termsable/TermsableBase";
 export { TermsableBase__factory } from "./factories/contracts/termsable/TermsableBase__factory";
 export type { TermsableNoToken } from "./contracts/termsable/TermsableNoToken";
