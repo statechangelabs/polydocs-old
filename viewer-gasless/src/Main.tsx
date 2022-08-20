@@ -26,19 +26,19 @@ import { FaClipboard } from "react-icons/fa";
 import useAsyncEffect from "./useAsyncEffect";
 import Loading from "./Loading";
 
-const MYJSON: any = {
-  image: "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
-  cover: "ipfs://bafkreie4pck53sp62rezde2h5z4uw7e4gqzwmj7aeysybbr23zm3jzz73q",
-  title: "Sample NFT Collection, Drew!",
-  description:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  terms: {
-    name: "State Change Labs",
-  },
-  backgroundColor: "#0000FF",
-  background:
-    "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
-};
+// const MYJSON: any = {
+//   image: "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
+//   cover: "ipfs://bafkreie4pck53sp62rezde2h5z4uw7e4gqzwmj7aeysybbr23zm3jzz73q",
+//   title: "Sample NFT Collection, Drew!",
+//   description:
+//     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+//   terms: {
+//     name: "State Change Labs",
+//   },
+//   backgroundColor: "#0000FF",
+//   background:
+//     "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
+// };
 
 const POLYDOCS_URL =
   process.env.REACT_APP_POLYDOCS_URL ??
@@ -232,8 +232,8 @@ const Renderer: FC<{
   console.log("Last URI block is", lastURIBlock);
   //@TODO Move back to using contract JSON
   const json = useIPFSText(URI);
-  // const obj = json ? JSON.parse(json) : {};
-  const obj = MYJSON;
+  const obj = json ? JSON.parse(json) : {};
+  // const obj = MYJSON;
   const image = useIPFSDataUri(
     (obj.image && obj.image.split("://").pop()) || obj.image
   );
