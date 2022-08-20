@@ -75,12 +75,12 @@
           "method": "post"
           "cors": true
           "private": false
-  "deployNFT":
-    "handler": "handlers.deployNFT"
+  "deployNFTContract":
+    "handler": "handlers.deployNFTContract"
     "timeout": 30
     "events":
       - "http":
-          "path": "/deploy"
+          "path": "/make-nft-contract"
           "method": "post"
           "cors": true
           "private": false
@@ -102,6 +102,15 @@
     "events":
       - "http":
           "path": "/ucan-token"
+          "method": "get"
+          "cors": true
+          "private": false
+  "getContracts":
+    "handler": "handlers.getContracts"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/contracts"
           "method": "get"
           "cors": true
           "private": false

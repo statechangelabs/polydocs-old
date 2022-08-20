@@ -26,13 +26,9 @@ import {
 } from "./contracts/index";
 import { promisify } from "util";
 import { render } from "mustache";
-// import fetch  from "cross-fetch";
 import fetch from "node-fetch";
-import FormData from "form-data";
 import { KeyPair } from "ucan-storage-commonjs/keypair";
 import { build, validate } from "ucan-storage-commonjs/ucan-storage";
-import { getContractAddress } from "ethers/lib/utils";
-import JSBI from "jsbi";
 const DEFAULT_RENDERER =
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy";
 const DEFAULT_TEMPLATE =
@@ -45,7 +41,6 @@ const agentForQldb: Agent = new Agent({
   keepAlive: true,
   maxSockets: maxConcurrentTransactions,
 });
-
 const serviceConfigurationOptions = {
   region: process.env.region || process.env.AWS_REGION,
   httpOptions: {
@@ -54,7 +49,6 @@ const serviceConfigurationOptions = {
 };
 const retryConfig: RetryConfig = new RetryConfig(retryLimit);
 const ledgerName = process.env.ledgerName || "myLedger";
-
 const chainInfo: Record<string, { privateKey: string; url: string }> = {
   "80001": {
     privateKey: process.env.METASIGNER_MUMBAI_PRIVATE_KEY || "",
@@ -66,6 +60,7 @@ const chainInfo: Record<string, { privateKey: string; url: string }> = {
   },
 };
 const getChainInfo = (chainId: string) => {
+  if (chainId.startsWith("0x")) chainId = parseInt(chainId, 16).toString(10);
   const _chainInfo = chainInfo[chainId];
   if (!_chainInfo) {
     throw new Error(`Chain ${chainId} not found`);
@@ -128,12 +123,10 @@ const getRecord = async (tableName: string, id: string) => {
   });
   return result.getResultList().pop();
 };
-
 const getUser = async (address: string) =>
   getRecord("Users", address.toLowerCase());
-
-const getContract = async (address: string) =>
-  getRecord("Contracts", address.toLowerCase());
+const getContract = async (id: string) =>
+  getRecord("Contracts", id.toLowerCase());
 const getAccount = async (id: string) => getRecord("Accounts", id);
 const getAccountsForUser = async (address: string) => {
   const user = await getUser(address);
@@ -150,7 +143,6 @@ const getAccountsForUser = async (address: string) => {
         accountArr.push(a);
       }
     }
-
     const output = accountArr.map((v) => v.stringValue()).filter(Boolean);
     console.log("Outputs");
     if (output && output.length) return output as string[];
@@ -182,14 +174,13 @@ const getSignerFromHeader = <T extends { exp: number }>(
   }
   return undefined;
 };
-
 const makeAuthenticatedFunc = (
   func: (args: {
     event: APIGatewayProxyEvent;
     context: any;
     callback: Callback<APIGatewayProxyResult>;
     user: Value;
-    accounts: Value[];
+    accounts: Record<string, Value>;
   }) => void
 ) => <Handler<APIGatewayProxyEvent, APIGatewayProxyResult>>(async (
     event,
@@ -238,7 +229,7 @@ const makeAuthenticatedFunc = (
       context,
       callback,
       user,
-      accounts: accounts as Value[],
+      accounts: accounts as Record<string, Value>,
     });
   });
 //#endregion
@@ -309,106 +300,128 @@ export const signDocument = makeAPIGatewayLambda({
 // });
 //#endregion
 //#region Secured API Endpoints
-export const deployNFT = makeAPIGatewayLambda({
-  path: "/deploy",
+type DeployEvent = {
+  address: string;
+  name: string;
+  symbol: string;
+  renderer: string;
+  template: string;
+  // terms: Record<string, string>;
+  // title: string;
+  // description: string;
+  // image?: string;
+  // cover?: string;
+  royaltyRecipient: string;
+  royaltyPercentage: string;
+  chainId: string;
+  uri: string;
+};
+export const deployNFTContract = makeAPIGatewayLambda({
+  path: "/make-nft-contract",
   method: "post",
   cors: true,
   timeout: 30,
+  func: makeAuthenticatedFunc(
+    async ({ event, context, callback, user, accounts }) => {
+      if (!event.body) return sendHttpResult(400, "No body provided");
+      const {
+        address,
+        name,
+        symbol,
+        chainId,
+        renderer,
+        template,
+        uri,
+        royaltyRecipient,
+        royaltyPercentage,
+      }: DeployEvent = JSON.parse(event.body);
+      //Validate the address
+      if (!address || ethers.utils.isAddress(address) === false)
+        return sendHttpResult(400, "Invalid address");
+      const account = accounts[address.toLowerCase()];
+      if (!account) return sendHttpResult(401, "Unauthorized");
+      if (!name) return sendHttpResult(400, "Invalid name");
+      if (!symbol) return sendHttpResult(400, "Invalid symbol");
+      const chainInfo = getChainInfo(chainId);
+      if (!chainInfo) return sendHttpResult(400, "Invalid chainId");
 
-  func: async (event, context, callback) => {
-    if (!event.body) return sendHttpResult(400, "No body provided");
-    //What do we need to have in the payload
-    // Eventual owner's ECSDA address
-    // document info?
-    //
+      const provider = new ethers.providers.StaticJsonRpcProvider(
+        chainInfo.url
+      );
+      const signer = new ethers.Wallet(chainInfo.privateKey, provider);
+      //time to deploy
+      // build the new contract
+      //copy everything into tmp/contracts
 
-    const {
-      address,
-      name,
-      symbol,
-    }: { address: string; name: string; symbol: string } = JSON.parse(
-      event.body
-    );
-    if (!address || ethers.utils.isAddress(address) === false)
-      return sendHttpResult(400, "Invalid address");
-    if (!name) return sendHttpResult(400, "Invalid name");
-    if (!symbol) return sendHttpResult(400, "Invalid symbol");
+      const polyDocsFactory = new ERC721Termsable__factory(signer);
+      const hundredgwei = ethers.utils.parseUnits("50", "gwei");
+      console.log("A hundred gwei is", hundredgwei.toString());
+      console.log("Deploying with", address, name, symbol);
+      const polyDocs = await polyDocsFactory.deploy(address, name, symbol, {
+        maxFeePerGas: hundredgwei,
+        maxPriorityFeePerGas: hundredgwei,
+        gasLimit: BigNumber.from(6_500_000),
+      });
+      console.log("polyDocs is ", polyDocs.address);
+      qldbDriver.executeLambda(async (tx) => {
+        await tx.execute("INSERT INTO Contracts ?", {
+          id: `${chainId}::${polyDocs.address}`,
+          name,
+          symbol,
+          owner: account.get("id")?.stringValue(),
+        });
+        return true;
+      });
+      const Payload = JSON.stringify({
+        address,
+        name,
+        symbol,
+        contractAddress: polyDocs.address,
+        chainId,
+      });
+      console.log(
+        "invoking makecontract",
+        registryGet("MAKE_CONTRACT_FUNCTION")
+      );
+      await new Lambda({ region: registryGet("AWS_REGION", "us-east-1") })
+        .invoke({
+          InvocationType: "Event",
+          FunctionName: registryGet("stackName") + "-doDeploy",
+          Payload,
+        })
+        .promise();
 
-    const Payload = JSON.stringify({ address, name, symbol });
-    console.log("invoking makecontract", registryGet("MAKE_CONTRACT_FUNCTION"));
-    await new Lambda({ region: registryGet("AWS_REGION", "us-east-1") })
-      .invoke({
-        InvocationType: "Event",
-        FunctionName: registryGet("stackName") + "-doDeploy",
-        Payload,
-      })
-      .promise();
-
-    return httpSuccess({
-      message: "I got this party started",
-    });
-  },
+      return httpSuccess({
+        message: "I got this party started",
+      });
+    }
+  ),
 });
 export const doDeploy = makeLambda({
   timeout: 300,
   func: async (event) => {
     console.log("my event is ", event);
     const {
-      address,
-      name,
-      symbol,
+      royaltyRecipient,
+      royaltyPercentage,
       renderer = DEFAULT_RENDERER,
       template = DEFAULT_TEMPLATE,
-      terms = {},
-    }: {
-      address: string;
-      name: string;
-      symbol: string;
-      renderer: string;
-      template: string;
-      terms: Record<string, string>;
-    } = event;
-    console.log("hello!!!");
-    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
-    if (!process.env.ALCHEMY_MUMBAI_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      process.env.ALCHEMY_MUMBAI_KEY
-      // "0x" + (80001).toString(16)
-    );
-    // const provider = ethers.getDefaultProvider(80001);
-    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
-    // console.log("provider", provider);
-    const signer = new ethers.Wallet(
-      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
-      provider
-    );
-    //time to deploy
-    // build the new contract
-    //copy everything into tmp/contracts
-
-    const polyDocsFactory = new ERC721Termsable__factory(signer);
-    const hundredgwei = ethers.utils.parseUnits("50", "gwei");
-    console.log("A hundred gwei is", hundredgwei.toString());
-    console.log("Deploying with", address, name, symbol);
-    const polyDocs = await polyDocsFactory.deploy(address, name, symbol, {
-      maxFeePerGas: hundredgwei,
-      maxPriorityFeePerGas: hundredgwei,
-      gasLimit: BigNumber.from(6_500_000),
-    });
-    console.log("polyDocs is ", polyDocs.address);
+      // terms = {},
+      uri,
+      chainId,
+      contractAddress,
+    }: DeployEvent & { contractAddress: string } = event;
+    const chainInfo = getChainInfo(chainId);
+    const provider = new ethers.providers.StaticJsonRpcProvider(chainInfo.url);
+    const signer = new ethers.Wallet(chainInfo.privateKey, provider);
+    const polyDocs = ERC721Termsable__factory.connect(contractAddress, signer);
     await polyDocs.deployed();
-    const pdtxn = await polyDocs.setPolydocs(
-      renderer,
-      template,
-      Object.entries(terms).map(([key, value]) => ({
-        key,
-        value,
-      }))
-    );
-    await pdtxn.wait();
-    console.log("I have a deployed polydocs");
+    const pdPromise = polyDocs.setPolydocs(renderer, template, []);
+    const mdPromise = polyDocs.setURI(uri);
+    //@TODO support royalty
+    const [pdTxn, mdTxn] = await Promise.all([pdPromise, mdPromise]);
+    await Promise.all([pdTxn.wait(), mdTxn.wait()]);
+    console.log("I have a deployed polydocs with Metadata");
   },
 });
 
@@ -571,76 +584,12 @@ export const mintNFT = makeLambda({
 });
 
 //#endregion
-export const upload = async (
-  image: Buffer,
-  name: string,
-  description: string,
-  imageFileName: string
-) => {
-  //   const cid = "bafkreiaeppbzsvhoxifxq3dgwmiidto2p3j3agfb3vn5e3ur2rlhg5rqj4";
-  const formData = new FormData();
-  formData.append("image", image, imageFileName);
-  formData.append(
-    "meta",
-    JSON.stringify({
-      name,
-      image: "",
-      description,
-    })
-  );
-  // console.log(process.env);
-  const result = await fetch("https://api.nft.storage/store", {
-    headers: {
-      Authorization: "Bearer " + process.env.NFTSTORAGE_API_KEY,
-    },
-    method: "POST",
-    body: formData,
-  });
-  const obj = (await result.json()) as {
-    ok: boolean;
-    value: { ipnft: string; url: string; data: Record<string, any> };
-  };
-  console.log("obj result is ", obj);
-  return obj.value.url;
-  //   const cid = await nftStorage.storeBlob(new Blob([buf]), {});
-  //   return cid;
-};
 let rootToken = "";
 const nsServiceKey = "did:key:z6MknjRbVGkfWK1x5gyJZb6D4LjMj1EsitFzcSccS3sAaviQ";
 const issuerKeyPair = new KeyPair(
   Buffer.from(process.env.DID_PRIVATE_KEY ?? "", "base64"),
   Buffer.from(process.env.DID_PUBLIC_KEY ?? "", "base64")
 );
-// const _PublicKey = process.env.DID_PUBLIC_KEY ?? "";
-// const _PrivateKey = process.env.DID_PRIVATE_KEY ?? "";
-// const PublicKey = "VnQym9uqOGkGp0aQyUHw1WpCXi2qHq1EICkYCUETH5Y=";
-// const PrivateKey = "xIrljYnTaxKX3TK+fLFvnPvdI1YxiU8ATd1bwC2wwFQ=";
-// const issuerKeyPair = new KeyPair(
-//   Buffer.from(PrivateKey, "base64"),
-//   Buffer.from(PublicKey, "base64")
-// );
-// export const sentImage = makeAPIGatewayLambda({
-//   timeout: 30,
-//   method: "post",
-//   cors: true,
-//   path: "sentImage",
-//   func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
-//     if (!event.body) return sendHttpResult(400, "No body");
-//     const {
-//       contract,
-//       account,
-//       cid,
-//       type,
-//     }: {
-//       contract: string;
-//       account: string;
-//       cid: string;
-//       type: "image" | "cover";
-//     } = JSON.parse(event.body);
-//     if (!accounts.find((a) => a.get("id")?.stringValue() === account))
-//       return sendHttpResult(400, "This is not a valid account");
-//   }),
-// });
 export const getUCANToken = makeAPIGatewayLambda({
   timeout: 30,
   method: "get",
@@ -676,62 +625,34 @@ export const getUCANToken = makeAPIGatewayLambda({
     return httpSuccess({ token, did: process.env.DID });
   }),
 });
-
-interface MimeBuffer extends Buffer {
-  type: string;
-  typeFull: string;
-  charset: string;
-}
-export function dataUriToBuffer(uri: string): MimeBuffer {
-  if (!/^data:/i.test(uri)) {
-    throw new TypeError(
-      '`uri` does not appear to be a Data URI (must begin with "data:")'
-    );
-  }
-
-  // strip newlines
-  uri = uri.replace(/\r?\n/g, "");
-
-  // split the URI up into the "metadata" and the "data" portions
-  const firstComma = uri.indexOf(",");
-  if (firstComma === -1 || firstComma <= 4) {
-    throw new TypeError("malformed data: URI");
-  }
-
-  // remove the "data:" scheme and parse the metadata
-  const meta = uri.substring(5, firstComma).split(";");
-
-  let charset = "";
-  let base64 = false;
-  const type = meta[0] || "text/plain";
-  let typeFull = type;
-  for (let i = 1; i < meta.length; i++) {
-    if (meta[i] === "base64") {
-      base64 = true;
-    } else {
-      typeFull += `;${meta[i]}`;
-      if (meta[i].indexOf("charset=") === 0) {
-        charset = meta[i].substring(8);
-      }
-    }
-  }
-  // defaults to US-ASCII only if type is not provided
-  if (!meta[0] && !charset.length) {
-    typeFull += ";charset=US-ASCII";
-    charset = "US-ASCII";
-  }
-
-  // get the encoded data portion and decode URI-encoded chars
-  const encoding = base64 ? "base64" : "ascii";
-  const data = unescape(uri.substring(firstComma + 1));
-  const buffer = Buffer.from(data, encoding) as MimeBuffer;
-
-  // set `.type` and `.typeFull` properties to MIME type
-  buffer.type = type;
-  buffer.typeFull = typeFull;
-
-  // set the `.charset` property
-  buffer.charset = charset;
-
-  return buffer;
-}
+export const getContracts = makeAPIGatewayLambda({
+  timeout: 30,
+  method: "get",
+  cors: true,
+  path: "/contracts",
+  func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
+    let { account: accountId } = event.queryStringParameters || {};
+    if (!accountId) accountId = accounts[0].get("id")?.stringValue() ?? "";
+    if (!accountId) return sendHttpResult(400, "No account id");
+    const account = accounts[accountId];
+    if (!account) return sendHttpResult(400, "No account found");
+    //lets get my contracts
+    const list = await qldbDriver.executeLambda(async (txn) => {
+      const result = await txn.execute(
+        `SELECT * FROM Contract WHERE owner = ?`,
+        accountId
+      );
+      const list = await result.getResultList();
+      return list;
+    });
+    const output = list.map((v) => {
+      const id = v.get("id")?.stringValue() ?? "";
+      const [chainId, address] = id.split("::");
+      const name = v.get("name")?.stringValue() ?? "";
+      const description = v.get("description")?.stringValue() ?? "";
+      const image = v.get("image")?.stringValue() ?? "";
+      return { id, chainId, address, name, description, image };
+    });
+    return httpSuccess(output);
+  }),
+});
