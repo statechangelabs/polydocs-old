@@ -1,7 +1,8 @@
 import { Formik } from "formik";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuthenticatedFetch } from "./Authenticator";
 import {
   ERC721Termsable__factory,
   MetadataURI__factory,
@@ -24,7 +25,10 @@ const useMetadata = (chainId: string, contractAddress: string) => {
   //Get the metadata from the URI
   const ipfsJson = useIPFSText(uri);
   const metaData = JSON.parse(ipfsJson) as Record<string, any>;
-  return { metaData, refresh: getUri };
+  return useMemo(
+    () => ({ metaData, refresh: getUri, setUri }),
+    [metaData, getUri, setUri]
+  );
 };
 
 const ContractMetadata: FC = () => {
@@ -37,6 +41,7 @@ const ContractMetadata: FC = () => {
   const title = metaData.title;
   const { upload } = useUpload();
   const provider = useProvider(chainId);
+  const fetch = useAuthenticatedFetch();
   return (
     <Formik
       initialValues={{
@@ -44,6 +49,8 @@ const ContractMetadata: FC = () => {
         cover: metaData.cover,
         description: metaData.description,
         title: metaData.title,
+        background: metaData.background,
+        backgroundColor: metaData.backgroundColor,
       }}
       onSubmit={async (values, { resetForm }) => {
         const newMetadata = metaData;
@@ -51,19 +58,14 @@ const ContractMetadata: FC = () => {
         newMetadata.cover = values.cover;
         newMetadata.description = values.description;
         newMetadata.title = values.title;
+        newMetadata.background = values.background;
+        newMetadata.backgroundColor = values.backgroundColor;
         const newMetadataURI = await upload(JSON.stringify(newMetadata));
-        const contract = ERC721Termsable__factory.connect(
-          contractAddress,
-          provider
-        );
-        if (newMetadataURI) {
-          await contract.setURI(newMetadataURI);
-          refresh();
-          resetForm();
-          toast.success("Metadata updated");
-        } else {
-          toast.error("Error uploading metadata");
-        }
+        //support gasless update
+        const response = await fetch("/setUri", {
+          method: "POST",
+          body: JSON.stringify({ chainId, contractAddress, newMetadataURI }),
+        });
       }}
     ></Formik>
   );
