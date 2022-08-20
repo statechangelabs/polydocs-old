@@ -4,14 +4,44 @@ import { utils } from "ethers";
 import { decodeAB, useIPFSList } from "./useIPFS";
 import { useMain } from "./Main";
 import { useKnownTemplates } from "./useKnownTemplates";
+import { useAuthenticatedFetch } from "./Authenticator";
+import useAsyncEffect from "./useAsyncEffect";
+
+type Contract = {
+  id: string;
+  address: string;
+  chainId: string;
+  name: string;
+  symbol: string;
+};
+const useContracts = () => {
+  const fetch = useAuthenticatedFetch();
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [loading, setLoading] = useState(false);
+  const getContracts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/contracts");
+      const json = await response.json();
+      setContracts(json);
+    } catch (e) {
+      console.error("I had a bad error", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetch]);
+  useEffect(() => {
+    getContracts();
+  }, [getContracts]);
+
+  return useMemo(
+    () => ({ contracts, refresh: getContracts, loading }),
+    [contracts, getContracts, loading]
+  );
+};
 
 const Home: FC = () => {
-  const [contractAddress, setContractAddress] = useState("");
-  const navigate = useNavigate();
-  useEffect(() => {
-    const contractAddress = localStorage.getItem("contractAddress");
-    if (contractAddress) setContractAddress(contractAddress);
-  }, []);
+  const { contracts } = useContracts();
   const templates = useMemo(() => {
     return JSON.parse(localStorage.getItem("templates") || "{}") as Record<
       string,
@@ -33,11 +63,20 @@ const Home: FC = () => {
       <div className="mb-16">
         <div className="flex justify-center space-x-12">
           <h2 className="flex text-3xl font-bold text-black mb-4">
-            Manage My Smart Contract
+            Manage My Smart Contracts
           </h2>
         </div>
         <div className="flex justify-center space-x-2">
-          <input
+          {contracts.map((contract) => (
+            <div>
+              <Link to={`/contract/${contract.chainId}::${contract.address}`}>
+                <div className="flex flex-col items-center justify-center w-64 h-64 bg-white rounded-lg shadow-lg">
+                  {contract.name} ({contract.symbol})
+                </div>
+              </Link>
+            </div>
+          ))}
+          {/* <input
             type="text"
             value={contractAddress}
             onChange={(e) => setContractAddress(e.target.value)}
@@ -51,7 +90,7 @@ const Home: FC = () => {
             className="btn btn-primary"
           >
             Manage
-          </button>
+          </button> */}
         </div>
       </div>
       <div>

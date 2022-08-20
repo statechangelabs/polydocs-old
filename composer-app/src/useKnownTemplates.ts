@@ -12,10 +12,6 @@ const templateRegistryChain =
 
 export const useKnownTemplates = () => {
   const provider = useProvider(templateRegistryChain);
-  const templatesRegistry = TemplateRegistry__factory.connect(
-    templateRegistryAddress,
-    provider
-  );
   const [knownCids, setKnownCids] = useState(
     JSON.parse(localStorage.getItem("localTemplateCids") || "[]") as {
       cid: string;
@@ -24,15 +20,21 @@ export const useKnownTemplates = () => {
   );
 
   useAsyncEffect(async () => {
+    const templatesRegistry = TemplateRegistry__factory.connect(
+      templateRegistryAddress,
+      provider
+    );
     const limit = await templatesRegistry.count();
-    for (let x = BigNumber.from(0); x < limit; x.add(1)) {
+    console.log("my lmiit is ", limit);
+    for (let x = BigNumber.from(0); x.lt(limit); x = x.add(1)) {
+      console.log("Looking up template number", x, limit);
       const struct = await templatesRegistry.template(x);
       setKnownCids((old) => [
         ...old.filter(({ cid }) => cid !== struct.cid),
         struct,
       ]);
     }
-  }, [templatesRegistry]);
+  }, []);
   useEffect(() => {
     localStorage.setItem("localTemplateCids", JSON.stringify(knownCids));
     if (knownCids.find(({ cid }) => !cid)) {
