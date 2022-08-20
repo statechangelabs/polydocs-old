@@ -1,4 +1,4 @@
-![Polydocs Logo](/assets/Polydocs+Devpost+Thumbnail.png)
+![Polydocs Logo](/assets/Polydocs%20Devpost%20Thumbnail.png)
 # Polydocs
 ## Inspiration
 Smart contracts are increasingly used for managing the allocation of digital assets. These assets are more complex than the cash or deeds we sometimes use for analogies. Intellectual property involves rights and responsibilities. Financial instruments require acceptance on both sides. Communities need agreement on government by norms and rules.
