@@ -41,7 +41,7 @@ const Home: FC = () => {
             </div>
             <ul className="max-w-4xl mx-auto">
               {knownTemplates.map(({ cid, name }) => (
-                <li>
+                <li className="pt-4">
                   <Link
                     to={"/template/" + cid}
                     className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"

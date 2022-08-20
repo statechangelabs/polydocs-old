@@ -35,7 +35,7 @@ const Templates: FC = () => {
               {knownTemplates
                 .filter(({ cid }) => !!cid)
                 .map(({ name, cid }) => (
-                  <li>
+                  <li className="pt-4">
                     <Link
                       to={"/templates/" + cid}
                       className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
