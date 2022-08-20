@@ -1,22 +1,23 @@
 import { eth_requestAccounts } from "@raydeck/metamask-ts";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { FaGithub } from "react-icons/fa";
-import { HashRouter, Link, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { Link, Route, Routes } from "react-router-dom";
+import { useAuthenticator } from "./Authenticator";
+import { useMain } from "./DisconnectedMain";
 import Editor from "./Editor";
-import Templates from "./Templates";
+import KnownTemplates from "./KnownTemplates";
 import Title from "./Title";
 import Topography from "./topography.svg";
-const DisconnectedRoutes = () => {
-  return (
-    <Routes>
-      <Route path="/templates" element={<Templates />} />
-      <Route path="/templates/{templateId}" element={<Editor />} />
-      <Route path="*" element={<Disconnected />} />
-    </Routes>
-  );
-};
+
 const Disconnected: FC = () => {
+  const { setHeaderVisible } = useMain();
+  useEffect(() => {
+    setHeaderVisible(false);
+    return () => {
+      setHeaderVisible(true);
+    };
+  }, []);
+  const { authenticate } = useAuthenticator();
   return (
     <div
       className="h-screen w-full flex flex-col justify-center items-center"
@@ -30,6 +31,8 @@ const Disconnected: FC = () => {
             onClick={async () => {
               const accounts = await eth_requestAccounts();
               console.log("I haz accounts", accounts);
+              await authenticate();
+              console.log("I am authenticated");
             }}
           >
             Connect to Metamask
@@ -53,4 +56,4 @@ const Disconnected: FC = () => {
     </div>
   );
 };
-export default DisconnectedRoutes;
+export default Disconnected;

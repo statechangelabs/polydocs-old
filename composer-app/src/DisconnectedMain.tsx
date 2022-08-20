@@ -1,30 +1,18 @@
 import { Disclosure } from "@headlessui/react";
-import React, {
-  createContext,
-  FC,
-  Fragment,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, FC, useContext, useMemo, useState } from "react";
 import {
   Route,
   Routes,
   useLocation,
   Link,
   useNavigate,
-  Navigate,
 } from "react-router-dom";
 import Editor from "./Editor";
-import Home from "./Home";
 import Logo from "./logo.png";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
-import Settings from "./Settings";
-import Contract from "./Contract";
 import Topography from "./topography.svg";
-import { useAddress, useAuthenticator } from "./Authenticator";
-import CreateContract from "./CreateContract";
-import Templates from "./Templates";
+import Disconnected from "./Disconnected";
+import KnownTemplates from "./KnownTemplates";
 const chainNames: Record<number, string> = {
   1: "mainnet",
   3: "ropsten",
@@ -54,22 +42,22 @@ function classNames(...classes: string[]) {
 const mainContext = createContext({
   title: "Dashboard",
   setTitle: (title: string) => {},
+  headerVisible: true,
+  setHeaderVisible: (visible: boolean) => {},
 });
 const { Provider: MainProvider } = mainContext;
 export const useMain = () => useContext(mainContext);
 
 const Main: FC = () => {
-  const { logout } = useAuthenticator();
-  const address = useAddress();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const navigation = useMemo(() => {
     return [
       { name: "Home", to: "/", current: pathname === "/" },
       {
-        name: "Template",
-        to: "/template",
-        current: pathname.startsWith("/template"),
+        name: "Templates",
+        to: "/templates",
+        current: pathname.startsWith("/templates"),
       },
       {
         name: "Contract",
@@ -80,7 +68,17 @@ const Main: FC = () => {
   }, [pathname]);
 
   const [title, setTitle] = useState("Dashboard");
-  const value = useMemo(() => ({ title, setTitle }), [title]);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const value = useMemo(
+    () => ({ title, setTitle, headerVisible, setHeaderVisible }),
+    [title, headerVisible]
+  );
+  if (!headerVisible)
+    return (
+      <MainProvider value={value}>
+        <SubMain />
+      </MainProvider>
+    );
   return (
     <div>
       <div
@@ -143,13 +141,6 @@ const Main: FC = () => {
                       )}
                     </Disclosure.Button>
                   </div>
-                  <button
-                    className="ml-2 text-purple-dark text-xs"
-                    onClick={logout}
-                  >
-                    {address.substring(0, 6)}...
-                    {address.substring(address.length - 4)} Log out
-                  </button>
                 </div>
               </div>
 
@@ -218,23 +209,9 @@ const Main: FC = () => {
 const SubMain: FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/template" element={<Templates />} />
-      <Route path="/template/:templateId" element={<Editor />} />
-      <Route path="/template/:templateId/:subpath1" element={<Editor />} />
-      <Route
-        path="/template/:templateId/:subpath1/:subpath2"
-        element={<Editor />}
-      />
-      <Route
-        path="/template/:templateId/:subpath1/:subpath2/:subpath3"
-        element={<Editor />}
-      />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/contracts/:contractId" element={<Contract />} />
-      <Route path="/contracts/" element={<Contract />} />
-      <Route path="*" element={<Navigate to="/" />} />
-      <Route path="/contract" element={<CreateContract />} />
+      <Route path="/templates" element={<KnownTemplates />} />
+      <Route path="/templates/:templateId" element={<Editor />} />
+      <Route path="*" element={<Disconnected />} />
     </Routes>
   );
 };

@@ -1,19 +1,18 @@
-import React, { FC, Fragment } from "react";
+import React, { FC, Fragment, useEffect } from "react";
 import {
   MetamaskConnected,
   MetamaskDisconnected,
+  MetamaskInstalled,
   MetamaskNotInstalled,
-  MetamaskWrongChain,
 } from "@raydeck/usemetamask";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import GetMetamask from "./GetMetamask";
-import WrongChain from "./WrongChain";
-import Disconnected from "./Disconnected";
 import { ToastContainer } from "react-toastify";
 import Main from "./Main";
 import "inter-ui";
 import Redirector from "./Redirector";
-import Authenticator from "./Authenticator";
+import Authenticator, { useAuthenticator } from "./Authenticator";
+import DisconnectedMain from "./DisconnectedMain";
 const App: FC = () => {
   return (
     <HashRouter>
@@ -25,6 +24,13 @@ const App: FC = () => {
     </HashRouter>
   );
 };
+const Disconnected: FC = () => {
+  const { logout } = useAuthenticator();
+  useEffect(() => {
+    logout();
+  }, [logout]);
+  return null;
+};
 
 const RestOfApp: FC = () => {
   return (
@@ -32,17 +38,18 @@ const RestOfApp: FC = () => {
       <MetamaskNotInstalled>
         <GetMetamask />
       </MetamaskNotInstalled>
-      <MetamaskDisconnected>
-        <Disconnected />
-      </MetamaskDisconnected>
-      <MetamaskWrongChain>
-        <WrongChain />
-      </MetamaskWrongChain>
-      <MetamaskConnected>
-        <Authenticator>
-          <Main />
+      <MetamaskInstalled>
+        <Authenticator fallback={<DisconnectedMain />}>
+          <Fragment>
+            <MetamaskConnected>
+              <Main />
+            </MetamaskConnected>
+            {/* <MetamaskDisconnected>
+              <Disconnected />
+            </MetamaskDisconnected> */}
+          </Fragment>
         </Authenticator>
-      </MetamaskConnected>
+      </MetamaskInstalled>
       <ToastContainer />
     </Fragment>
   );

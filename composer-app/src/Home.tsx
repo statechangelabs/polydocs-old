@@ -3,9 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { utils } from "ethers";
 import { decodeAB, useIPFSList } from "./useIPFS";
 import { useMain } from "./Main";
-const knownCids = [
-  "bafybeih2ea4d777iaot4fodu76r5adaqf5hvp4aumfrlxk4teexs2b54ua/template.md",
-];
+import { useKnownTemplates } from "./useKnownTemplates";
+
 const Home: FC = () => {
   const [contractAddress, setContractAddress] = useState("");
   const navigate = useNavigate();
@@ -23,7 +22,7 @@ const Home: FC = () => {
   const incrementCounter = useCallback(() => {
     setCounter((old) => old + 1);
   }, []);
-  const knownTemplates = useIPFSList(knownCids);
+  const knownTemplates = useKnownTemplates();
 
   const { setTitle } = useMain();
   useEffect(() => {
@@ -72,14 +71,14 @@ const Home: FC = () => {
               Click To Review/Revise
             </div>
             <ul className="max-w-4xl mx-auto">
-              {Object.entries(knownTemplates).map(([cid, ab]) => (
+              {knownTemplates.map(({ cid, name }) => (
                 <li>
                   <Link
                     to={"/template/" + cid}
                     className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
                   >
                     <div>
-                      {decodeAB(ab).replaceAll("#", "").substring(0, 120)}
+                      {name}
                       ...
                     </div>
                     <div className="text-xs text-gray-600">

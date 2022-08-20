@@ -9,13 +9,10 @@ import { ethers } from "ethers";
 import useAsyncEffect from "./useAsyncEffect";
 import { useMain } from "./Main";
 import Renderer from "./Renderer";
-import { decodeAB, useIPFSText, useIPFSList } from "./useIPFS";
+import { useIPFSText } from "./useIPFS";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
-const knownCids = [
-  "bafybeih2ea4d777iaot4fodu76r5adaqf5hvp4aumfrlxk4teexs2b54ua/template.md",
-];
+import { useKnownTemplates } from "./useKnownTemplates";
 
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
@@ -26,6 +23,7 @@ const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
   : undefined;
 const Contract: FC = () => {
+  const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
   const { contractId } = useParams();
 
@@ -153,7 +151,7 @@ const Contract: FC = () => {
       localStorage.setItem("contractAddress", contractAddress);
     }
   }, [contractAddress, contractId, navigate]);
-  const knownTemplates = useIPFSList(knownCids);
+  // const knownTemplates = useIPFSList(knownCids);
   return (
     <Fragment>
       <div>
@@ -303,7 +301,7 @@ const Contract: FC = () => {
                     </p>
                     <h3 className="font-semibold mb-2">Known Templates</h3>
                     <ul>
-                      {Object.entries(knownTemplates).map(([cid, ab]) => (
+                      {knownTemplates.map(({ cid, name }) => (
                         <li className="flex justify-between  mb-4 ">
                           <button
                             onClick={() => {
@@ -312,9 +310,7 @@ const Contract: FC = () => {
                             className="text-gray-60 text-purple-default hover:text-purple-light truncate"
                           >
                             <div>
-                              {decodeAB(ab)
-                                .replaceAll("#", "")
-                                .substring(0, 60)}
+                              {name}
                               ...
                             </div>
                             <div className="text-xs text-gray-60">

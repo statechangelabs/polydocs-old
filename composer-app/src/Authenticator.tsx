@@ -16,6 +16,7 @@ const context = createContext({
   token: "",
   isAuthenticated: false,
   logout: () => {},
+  authenticate: async () => true as true | undefined,
 });
 const { Provider } = context;
 const POLYDOCS_BASE =
@@ -25,7 +26,10 @@ const ethereum = (window as unknown as { ethereum: any }).ethereum;
 const provider = ethereum
   ? new ethers.providers.Web3Provider(ethereum)
   : undefined;
-const Authenticator: FC<{ children: ReactElement }> = ({ children }) => {
+const Authenticator: FC<{
+  children: ReactElement;
+  fallback?: ReactElement;
+}> = ({ children, fallback }) => {
   const [token, setToken] = useState("");
   useEffect(() => {
     const localToken = localStorage.getItem("polydocs_token");
@@ -72,31 +76,31 @@ const Authenticator: FC<{ children: ReactElement }> = ({ children }) => {
   }, []);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const value = useMemo(
-    () => ({ isAuthenticated, token, logout }),
-    [isAuthenticated, token, logout]
+    () => ({ isAuthenticated, token, logout, authenticate }),
+    [isAuthenticated, token, logout, authenticate]
   );
   if (isAuthenticated) return <Provider value={value}>{children}</Provider>;
-  else
-    return (
-      <div
-        className="h-screen w-full flex flex-col justify-center items-center"
-        style={{ background: `url(${Topography})` }}
-      >
-        <div className="flex flex-col space-y-8">
-          <Title />
-          <div className="flex flex-row justify-center">
-            <button className="btn btn-gradient" onClick={authenticate}>
-              Sign In To Polydocs
-            </button>
-          </div>
+  else if (fallback) return <Provider value={value}>{fallback}</Provider>;
+  return (
+    <div
+      className="h-screen w-full flex flex-col justify-center items-center"
+      style={{ background: `url(${Topography})` }}
+    >
+      <div className="flex flex-col space-y-8">
+        <Title />
+        <div className="flex flex-row justify-center">
+          <button className="btn btn-gradient" onClick={authenticate}>
+            Sign In To Polydocs
+          </button>
         </div>
       </div>
-    );
+    </div>
+  );
 };
 export default Authenticator;
 export const useAuthenticator = () => {
-  const { isAuthenticated, logout } = useContext(context);
-  return { isAuthenticated, logout };
+  const { isAuthenticated, logout, authenticate } = useContext(context);
+  return { isAuthenticated, logout, authenticate };
 };
 const useAuthToken = () => {
   const { token } = useContext(context);
@@ -107,6 +111,7 @@ export const useAuthenticatedFetch = () => {
   const { logout } = useAuthenticator();
   return (async (path: string, info: RequestInit = {}) => {
     const res = await fetch(POLYDOCS_BASE + path, {
+      ...info,
       headers: {
         ...(info.headers || {}),
         Authorization: `Bearer ${token}`,

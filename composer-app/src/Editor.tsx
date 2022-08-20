@@ -2,11 +2,12 @@ import { FC, Fragment, useCallback, useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import Renderer from "./Renderer";
 import { useMain } from "./Main";
-import { upload } from "./upload";
+import { useUpload } from "./useIPFSUpload";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { useIPFS, useIPFSText } from "./useIPFS";
+import { useAuthenticator } from "./Authenticator";
 const example: string = `
 # Title
 
@@ -43,6 +44,7 @@ And put terms you want to use in the document between {{curly braces}}
 
 `;
 const Editor: FC = () => {
+  const { isAuthenticated } = useAuthenticator();
   const [terms, setTerms] = useState<Record<string, string>>({});
   const { templateId, subpath1, subpath2, subpath3 } = useParams();
   const combinedPath = [templateId, subpath1, subpath2, subpath3]
@@ -66,6 +68,7 @@ const Editor: FC = () => {
   useEffect(() => {
     setTitle("Editor");
   }, []);
+  const { upload } = useUpload();
   if (combinedPath && !ipfsText) return null;
   return (
     <Fragment>
@@ -94,32 +97,34 @@ const Editor: FC = () => {
                     rows={20}
                   />
                   <div className="flex justify-end mt-6">
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={async () => {
-                        console.log("Hello there my friend");
-                        toast("Uploading");
-                        const cidWithPath = await upload(values.template);
-                        toast("Successfully uploaded" + cidWithPath);
-                        console.log("uploaded", cidWithPath);
-                        localStorage.setItem("currentTemplate", cidWithPath);
-                        const templates: Record<string, string> = JSON.parse(
-                          localStorage.getItem("templates") || "{}"
-                        );
-                        templates[cidWithPath] = values.template;
-                        console.log(
-                          "I will save templates",
-                          JSON.stringify(templates)
-                        );
-                        localStorage.setItem(
-                          "templates",
-                          JSON.stringify(templates)
-                        );
-                      }}
-                    >
-                      Upload to IPFS
-                    </button>
+                    {isAuthenticated && (
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={async () => {
+                          console.log("Hello there my friend");
+                          toast("Uploading");
+                          const cidWithPath = await upload(values.template);
+                          toast("Successfully uploaded" + cidWithPath);
+                          console.log("uploaded", cidWithPath);
+                          localStorage.setItem("currentTemplate", cidWithPath);
+                          const templates: Record<string, string> = JSON.parse(
+                            localStorage.getItem("templates") || "{}"
+                          );
+                          templates[cidWithPath] = values.template;
+                          console.log(
+                            "I will save templates",
+                            JSON.stringify(templates)
+                          );
+                          localStorage.setItem(
+                            "templates",
+                            JSON.stringify(templates)
+                          );
+                        }}
+                      >
+                        Upload to IPFS
+                      </button>
+                    )}
                   </div>
                 </div>
 

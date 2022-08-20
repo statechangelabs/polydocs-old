@@ -22,7 +22,7 @@ export const useUpload = () => {
       });
       const obj = await result.json();
       if (obj.ok) {
-        return obj.value.cid;
+        return obj.value.cid as string;
       } else {
         console.error(obj.error);
         throw new Error(obj.error);
