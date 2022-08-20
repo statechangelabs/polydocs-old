@@ -33,7 +33,9 @@ Sponsor technologies were key to making as much progress as we did in this hacka
 
 * Using hardhat in a lambda environment was challenging as the dependencies pushed against the space limits for a single package. To address this, we created a lambda layer to make it easy to work with hardhat. It is integrated into our project, and publically available: https://github.com/rhdeck/hardhat-lambda-layer 
 
-* Deploying dynamic apps on IPFS hosting creates challenges since the apps must be truly static assets - there is no web server to help redirect one. We found two tricks particularly helped. First, we shifted from using the traditional `BrowserRouter` approach of overriding history and paths to using an older-school `HashRouter` that manages navigation through the fragment. This technique felt like a throwback, but magically solved many problems with deep linking. Second, we set the `PUBLIC_URL` environment variable used by create-react-app to `.` as opposed to the default of `/`. This was important because when viewing an app on IPFS, one is not guaranteed to doing so through a specific path. By referencing "current" and then staying on the one page (because we navigate via the fragment) the app stays stable and available. 
+* Deploying dynamic apps on IPFS hosting creates challenges since the apps must be truly static assets - there is no web server to help redirect one. We found two tricks particularly helped. 
+  * First, we shifted from using the traditional `BrowserRouter` approach of overriding history and paths to using an older-school `HashRouter` that manages navigation through the fragment. This technique felt like a throwback, but magically solved many problems with deep linking. 
+  * Second, we set the `PUBLIC_URL` environment variable used by create-react-app to `.` as opposed to the default of `/`. This was important because when viewing an app on IPFS, one is not guaranteed to doing so through a specific path. By referencing "current" and then staying on the one page (because we navigate via the fragment) the app stays stable and available. 
 
 * We focused on issues of onboarding and approaches to make this technology more useful for protecting rights and managing digital assets. While our initial approach was a more traditional dapp in which the customer pays gas fees, introducing a bit of indirection while managing protection and guaranteeing the provenance of signatures significantly reduces the stresses for users. 
 
@@ -47,7 +49,7 @@ We started Polydocs as an effort to make it easier and safer to operate complica
 
 ## Gratitude
 
-We are very thankful for the opportunity to learn, grow and develop Polydocs in the context of the Buidl hackathon. Thank you to Polygon, Protocol Labs, Spheron, AWS, and the many members of the hackathon community who have made this such a rewarding experience. 
+We are very thankful for the opportunity to learn, grow and develop Polydocs in the context of the Buidl hackathon. Thank you to our hosts at Polygon, the sponsors - especially Protocol Labs, Spheron, and AWS - and the many members of the hackathon community who have made this such a rewarding experience. 
 
 Team Polydocs
 
