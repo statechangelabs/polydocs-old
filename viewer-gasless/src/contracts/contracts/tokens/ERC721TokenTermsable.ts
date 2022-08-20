@@ -27,8 +27,21 @@ import type {
   PromiseOrValue,
 } from "../../common";
 
+export declare namespace ERC721TokenTermsable {
+  export type TermsInfoStruct = {
+    key: PromiseOrValue<string>;
+    value: PromiseOrValue<string>;
+  };
+
+  export type TermsInfoStructOutput = [string, string] & {
+    key: string;
+    value: string;
+  };
+}
+
 export interface ERC721TokenTermsableInterface extends utils.Interface {
   functions: {
+    "URI()": FunctionFragment;
     "_tokenIds()": FunctionFragment;
     "acceptTerms(uint256,string)": FunctionFragment;
     "acceptTermsFor(address,string,uint256,bytes)": FunctionFragment;
@@ -41,23 +54,26 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     "getApproved(uint256)": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint()": FunctionFragment;
+    "isMetaSigner(address)": FunctionFragment;
+    "mint(string)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "royaltyInfo(uint256,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
+    "setPolydocs(uint256,string,string,(string,string)[])": FunctionFragment;
     "setTokenRenderer(uint256,string)": FunctionFragment;
     "setTokenTemplate(uint256,string)": FunctionFragment;
     "setTokenTerm(string,uint256,string)": FunctionFragment;
-    "setTokenURI(uint256,string)": FunctionFragment;
+    "setURI(string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "termsUrl(uint256)": FunctionFragment;
@@ -72,6 +88,7 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "URI"
       | "_tokenIds"
       | "acceptTerms"
       | "acceptTermsFor"
@@ -84,6 +101,7 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
       | "getApproved"
       | "globalTerm"
       | "isApprovedForAll"
+      | "isMetaSigner"
       | "mint"
       | "name"
       | "owner"
@@ -91,16 +109,18 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
       | "removeMetaSigner"
       | "renderer"
       | "renounceOwnership"
+      | "royaltyInfo"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
+      | "setPolydocs"
       | "setTokenRenderer"
       | "setTokenTemplate"
       | "setTokenTerm"
-      | "setTokenURI"
+      | "setURI"
       | "supportsInterface"
       | "symbol"
       | "termsUrl"
@@ -113,6 +133,7 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "URI", values?: undefined): string;
   encodeFunctionData(functionFragment: "_tokenIds", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "acceptTerms",
@@ -163,7 +184,14 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(functionFragment: "mint", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "isMetaSigner",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -178,6 +206,10 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "royaltyInfo",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom(address,address,uint256)",
@@ -213,6 +245,15 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setPolydocs",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      ERC721TokenTermsable.TermsInfoStruct[]
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setTokenRenderer",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
@@ -229,8 +270,8 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTokenURI",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+    functionFragment: "setURI",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -274,6 +315,7 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "URI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_tokenIds", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "acceptTerms",
@@ -310,6 +352,10 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "isMetaSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -321,6 +367,10 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "renderer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "royaltyInfo",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -348,6 +398,10 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setPolydocs",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setTokenRenderer",
     data: BytesLike
   ): Result;
@@ -359,10 +413,7 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     functionFragment: "setTokenTerm",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTokenURI",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -401,8 +452,11 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "MintNFT(address,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "TokenRendererChanged(uint256,string)": EventFragment;
+    "TokenTemplateChanged(uint256,string)": EventFragment;
     "TokenTermChanged(bytes32,uint256,bytes32)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "UpdatedURI(string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AcceptedTerms"): EventFragment;
@@ -413,8 +467,11 @@ export interface ERC721TokenTermsableInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenRendererChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokenTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdatedURI"): EventFragment;
 }
 
 export interface AcceptedTermsEventObject {
@@ -507,6 +564,30 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
+export interface TokenRendererChangedEventObject {
+  _tokenId: BigNumber;
+  _renderer: string;
+}
+export type TokenRendererChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenRendererChangedEventObject
+>;
+
+export type TokenRendererChangedEventFilter =
+  TypedEventFilter<TokenRendererChangedEvent>;
+
+export interface TokenTemplateChangedEventObject {
+  _tokenId: BigNumber;
+  _template: string;
+}
+export type TokenTemplateChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenTemplateChangedEventObject
+>;
+
+export type TokenTemplateChangedEventFilter =
+  TypedEventFilter<TokenTemplateChangedEvent>;
+
 export interface TokenTermChangedEventObject {
   _term: string;
   _tokenId: BigNumber;
@@ -531,6 +612,13 @@ export type TransferEvent = TypedEvent<
 >;
 
 export type TransferEventFilter = TypedEventFilter<TransferEvent>;
+
+export interface UpdatedURIEventObject {
+  uri: string;
+}
+export type UpdatedURIEvent = TypedEvent<[string], UpdatedURIEventObject>;
+
+export type UpdatedURIEventFilter = TypedEventFilter<UpdatedURIEvent>;
 
 export interface ERC721TokenTermsable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -559,6 +647,8 @@ export interface ERC721TokenTermsable extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    URI(overrides?: CallOverrides): Promise<[string]>;
+
     _tokenIds(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { _value: BigNumber }>;
@@ -619,7 +709,13 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     mint(
+      _tokenURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -642,6 +738,12 @@ export interface ERC721TokenTermsable extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    royaltyInfo(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string, BigNumber]>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: PromiseOrValue<string>,
@@ -680,6 +782,14 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setPolydocs(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721TokenTermsable.TermsInfoStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setTokenRenderer(
       tokenId: PromiseOrValue<BigNumberish>,
       newRenderer: PromiseOrValue<string>,
@@ -699,9 +809,8 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    setTokenURI(
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _uri: PromiseOrValue<string>,
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -756,6 +865,8 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  URI(overrides?: CallOverrides): Promise<string>;
 
   _tokenIds(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -815,7 +926,13 @@ export interface ERC721TokenTermsable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  isMetaSigner(
+    _signer: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   mint(
+    _tokenURI: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -838,6 +955,12 @@ export interface ERC721TokenTermsable extends BaseContract {
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  royaltyInfo(
+    _tokenId: PromiseOrValue<BigNumberish>,
+    _salePrice: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<[string, BigNumber]>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: PromiseOrValue<string>,
@@ -876,6 +999,14 @@ export interface ERC721TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setPolydocs(
+    _tokenId: PromiseOrValue<BigNumberish>,
+    renderer: PromiseOrValue<string>,
+    template: PromiseOrValue<string>,
+    terms: ERC721TokenTermsable.TermsInfoStruct[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setTokenRenderer(
     tokenId: PromiseOrValue<BigNumberish>,
     newRenderer: PromiseOrValue<string>,
@@ -895,9 +1026,8 @@ export interface ERC721TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  setTokenURI(
-    _tokenId: PromiseOrValue<BigNumberish>,
-    _uri: PromiseOrValue<string>,
+  setURI(
+    _newURI: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -953,6 +1083,8 @@ export interface ERC721TokenTermsable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    URI(overrides?: CallOverrides): Promise<string>;
+
     _tokenIds(overrides?: CallOverrides): Promise<BigNumber>;
 
     acceptTerms(
@@ -1011,7 +1143,15 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(overrides?: CallOverrides): Promise<void>;
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    mint(
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1030,6 +1170,12 @@ export interface ERC721TokenTermsable extends BaseContract {
     renderer(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    royaltyInfo(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string, BigNumber]>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: PromiseOrValue<string>,
@@ -1068,6 +1214,14 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setPolydocs(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721TokenTermsable.TermsInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setTokenRenderer(
       tokenId: PromiseOrValue<BigNumberish>,
       newRenderer: PromiseOrValue<string>,
@@ -1087,9 +1241,8 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setTokenURI(
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _uri: PromiseOrValue<string>,
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1217,6 +1370,24 @@ export interface ERC721TokenTermsable extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
+    "TokenRendererChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+    TokenRendererChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+
+    "TokenTemplateChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+    TokenTemplateChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+
     "TokenTermChanged(bytes32,uint256,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
@@ -1238,9 +1409,14 @@ export interface ERC721TokenTermsable extends BaseContract {
       to?: PromiseOrValue<string> | null,
       tokenId?: PromiseOrValue<BigNumberish> | null
     ): TransferEventFilter;
+
+    "UpdatedURI(string)"(uri?: null): UpdatedURIEventFilter;
+    UpdatedURI(uri?: null): UpdatedURIEventFilter;
   };
 
   estimateGas: {
+    URI(overrides?: CallOverrides): Promise<BigNumber>;
+
     _tokenIds(overrides?: CallOverrides): Promise<BigNumber>;
 
     acceptTerms(
@@ -1299,7 +1475,13 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     mint(
+      _tokenURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1321,6 +1503,12 @@ export interface ERC721TokenTermsable extends BaseContract {
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    royaltyInfo(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
@@ -1360,6 +1548,14 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setPolydocs(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721TokenTermsable.TermsInfoStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setTokenRenderer(
       tokenId: PromiseOrValue<BigNumberish>,
       newRenderer: PromiseOrValue<string>,
@@ -1379,9 +1575,8 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setTokenURI(
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _uri: PromiseOrValue<string>,
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1438,6 +1633,8 @@ export interface ERC721TokenTermsable extends BaseContract {
   };
 
   populateTransaction: {
+    URI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     _tokenIds(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     acceptTerms(
@@ -1496,7 +1693,13 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     mint(
+      _tokenURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1518,6 +1721,12 @@ export interface ERC721TokenTermsable extends BaseContract {
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    royaltyInfo(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      _salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
@@ -1557,6 +1766,14 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setPolydocs(
+      _tokenId: PromiseOrValue<BigNumberish>,
+      renderer: PromiseOrValue<string>,
+      template: PromiseOrValue<string>,
+      terms: ERC721TokenTermsable.TermsInfoStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setTokenRenderer(
       tokenId: PromiseOrValue<BigNumberish>,
       newRenderer: PromiseOrValue<string>,
@@ -1576,9 +1793,8 @@ export interface ERC721TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setTokenURI(
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _uri: PromiseOrValue<string>,
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

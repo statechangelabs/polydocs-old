@@ -40,11 +40,39 @@ export interface TokenTermReaderInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "tokenTerm", data: BytesLike): Result;
 
   events: {
+    "TokenRendererChanged(uint256,string)": EventFragment;
+    "TokenTemplateChanged(uint256,string)": EventFragment;
     "TokenTermChanged(bytes32,uint256,bytes32)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "TokenRendererChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokenTermChanged"): EventFragment;
 }
+
+export interface TokenRendererChangedEventObject {
+  _tokenId: BigNumber;
+  _renderer: string;
+}
+export type TokenRendererChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenRendererChangedEventObject
+>;
+
+export type TokenRendererChangedEventFilter =
+  TypedEventFilter<TokenRendererChangedEvent>;
+
+export interface TokenTemplateChangedEventObject {
+  _tokenId: BigNumber;
+  _template: string;
+}
+export type TokenTemplateChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenTemplateChangedEventObject
+>;
+
+export type TokenTemplateChangedEventFilter =
+  TypedEventFilter<TokenTemplateChangedEvent>;
 
 export interface TokenTermChangedEventObject {
   _term: string;
@@ -108,6 +136,24 @@ export interface TokenTermReader extends BaseContract {
   };
 
   filters: {
+    "TokenRendererChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+    TokenRendererChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+
+    "TokenTemplateChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+    TokenTemplateChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+
     "TokenTermChanged(bytes32,uint256,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,

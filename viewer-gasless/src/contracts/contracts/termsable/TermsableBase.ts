@@ -28,10 +28,12 @@ import type {
 
 export interface TermsableBaseInterface extends utils.Interface {
   functions: {
+    "URI()": FunctionFragment;
     "addMetaSigner(address)": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
+    "isMetaSigner(address)": FunctionFragment;
     "owner()": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
@@ -39,15 +41,18 @@ export interface TermsableBaseInterface extends utils.Interface {
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
+    "setURI(string)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "URI"
       | "addMetaSigner"
       | "currentTermsBlock"
       | "docTemplate"
       | "globalTerm"
+      | "isMetaSigner"
       | "owner"
       | "removeMetaSigner"
       | "renderer"
@@ -55,9 +60,11 @@ export interface TermsableBaseInterface extends utils.Interface {
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
+      | "setURI"
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "URI", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "addMetaSigner",
     values: [PromiseOrValue<string>]
@@ -72,6 +79,10 @@ export interface TermsableBaseInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "globalTerm",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isMetaSigner",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -97,10 +108,15 @@ export interface TermsableBaseInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setURI",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "URI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addMetaSigner",
     data: BytesLike
@@ -114,6 +130,10 @@ export interface TermsableBaseInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isMetaSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeMetaSigner",
@@ -136,6 +156,7 @@ export interface TermsableBaseInterface extends utils.Interface {
     functionFragment: "setGlobalTerm",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -146,12 +167,14 @@ export interface TermsableBaseInterface extends utils.Interface {
     "GlobalTemplateChanged(string)": EventFragment;
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "UpdatedURI(string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "GlobalRendererChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdatedURI"): EventFragment;
 }
 
 export interface GlobalRendererChangedEventObject {
@@ -200,6 +223,13 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
+export interface UpdatedURIEventObject {
+  uri: string;
+}
+export type UpdatedURIEvent = TypedEvent<[string], UpdatedURIEventObject>;
+
+export type UpdatedURIEventFilter = TypedEventFilter<UpdatedURIEvent>;
+
 export interface TermsableBase extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -227,6 +257,8 @@ export interface TermsableBase extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    URI(overrides?: CallOverrides): Promise<[string]>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -240,6 +272,11 @@ export interface TermsableBase extends BaseContract {
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -270,11 +307,18 @@ export interface TermsableBase extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  URI(overrides?: CallOverrides): Promise<string>;
 
   addMetaSigner(
     _signer: PromiseOrValue<string>,
@@ -289,6 +333,11 @@ export interface TermsableBase extends BaseContract {
     _term: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  isMetaSigner(
+    _signer: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -319,12 +368,19 @@ export interface TermsableBase extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setURI(
+    _newURI: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   transferOwnership(
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    URI(overrides?: CallOverrides): Promise<string>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -338,6 +394,11 @@ export interface TermsableBase extends BaseContract {
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -363,6 +424,11 @@ export interface TermsableBase extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -404,9 +470,14 @@ export interface TermsableBase extends BaseContract {
       previousOwner?: PromiseOrValue<string> | null,
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
+
+    "UpdatedURI(string)"(uri?: null): UpdatedURIEventFilter;
+    UpdatedURI(uri?: null): UpdatedURIEventFilter;
   };
 
   estimateGas: {
+    URI(overrides?: CallOverrides): Promise<BigNumber>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -418,6 +489,11 @@ export interface TermsableBase extends BaseContract {
 
     globalTerm(
       _term: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -450,6 +526,11 @@ export interface TermsableBase extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -457,6 +538,8 @@ export interface TermsableBase extends BaseContract {
   };
 
   populateTransaction: {
+    URI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -468,6 +551,11 @@ export interface TermsableBase extends BaseContract {
 
     globalTerm(
       _term: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -497,6 +585,11 @@ export interface TermsableBase extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

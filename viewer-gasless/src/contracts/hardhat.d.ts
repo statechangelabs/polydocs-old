@@ -109,6 +109,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TokenTermReader__factory>;
     getContractFactory(
+      name: "TemplateRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TemplateRegistry__factory>;
+    getContractFactory(
       name: "TermsableBase",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TermsableBase__factory>;
@@ -261,6 +265,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.TokenTermReader>;
+    getContractAt(
+      name: "TemplateRegistry",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TemplateRegistry>;
     getContractAt(
       name: "TermsableBase",
       address: string,

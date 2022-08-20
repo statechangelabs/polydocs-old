@@ -29,6 +29,7 @@ import type {
 
 export interface TokenTermsableInterface extends utils.Interface {
   functions: {
+    "URI()": FunctionFragment;
     "acceptTerms(uint256,string)": FunctionFragment;
     "acceptTermsFor(address,string,uint256,bytes)": FunctionFragment;
     "acceptedTerms(address,uint256)": FunctionFragment;
@@ -36,6 +37,7 @@ export interface TokenTermsableInterface extends utils.Interface {
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
+    "isMetaSigner(address)": FunctionFragment;
     "owner()": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
@@ -46,6 +48,7 @@ export interface TokenTermsableInterface extends utils.Interface {
     "setTokenRenderer(uint256,string)": FunctionFragment;
     "setTokenTemplate(uint256,string)": FunctionFragment;
     "setTokenTerm(string,uint256,string)": FunctionFragment;
+    "setURI(string)": FunctionFragment;
     "termsUrl(uint256)": FunctionFragment;
     "termsUrlWithPrefix(uint256,string)": FunctionFragment;
     "tokenRenderer(uint256)": FunctionFragment;
@@ -56,6 +59,7 @@ export interface TokenTermsableInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "URI"
       | "acceptTerms"
       | "acceptTermsFor"
       | "acceptedTerms"
@@ -63,6 +67,7 @@ export interface TokenTermsableInterface extends utils.Interface {
       | "currentTermsBlock"
       | "docTemplate"
       | "globalTerm"
+      | "isMetaSigner"
       | "owner"
       | "removeMetaSigner"
       | "renderer"
@@ -73,6 +78,7 @@ export interface TokenTermsableInterface extends utils.Interface {
       | "setTokenRenderer"
       | "setTokenTemplate"
       | "setTokenTerm"
+      | "setURI"
       | "termsUrl"
       | "termsUrlWithPrefix"
       | "tokenRenderer"
@@ -81,6 +87,7 @@ export interface TokenTermsableInterface extends utils.Interface {
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "URI", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "acceptTerms",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
@@ -112,6 +119,10 @@ export interface TokenTermsableInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "globalTerm",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isMetaSigner",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -153,6 +164,10 @@ export interface TokenTermsableInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "setURI",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "termsUrl",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -177,6 +192,7 @@ export interface TokenTermsableInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "URI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "acceptTerms",
     data: BytesLike
@@ -202,6 +218,10 @@ export interface TokenTermsableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isMetaSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeMetaSigner",
@@ -236,6 +256,7 @@ export interface TokenTermsableInterface extends utils.Interface {
     functionFragment: "setTokenTerm",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
@@ -261,7 +282,10 @@ export interface TokenTermsableInterface extends utils.Interface {
     "GlobalTemplateChanged(string)": EventFragment;
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "TokenRendererChanged(uint256,string)": EventFragment;
+    "TokenTemplateChanged(uint256,string)": EventFragment;
     "TokenTermChanged(bytes32,uint256,bytes32)": EventFragment;
+    "UpdatedURI(string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AcceptedTerms"): EventFragment;
@@ -269,7 +293,10 @@ export interface TokenTermsableInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "GlobalTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenRendererChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokenTermChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdatedURI"): EventFragment;
 }
 
 export interface AcceptedTermsEventObject {
@@ -330,6 +357,30 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
+export interface TokenRendererChangedEventObject {
+  _tokenId: BigNumber;
+  _renderer: string;
+}
+export type TokenRendererChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenRendererChangedEventObject
+>;
+
+export type TokenRendererChangedEventFilter =
+  TypedEventFilter<TokenRendererChangedEvent>;
+
+export interface TokenTemplateChangedEventObject {
+  _tokenId: BigNumber;
+  _template: string;
+}
+export type TokenTemplateChangedEvent = TypedEvent<
+  [BigNumber, string],
+  TokenTemplateChangedEventObject
+>;
+
+export type TokenTemplateChangedEventFilter =
+  TypedEventFilter<TokenTemplateChangedEvent>;
+
 export interface TokenTermChangedEventObject {
   _term: string;
   _tokenId: BigNumber;
@@ -342,6 +393,13 @@ export type TokenTermChangedEvent = TypedEvent<
 
 export type TokenTermChangedEventFilter =
   TypedEventFilter<TokenTermChangedEvent>;
+
+export interface UpdatedURIEventObject {
+  uri: string;
+}
+export type UpdatedURIEvent = TypedEvent<[string], UpdatedURIEventObject>;
+
+export type UpdatedURIEventFilter = TypedEventFilter<UpdatedURIEvent>;
 
 export interface TokenTermsable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -370,6 +428,8 @@ export interface TokenTermsable extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    URI(overrides?: CallOverrides): Promise<[string]>;
+
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
@@ -403,6 +463,11 @@ export interface TokenTermsable extends BaseContract {
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -452,6 +517,11 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -484,6 +554,8 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  URI(overrides?: CallOverrides): Promise<string>;
 
   acceptTerms(
     tokenId: PromiseOrValue<BigNumberish>,
@@ -518,6 +590,11 @@ export interface TokenTermsable extends BaseContract {
     _term: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  isMetaSigner(
+    _signer: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -567,6 +644,11 @@ export interface TokenTermsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setURI(
+    _newURI: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   termsUrl(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -600,6 +682,8 @@ export interface TokenTermsable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    URI(overrides?: CallOverrides): Promise<string>;
+
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
@@ -633,6 +717,11 @@ export interface TokenTermsable extends BaseContract {
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -677,6 +766,11 @@ export interface TokenTermsable extends BaseContract {
       _term: PromiseOrValue<string>,
       _tokenId: PromiseOrValue<BigNumberish>,
       _value: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -757,6 +851,24 @@ export interface TokenTermsable extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
+    "TokenRendererChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+    TokenRendererChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _renderer?: PromiseOrValue<string> | null
+    ): TokenRendererChangedEventFilter;
+
+    "TokenTemplateChanged(uint256,string)"(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+    TokenTemplateChanged(
+      _tokenId?: PromiseOrValue<BigNumberish> | null,
+      _template?: PromiseOrValue<string> | null
+    ): TokenTemplateChangedEventFilter;
+
     "TokenTermChanged(bytes32,uint256,bytes32)"(
       _term?: PromiseOrValue<BytesLike> | null,
       _tokenId?: PromiseOrValue<BigNumberish> | null,
@@ -767,9 +879,14 @@ export interface TokenTermsable extends BaseContract {
       _tokenId?: PromiseOrValue<BigNumberish> | null,
       _value?: null
     ): TokenTermChangedEventFilter;
+
+    "UpdatedURI(string)"(uri?: null): UpdatedURIEventFilter;
+    UpdatedURI(uri?: null): UpdatedURIEventFilter;
   };
 
   estimateGas: {
+    URI(overrides?: CallOverrides): Promise<BigNumber>;
+
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
@@ -801,6 +918,11 @@ export interface TokenTermsable extends BaseContract {
 
     globalTerm(
       _term: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -852,6 +974,11 @@ export interface TokenTermsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     termsUrl(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -886,6 +1013,8 @@ export interface TokenTermsable extends BaseContract {
   };
 
   populateTransaction: {
+    URI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     acceptTerms(
       tokenId: PromiseOrValue<BigNumberish>,
       newtermsUrl: PromiseOrValue<string>,
@@ -917,6 +1046,11 @@ export interface TokenTermsable extends BaseContract {
 
     globalTerm(
       _term: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -965,6 +1099,11 @@ export interface TokenTermsable extends BaseContract {
       _term: PromiseOrValue<string>,
       _tokenId: PromiseOrValue<BigNumberish>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -54,6 +54,7 @@ export interface ERC721TermsableInterface extends utils.Interface {
     "getApproved(uint256)": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "isMetaSigner(address)": FunctionFragment;
     "mint(string)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
@@ -94,6 +95,7 @@ export interface ERC721TermsableInterface extends utils.Interface {
       | "getApproved"
       | "globalTerm"
       | "isApprovedForAll"
+      | "isMetaSigner"
       | "mint"
       | "name"
       | "owner"
@@ -168,6 +170,10 @@ export interface ERC721TermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isMetaSigner",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
@@ -299,6 +305,10 @@ export interface ERC721TermsableInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isMetaSigner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -586,6 +596,11 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     mint(
       _tokenURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -755,6 +770,11 @@ export interface ERC721Termsable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  isMetaSigner(
+    _signer: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   mint(
     _tokenURI: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -921,6 +941,11 @@ export interface ERC721Termsable extends BaseContract {
     isApprovedForAll(
       owner: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -1174,6 +1199,11 @@ export interface ERC721Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     mint(
       _tokenURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1341,6 +1371,11 @@ export interface ERC721Termsable extends BaseContract {
     isApprovedForAll(
       owner: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

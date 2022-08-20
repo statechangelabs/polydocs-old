@@ -15,6 +15,44 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "string",
+        name: "_renderer",
+        type: "string",
+      },
+    ],
+    name: "TokenRendererChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "string",
+        name: "_template",
+        type: "string",
+      },
+    ],
+    name: "TokenTemplateChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "bytes32",
         name: "_term",
         type: "bytes32",

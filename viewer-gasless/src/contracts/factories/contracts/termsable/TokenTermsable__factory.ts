@@ -104,6 +104,44 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "string",
+        name: "_renderer",
+        type: "string",
+      },
+    ],
+    name: "TokenRendererChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "string",
+        name: "_template",
+        type: "string",
+      },
+    ],
+    name: "TokenTemplateChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "bytes32",
         name: "_term",
         type: "bytes32",
@@ -123,6 +161,32 @@ const _abi = [
     ],
     name: "TokenTermChanged",
     type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "string",
+        name: "uri",
+        type: "string",
+      },
+    ],
+    name: "UpdatedURI",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "URI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [
@@ -247,6 +311,25 @@ const _abi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_signer",
+        type: "address",
+      },
+    ],
+    name: "isMetaSigner",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -397,6 +480,19 @@ const _abi = [
       },
     ],
     name: "setTokenTerm",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_newURI",
+        type: "string",
+      },
+    ],
+    name: "setURI",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

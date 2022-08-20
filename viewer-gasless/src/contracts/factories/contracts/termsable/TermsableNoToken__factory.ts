@@ -94,6 +94,32 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "string",
+        name: "uri",
+        type: "string",
+      },
+    ],
+    name: "UpdatedURI",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "URI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "string",
@@ -207,6 +233,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_signer",
+        type: "address",
+      },
+    ],
+    name: "isMetaSigner",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "owner",
     outputs: [
@@ -292,6 +337,19 @@ const _abi = [
       },
     ],
     name: "setGlobalTerm",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_newURI",
+        type: "string",
+      },
+    ],
+    name: "setURI",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

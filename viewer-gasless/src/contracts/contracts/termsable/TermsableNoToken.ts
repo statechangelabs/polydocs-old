@@ -28,6 +28,7 @@ import type {
 
 export interface TermsableNoTokenInterface extends utils.Interface {
   functions: {
+    "URI()": FunctionFragment;
     "acceptTerms(string)": FunctionFragment;
     "acceptTermsFor(address,string,bytes)": FunctionFragment;
     "acceptedTerms(address)": FunctionFragment;
@@ -35,6 +36,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     "currentTermsBlock()": FunctionFragment;
     "docTemplate()": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
+    "isMetaSigner(address)": FunctionFragment;
     "owner()": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
@@ -42,6 +44,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
+    "setURI(string)": FunctionFragment;
     "termsUrl()": FunctionFragment;
     "termsUrlWithPrefix(string)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -49,6 +52,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "URI"
       | "acceptTerms"
       | "acceptTermsFor"
       | "acceptedTerms"
@@ -56,6 +60,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
       | "currentTermsBlock"
       | "docTemplate"
       | "globalTerm"
+      | "isMetaSigner"
       | "owner"
       | "removeMetaSigner"
       | "renderer"
@@ -63,11 +68,13 @@ export interface TermsableNoTokenInterface extends utils.Interface {
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
+      | "setURI"
       | "termsUrl"
       | "termsUrlWithPrefix"
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "URI", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "acceptTerms",
     values: [PromiseOrValue<string>]
@@ -100,6 +107,10 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "globalTerm",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "isMetaSigner",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "removeMetaSigner",
@@ -122,6 +133,10 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "setGlobalTerm",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "setURI",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "termsUrl", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "termsUrlWithPrefix",
@@ -132,6 +147,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "URI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "acceptTerms",
     data: BytesLike
@@ -157,6 +173,10 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isMetaSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeMetaSigner",
@@ -179,6 +199,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     functionFragment: "setGlobalTerm",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
@@ -195,6 +216,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
     "GlobalTemplateChanged(string)": EventFragment;
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "UpdatedURI(string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AcceptedTerms"): EventFragment;
@@ -202,6 +224,7 @@ export interface TermsableNoTokenInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "GlobalTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdatedURI"): EventFragment;
 }
 
 export interface AcceptedTermsEventObject {
@@ -261,6 +284,13 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
+export interface UpdatedURIEventObject {
+  uri: string;
+}
+export type UpdatedURIEvent = TypedEvent<[string], UpdatedURIEventObject>;
+
+export type UpdatedURIEventFilter = TypedEventFilter<UpdatedURIEvent>;
+
 export interface TermsableNoToken extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -288,6 +318,8 @@ export interface TermsableNoToken extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    URI(overrides?: CallOverrides): Promise<[string]>;
+
     acceptTerms(
       _newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -319,6 +351,11 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     removeMetaSigner(
@@ -348,6 +385,11 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     termsUrl(overrides?: CallOverrides): Promise<[string]>;
 
     termsUrlWithPrefix(
@@ -360,6 +402,8 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  URI(overrides?: CallOverrides): Promise<string>;
 
   acceptTerms(
     _newtermsUrl: PromiseOrValue<string>,
@@ -392,6 +436,11 @@ export interface TermsableNoToken extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  isMetaSigner(
+    _signer: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   removeMetaSigner(
@@ -421,6 +470,11 @@ export interface TermsableNoToken extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setURI(
+    _newURI: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   termsUrl(overrides?: CallOverrides): Promise<string>;
 
   termsUrlWithPrefix(
@@ -434,6 +488,8 @@ export interface TermsableNoToken extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    URI(overrides?: CallOverrides): Promise<string>;
+
     acceptTerms(
       _newtermsUrl: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -465,6 +521,11 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     removeMetaSigner(
@@ -489,6 +550,11 @@ export interface TermsableNoToken extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -543,9 +609,14 @@ export interface TermsableNoToken extends BaseContract {
       previousOwner?: PromiseOrValue<string> | null,
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
+
+    "UpdatedURI(string)"(uri?: null): UpdatedURIEventFilter;
+    UpdatedURI(uri?: null): UpdatedURIEventFilter;
   };
 
   estimateGas: {
+    URI(overrides?: CallOverrides): Promise<BigNumber>;
+
     acceptTerms(
       _newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -574,6 +645,11 @@ export interface TermsableNoToken extends BaseContract {
 
     globalTerm(
       _term: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -606,6 +682,11 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setURI(
+      _newURI: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     termsUrl(overrides?: CallOverrides): Promise<BigNumber>;
 
     termsUrlWithPrefix(
@@ -620,6 +701,8 @@ export interface TermsableNoToken extends BaseContract {
   };
 
   populateTransaction: {
+    URI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     acceptTerms(
       _newtermsUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -651,6 +734,11 @@ export interface TermsableNoToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    isMetaSigner(
+      _signer: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     removeMetaSigner(
@@ -677,6 +765,11 @@ export interface TermsableNoToken extends BaseContract {
     setGlobalTerm(
       _term: PromiseOrValue<string>,
       _value: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setURI(
+      _newURI: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

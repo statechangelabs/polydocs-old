@@ -9,6 +9,7 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -25,44 +26,62 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "../../common";
+} from "../../../common";
 
-export interface ERC20TermsableInterface extends utils.Interface {
+export declare namespace TemplateRegistry {
+  export type TemplateStruct = {
+    name: PromiseOrValue<string>;
+    cid: PromiseOrValue<string>;
+    score: PromiseOrValue<BigNumberish>;
+    MetadataURI: PromiseOrValue<string>;
+    owner: PromiseOrValue<string>;
+  };
+
+  export type TemplateStructOutput = [
+    string,
+    string,
+    BigNumber,
+    string,
+    string
+  ] & {
+    name: string;
+    cid: string;
+    score: BigNumber;
+    MetadataURI: string;
+    owner: string;
+  };
+}
+
+export interface TemplateRegistryInterface extends utils.Interface {
   functions: {
     "URI()": FunctionFragment;
     "acceptTerms(string)": FunctionFragment;
     "acceptTermsFor(address,string,bytes)": FunctionFragment;
     "acceptedTerms(address)": FunctionFragment;
+    "add((string,string,int256,string,address))": FunctionFragment;
     "addMetaSigner(address)": FunctionFragment;
-    "allowance(address,address)": FunctionFragment;
-    "approve(address,uint256)": FunctionFragment;
-    "balanceOf(address)": FunctionFragment;
+    "count()": FunctionFragment;
     "currentTermsBlock()": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "decreaseAllowance(address,uint256)": FunctionFragment;
     "docTemplate()": FunctionFragment;
+    "downvote(string)": FunctionFragment;
     "globalTerm(string)": FunctionFragment;
-    "increaseAllowance(address,uint256)": FunctionFragment;
+    "indexOf(string)": FunctionFragment;
     "isMetaSigner(address)": FunctionFragment;
-    "mint(address,uint256)": FunctionFragment;
-    "name()": FunctionFragment;
-    "name_()": FunctionFragment;
     "owner()": FunctionFragment;
     "removeMetaSigner(address)": FunctionFragment;
     "renderer()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "score(string)": FunctionFragment;
     "setGlobalRenderer(string)": FunctionFragment;
     "setGlobalTemplate(string)": FunctionFragment;
     "setGlobalTerm(string,string)": FunctionFragment;
     "setURI(string)": FunctionFragment;
-    "symbol()": FunctionFragment;
-    "symbol_()": FunctionFragment;
+    "template(uint256)": FunctionFragment;
+    "templatebyCID(string)": FunctionFragment;
     "termsUrl()": FunctionFragment;
     "termsUrlWithPrefix(string)": FunctionFragment;
-    "totalSupply()": FunctionFragment;
-    "transfer(address,uint256)": FunctionFragment;
-    "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "upvote(string)": FunctionFragment;
   };
 
   getFunction(
@@ -71,36 +90,30 @@ export interface ERC20TermsableInterface extends utils.Interface {
       | "acceptTerms"
       | "acceptTermsFor"
       | "acceptedTerms"
+      | "add"
       | "addMetaSigner"
-      | "allowance"
-      | "approve"
-      | "balanceOf"
+      | "count"
       | "currentTermsBlock"
-      | "decimals"
-      | "decreaseAllowance"
       | "docTemplate"
+      | "downvote"
       | "globalTerm"
-      | "increaseAllowance"
+      | "indexOf"
       | "isMetaSigner"
-      | "mint"
-      | "name"
-      | "name_"
       | "owner"
       | "removeMetaSigner"
       | "renderer"
       | "renounceOwnership"
+      | "score"
       | "setGlobalRenderer"
       | "setGlobalTemplate"
       | "setGlobalTerm"
       | "setURI"
-      | "symbol"
-      | "symbol_"
+      | "template"
+      | "templatebyCID"
       | "termsUrl"
       | "termsUrlWithPrefix"
-      | "totalSupply"
-      | "transfer"
-      | "transferFrom"
       | "transferOwnership"
+      | "upvote"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "URI", values?: undefined): string;
@@ -121,52 +134,38 @@ export interface ERC20TermsableInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "add",
+    values: [TemplateRegistry.TemplateStruct]
+  ): string;
+  encodeFunctionData(
     functionFragment: "addMetaSigner",
     values: [PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "allowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "approve",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "balanceOf",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "count", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "currentTermsBlock",
     values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "decreaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "docTemplate",
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "downvote",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "globalTerm",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "increaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    functionFragment: "indexOf",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isMetaSigner",
     values: [PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "mint",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "name_", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "removeMetaSigner",
@@ -176,6 +175,10 @@ export interface ERC20TermsableInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "score",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "setGlobalRenderer",
@@ -193,31 +196,25 @@ export interface ERC20TermsableInterface extends utils.Interface {
     functionFragment: "setURI",
     values: [PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
-  encodeFunctionData(functionFragment: "symbol_", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "template",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "templatebyCID",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "termsUrl", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "termsUrlWithPrefix",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "totalSupply",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transfer",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferFrom",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferOwnership",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upvote",
     values: [PromiseOrValue<string>]
   ): string;
 
@@ -234,38 +231,27 @@ export interface ERC20TermsableInterface extends utils.Interface {
     functionFragment: "acceptedTerms",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "add", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addMetaSigner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "count", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "currentTermsBlock",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "docTemplate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "downvote", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "globalTerm", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "increaseAllowance",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "indexOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isMetaSigner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "name_", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeMetaSigner",
@@ -276,6 +262,7 @@ export interface ERC20TermsableInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "score", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setGlobalRenderer",
     data: BytesLike
@@ -289,45 +276,38 @@ export interface ERC20TermsableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "symbol_", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "template", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "templatebyCID",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "termsUrl", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "termsUrlWithPrefix",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "transferFrom",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "upvote", data: BytesLike): Result;
 
   events: {
     "AcceptedTerms(address,string)": EventFragment;
-    "Approval(address,address,uint256)": EventFragment;
     "GlobalRendererChanged(string)": EventFragment;
     "GlobalTemplateChanged(string)": EventFragment;
     "GlobalTermChanged(bytes32,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "Transfer(address,address,uint256)": EventFragment;
+    "TemplateAdded(address,uint256)": EventFragment;
     "UpdatedURI(string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AcceptedTerms"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalRendererChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTemplateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GlobalTermChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TemplateAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdatedURI"): EventFragment;
 }
 
@@ -341,18 +321,6 @@ export type AcceptedTermsEvent = TypedEvent<
 >;
 
 export type AcceptedTermsEventFilter = TypedEventFilter<AcceptedTermsEvent>;
-
-export interface ApprovalEventObject {
-  owner: string;
-  spender: string;
-  value: BigNumber;
-}
-export type ApprovalEvent = TypedEvent<
-  [string, string, BigNumber],
-  ApprovalEventObject
->;
-
-export type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
 
 export interface GlobalRendererChangedEventObject {
   _renderer: string;
@@ -400,17 +368,16 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
-export interface TransferEventObject {
-  from: string;
-  to: string;
-  value: BigNumber;
+export interface TemplateAddedEventObject {
+  owner: string;
+  index: BigNumber;
 }
-export type TransferEvent = TypedEvent<
-  [string, string, BigNumber],
-  TransferEventObject
+export type TemplateAddedEvent = TypedEvent<
+  [string, BigNumber],
+  TemplateAddedEventObject
 >;
 
-export type TransferEventFilter = TypedEventFilter<TransferEvent>;
+export type TemplateAddedEventFilter = TypedEventFilter<TemplateAddedEvent>;
 
 export interface UpdatedURIEventObject {
   uri: string;
@@ -419,12 +386,12 @@ export type UpdatedURIEvent = TypedEvent<[string], UpdatedURIEventObject>;
 
 export type UpdatedURIEventFilter = TypedEventFilter<UpdatedURIEvent>;
 
-export interface ERC20Termsable extends BaseContract {
+export interface TemplateRegistry extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: ERC20TermsableInterface;
+  interface: TemplateRegistryInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -465,65 +432,41 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    add(
+      _template: TemplateRegistry.TemplateStruct,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    count(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     currentTermsBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     docTemplate(overrides?: CallOverrides): Promise<[string]>;
+
+    downvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     globalTerm(
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    indexOf(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     isMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    mint(
-      account: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    name(overrides?: CallOverrides): Promise<[string]>;
-
-    name_(overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -537,6 +480,11 @@ export interface ERC20Termsable extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    score(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     setGlobalRenderer(
       _newRenderer: PromiseOrValue<string>,
@@ -559,9 +507,15 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    symbol(overrides?: CallOverrides): Promise<[string]>;
+    template(
+      _index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[TemplateRegistry.TemplateStructOutput]>;
 
-    symbol_(overrides?: CallOverrides): Promise<[string]>;
+    templatebyCID(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[TemplateRegistry.TemplateStructOutput]>;
 
     termsUrl(overrides?: CallOverrides): Promise<[string]>;
 
@@ -570,24 +524,14 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    transfer(
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    transferFrom(
-      from: PromiseOrValue<string>,
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    upvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -610,65 +554,41 @@ export interface ERC20Termsable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  add(
+    _template: TemplateRegistry.TemplateStruct,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   addMetaSigner(
     _signer: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  allowance(
-    owner: PromiseOrValue<string>,
-    spender: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  approve(
-    spender: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  balanceOf(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  count(overrides?: CallOverrides): Promise<BigNumber>;
 
   currentTermsBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  decreaseAllowance(
-    spender: PromiseOrValue<string>,
-    subtractedValue: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   docTemplate(overrides?: CallOverrides): Promise<string>;
+
+  downvote(
+    _cid: PromiseOrValue<string>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   globalTerm(
     _term: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string>;
 
-  increaseAllowance(
-    spender: PromiseOrValue<string>,
-    addedValue: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  indexOf(
+    _cid: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   isMetaSigner(
     _signer: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  mint(
-    account: PromiseOrValue<string>,
-    _amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  name(overrides?: CallOverrides): Promise<string>;
-
-  name_(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -682,6 +602,11 @@ export interface ERC20Termsable extends BaseContract {
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  score(
+    _cid: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   setGlobalRenderer(
     _newRenderer: PromiseOrValue<string>,
@@ -704,9 +629,15 @@ export interface ERC20Termsable extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  symbol(overrides?: CallOverrides): Promise<string>;
+  template(
+    _index: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<TemplateRegistry.TemplateStructOutput>;
 
-  symbol_(overrides?: CallOverrides): Promise<string>;
+  templatebyCID(
+    _cid: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<TemplateRegistry.TemplateStructOutput>;
 
   termsUrl(overrides?: CallOverrides): Promise<string>;
 
@@ -715,24 +646,14 @@ export interface ERC20Termsable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  transfer(
-    to: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  transferFrom(
-    from: PromiseOrValue<string>,
-    to: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   transferOwnership(
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  upvote(
+    _cid: PromiseOrValue<string>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -755,65 +676,41 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    add(
+      _template: TemplateRegistry.TemplateStruct,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    count(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentTermsBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    decimals(overrides?: CallOverrides): Promise<number>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     docTemplate(overrides?: CallOverrides): Promise<string>;
+
+    downvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     globalTerm(
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
+    indexOf(
+      _cid: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<BigNumber>;
 
     isMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    mint(
-      account: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    name(overrides?: CallOverrides): Promise<string>;
-
-    name_(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -825,6 +722,11 @@ export interface ERC20Termsable extends BaseContract {
     renderer(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    score(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     setGlobalRenderer(
       _newRenderer: PromiseOrValue<string>,
@@ -847,9 +749,15 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    symbol(overrides?: CallOverrides): Promise<string>;
+    template(
+      _index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<TemplateRegistry.TemplateStructOutput>;
 
-    symbol_(overrides?: CallOverrides): Promise<string>;
+    templatebyCID(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<TemplateRegistry.TemplateStructOutput>;
 
     termsUrl(overrides?: CallOverrides): Promise<string>;
 
@@ -858,23 +766,13 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    transferFrom(
-      from: PromiseOrValue<string>,
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    upvote(
+      _cid: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -885,17 +783,6 @@ export interface ERC20Termsable extends BaseContract {
       terms?: null
     ): AcceptedTermsEventFilter;
     AcceptedTerms(sender?: null, terms?: null): AcceptedTermsEventFilter;
-
-    "Approval(address,address,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      value?: null
-    ): ApprovalEventFilter;
-    Approval(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      value?: null
-    ): ApprovalEventFilter;
 
     "GlobalRendererChanged(string)"(
       _renderer?: PromiseOrValue<string> | null
@@ -929,16 +816,14 @@ export interface ERC20Termsable extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
-    "Transfer(address,address,uint256)"(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      value?: null
-    ): TransferEventFilter;
-    Transfer(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      value?: null
-    ): TransferEventFilter;
+    "TemplateAdded(address,uint256)"(
+      owner?: null,
+      index?: PromiseOrValue<BigNumberish> | null
+    ): TemplateAddedEventFilter;
+    TemplateAdded(
+      owner?: null,
+      index?: PromiseOrValue<BigNumberish> | null
+    ): TemplateAddedEventFilter;
 
     "UpdatedURI(string)"(uri?: null): UpdatedURIEventFilter;
     UpdatedURI(uri?: null): UpdatedURIEventFilter;
@@ -964,65 +849,41 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    add(
+      _template: TemplateRegistry.TemplateStruct,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    count(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentTermsBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     docTemplate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    downvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     globalTerm(
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    indexOf(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     isMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    mint(
-      account: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    name(overrides?: CallOverrides): Promise<BigNumber>;
-
-    name_(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1035,6 +896,11 @@ export interface ERC20Termsable extends BaseContract {
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    score(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     setGlobalRenderer(
@@ -1058,9 +924,15 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+    template(
+      _index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    symbol_(overrides?: CallOverrides): Promise<BigNumber>;
+    templatebyCID(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     termsUrl(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1069,24 +941,14 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    transferFrom(
-      from: PromiseOrValue<string>,
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    upvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
 
@@ -1110,65 +972,41 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    add(
+      _template: TemplateRegistry.TemplateStruct,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     addMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    count(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     currentTermsBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     docTemplate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    downvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     globalTerm(
       _term: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    indexOf(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     isMetaSigner(
       _signer: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    mint(
-      account: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    name_(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1181,6 +1019,11 @@ export interface ERC20Termsable extends BaseContract {
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    score(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     setGlobalRenderer(
@@ -1204,9 +1047,15 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    template(
+      _index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    symbol_(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    templatebyCID(
+      _cid: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     termsUrl(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1215,24 +1064,14 @@ export interface ERC20Termsable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    transfer(
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferFrom(
-      from: PromiseOrValue<string>,
-      to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    upvote(
+      _cid: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
