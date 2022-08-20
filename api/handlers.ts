@@ -632,26 +632,30 @@ export const getContracts = makeAPIGatewayLambda({
   path: "/contracts",
   func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
     let { account: accountId } = event.queryStringParameters || {};
-    if (!accountId) accountId = accounts[0].get("id")?.stringValue() ?? "";
+    if (!accountId) accountId = Object.keys(accounts)[0];
     if (!accountId) return sendHttpResult(400, "No account id");
     const account = accounts[accountId];
     if (!account) return sendHttpResult(400, "No account found");
     //lets get my contracts
+    console.log("Getting my contracts", accountId);
     const list = await qldbDriver.executeLambda(async (txn) => {
       const result = await txn.execute(
-        `SELECT * FROM Contract WHERE owner = ?`,
+        `SELECT * FROM Contracts WHERE owner = ?`,
         accountId
       );
       const list = await result.getResultList();
       return list;
     });
-    const output = list.map((v) => {
+    console.log("I got my contracts", list);
+    const output = list.map((v, i) => {
+      console.log("v is ", v, i);
       const id = v.get("id")?.stringValue() ?? "";
       const [chainId, address] = id.split("::");
       const name = v.get("name")?.stringValue() ?? "";
       const description = v.get("description")?.stringValue() ?? "";
       const image = v.get("image")?.stringValue() ?? "";
-      return { id, chainId, address, name, description, image };
+      const symbol = v.get("symbol")?.stringValue() ?? "";
+      return { id, chainId, address, name, description, image, symbol };
     });
     return httpSuccess(output);
   }),
