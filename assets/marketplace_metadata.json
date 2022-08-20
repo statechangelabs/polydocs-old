@@ -1,0 +1,14 @@
+{
+  "image": "ipfs://bafkreih63k2cft2lnry2xdijzu5fpbbzfrlf26h36bkgvvxhookkae5hsi",
+  "cover": "ipfs://bafybeihpvdhbnbwwoahxuvaj5sbkn3ufzrwqytxptia64dwex6nn3onfui",
+  "title": "NFT Marketplace Terms",
+  "description": "These  are adapted to be used by an NFT marketplace.",
+  "terms": {
+    "ShortCompanyName": "NFT Marketplace",
+    "LongCompanyName": "NFT Marketplace",
+    "website": "https://nftmarketplace.io",
+    "email": "",
+    "privacyPolicyURL": "https://nftmarketplace.io/privacy-policy",
+    "Address": ""
+  }
+}
