@@ -27,7 +27,12 @@ const App: FC = () => {
 const Disconnected: FC = () => {
   const { logout } = useAuthenticator();
   useEffect(() => {
-    logout();
+    const t = setTimeout(() => {
+      logout();
+    }, 500);
+    return () => {
+      clearTimeout(t);
+    };
   }, [logout]);
   return null;
 };

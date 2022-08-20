@@ -6,7 +6,7 @@ import useAsyncEffect from "./useAsyncEffect";
 
 const templateRegistryAddress =
   process.env.REACT_APP_TEMPLATE_REGISTRY_ADDRESS ??
-  "0xDd028192816e3366da78C7f0edf234adF5288403";
+  "0xC1871e6dc374650c1EcFFEf171DC5465a54c008d";
 const templateRegistryChain =
   process.env.REACT_APP_TEMPLATE_REGISTRY_CHAINID ?? "80001";
 

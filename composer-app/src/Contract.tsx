@@ -13,28 +13,16 @@ import { useIPFSText } from "./useIPFS";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useKnownTemplates } from "./useKnownTemplates";
-
+import { useProvider } from "./provider";
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
-
-const ethereum = (window as unknown as { ethereum: any }).ethereum;
-const provider = ethereum
-  ? new ethers.providers.Web3Provider(ethereum)
-  : undefined;
 const Contract: FC = () => {
   const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
-  const { contractId } = useParams();
-
-  const [contractAddress, setContractAddress] = useState("");
-  useEffect(() => {
-    if (contractId) setContractAddress(contractId);
-    else {
-      const storedId = localStorage.getItem("contractAddress");
-      if (storedId) navigate(`/contract/${storedId}`);
-    }
-  }, [contractId, navigate]);
+  const { id } = useParams();
+  const [chainId, contractAddress] = (id || "").split("::");
+  const provider = useProvider(chainId);
   const [currentRenderer, setCurrentRenderer] = useState("");
   const [currentBlock, setCurrentBlock] = useState("");
   const [currentTemplate, setCurrentTemplate] = useState("");
@@ -142,28 +130,28 @@ const Contract: FC = () => {
     console.log("FINISHED UAE");
   }, [templateTerms, contractAddress, tokenId]);
   const [showTemplateForm, setShowTemplateForm] = useState(false);
-  useEffect(() => {
-    if (
-      contractAddress !== contractId &&
-      ethers.utils.isAddress(contractAddress)
-    ) {
-      navigate(`/contract/${contractAddress}`);
-      localStorage.setItem("contractAddress", contractAddress);
-    }
-  }, [contractAddress, contractId, navigate]);
+  // useEffect(() => {
+  //   if (
+  //     contractAddress !== contractId &&
+  //     ethers.utils.isAddress(contractAddress)
+  //   ) {
+  //     navigate(`/contract/${contractAddress}`);
+  //     localStorage.setItem("contractAddress", contractAddress);
+  //   }
+  // }, [contractAddress, contractId, navigate]);
   // const knownTemplates = useIPFSList(knownCids);
   return (
     <Fragment>
       <div>
         <div className="flex space-x-6 items-center mb-12 bg-white doc-shadow p-6">
-          <h2 className="text-xl font-semibold ">Contract Address</h2>
+          {/* <h2 className="text-xl font-semibold ">Contract Address</h2>
           <input
             className="border border-gray-200 rounded-none p-1  flex-grow"
             value={contractAddress}
             onChange={(e) => {
               setContractAddress(e.target.value);
             }}
-          />
+          /> */}
           <div>
             <a
               className="btn btn-primary text-center"
