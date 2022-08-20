@@ -100,7 +100,10 @@ const Authenticator: FC<{
 export default Authenticator;
 export const useAuthenticator = () => {
   const { isAuthenticated, logout, authenticate } = useContext(context);
-  return { isAuthenticated, logout, authenticate };
+  return useMemo(
+    () => ({ isAuthenticated, logout, authenticate }),
+    [isAuthenticated, logout, authenticate]
+  );
 };
 const useAuthToken = () => {
   const { token } = useContext(context);
@@ -109,23 +112,28 @@ const useAuthToken = () => {
 export const useAuthenticatedFetch = () => {
   const token = useAuthToken();
   const { logout } = useAuthenticator();
-  return (async (path: string, info: RequestInit = {}) => {
-    const res = await fetch(POLYDOCS_BASE + path, {
-      ...info,
-      headers: {
-        ...(info.headers || {}),
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    //check response status
-    if (res.status === 401) {
-      //Yer outta here
-      toast("Authentication problem: try logging in again", { type: "error" });
-      logout();
-    } else {
-      return res;
-    }
-  }) as typeof fetch;
+  return useCallback(
+    async (path: string, info: RequestInit = {}) => {
+      const res = await fetch(POLYDOCS_BASE + path, {
+        ...info,
+        headers: {
+          ...(info.headers || {}),
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //check response status
+      if (res.status === 401) {
+        //Yer outta here
+        toast("Authentication problem: try logging in again", {
+          type: "error",
+        });
+        logout();
+      } else {
+        return res;
+      }
+    },
+    [logout, token]
+  ) as typeof fetch;
 };
 export const useAddress = () => {
   const { token } = useContext(context);
