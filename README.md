@@ -10,9 +10,13 @@ Polydocs is first a standard for expressing agreement to a document made of dece
     renderer/#/template::chainId::contractAddress::blockheight[::tokenId]
 *Note: `tokenID` is for when the agreement is particular to the token, rather than the whole contract*
 
-To make this easy, we created two affordances in this hackathon:
+To make this easy, we created three services in this hackathon:
 
-1) [sign.polydocs.xyz](https://sign.polydocs.xyz) is a gasless mini-app to enable a customer to express 
+1) [sign.polydocs.xyz](https://sign.polydocs.xyz) is a gasless mini-app to enable a customer to accept the terms of an agreement and get recorded on the blockchain using a metatransaction 
+2) [admin.polydocs.xyz](https://admin.polydocs.xyz) is a gasless admin system for creating, deploying and managing contracts with polydocs agreements. 
+3) [A known templates registry](https://mumbai.polygonscan.com/address/0xC1871e6dc374650c1EcFFEf171DC5465a54c008d) for documents hosted on IPFS.
+
+With these in combination, brands and service providers can create and manage contracts that make it easy for customers to accept terms, record those terms to the immutable blockchain, and enable commerce where everyone accepts the rules of engagement. 
 
 
 ## How we built it - Sponsor Technologies
@@ -25,7 +29,7 @@ Sponsor technologies were key to making as much progress as we did in this hacka
 
 * **Spheron** Our front-ends are hosted on IPFS and stored via FileCoin deals. We leveraged Spheron to deploy not one but three sites from a single monorepository, and reduced our concerns through supporting autodeployment based on pushes to main. This took some doing - we made multiple organizations to handle multiple deployments from a single repository. We found a couple of challenges that were generic to hosting on IPFS, but Spheron made them easier to work with. 
 
-* **IPFS/Filecoin** Decentralized storage opens tremendous new possibilities for keeping data in a high-trust and high-security model. The recent introduction of UCAN delegated authority allowed us to build an even-more-decentralized experience. Now our AWS web2 back-end can ship a time and authority limited token to the front end to facilitate direct uploads for maximum performance and minimum constraints. File transfer went from being our most difficult challege to being one of the best parts of the UX. 
+* **IPFS/Filecoin** Decentralized storage opens tremendous new possibilities for the integration of trustworthy documents with blockchain record-keeping. The recent introduction of UCAN delegated authority tokesn allowed us to build an even-more-decentralized experience. Now our AWS web2 back-end can ship a time and authority limited token to the front end to facilitate direct uploads for maximum performance and minimum constraints. File transfer went from being our most difficult challege to being one of the best parts of the UX. 
 
 ## Challenges, Accomplishments and Lessons
 
@@ -43,9 +47,11 @@ Sponsor technologies were key to making as much progress as we did in this hacka
 
 We started Polydocs as an effort to make it easier and safer to operate complicated intellectual, financial and rights-oriented assets on the chain. We want to continue in this vein.
 
-* **Standards** We aim to introduce EIPs for the Polydocs signature standard and the contract-level metadata URI that we invented along the way. These will make it easier for others to protect their communities and assets and introduce signable documents as a primitive to the chain. By making the standard open-source and usable by all, we can move the whole community forward. 
+* **EIPs** We aim to introduce EIPs for the Polydocs signature standard and the contract-level metadata URI that we invented along the way. These will make it easier for others to protect their communities and assets and introduce signable documents as a primitive to the chain. By making the standard open-source and usable by all, we can move the whole community forward. 
 
-* **Productization** We think there is a potential to provide useful service - especially with the gasless transactions. We are pursuing this opportunity. 
+* **Trusted Templates** Customers should be able to trust the legal documents put in front of them. As part of Polydocs we created a trusted template registry ([currently hosted on Mumbai](https://mumbai.polygonscan.com/address/0xC1871e6dc374650c1EcFFEf171DC5465a54c008d)) that we imagine we can contribute to based on organizations and projects adopting common agreements. The ability to confirm that the template is in the registry and has some high trust score is a way to help people feel comfortable with these agreements. 
+
+* **Commercialization** There is a potential to provide useful service - especially with the gasless transactions. We are pursuing this opportunity. 
 
 ## Gratitude
 
