@@ -32,14 +32,17 @@ export const useContracts = () => {
       //get the info
       const provider = getProvider(chainId);
       const contract = ERC721Termsable__factory.connect(address, provider);
-      const [name, symbol] = await Promise.all([
-        contract.name(),
-        contract.symbol(),
-      ]);
-      setContracts((old) => [
-        ...old.filter((c) => c.address !== address),
-        { address, chainId, name, symbol, id, deployed },
-      ]);
+      try {
+        console.log("Checking ", address, chainId);
+        const name = await contract.name();
+        const symbol = await contract.symbol();
+        setContracts((old) => [
+          ...old.filter((c) => c.address !== address),
+          { address, chainId, name, symbol, id, deployed },
+        ]);
+      } catch (e) {
+        console.log("THat wasnt nice", e);
+      }
     },
     []
   );

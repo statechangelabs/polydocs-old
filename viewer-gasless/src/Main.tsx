@@ -312,7 +312,7 @@ const Renderer: FC<{
           <header className="flex justify-between items-center p-4">
             <div className="flex items-center space-x-2">
               <img src={Logo} alt="Logo" className="w-12" />
-              <h1 className="text-lg font-bold text-black">PolyDocs</h1>
+              <h1 className="text-lg font-bold text-black">Polydocs</h1>
             </div>
 
             <div className="flex flex-row justify-end print:hidden">
