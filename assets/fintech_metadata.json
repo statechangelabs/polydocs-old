@@ -1,0 +1,13 @@
+{
+  "image": "ipfs://bafkreih63k2cft2lnry2xdijzu5fpbbzfrlf26h36bkgvvxhookkae5hsi",
+  "cover": "ipfs://bafybeihpvdhbnbwwoahxuvaj5sbkn3ufzrwqytxptia64dwex6nn3onfui",
+  "title": "Fintech Terms and Conditions",
+  "description": "These terms and conditions are adapted from a Fintech Company.",
+  "terms": {
+    "ShortCompanyName": "Polydocs",
+    "LongCompanyName": "Polydocs, Inc.",
+    "RegistrationNumber": "123456789",
+    "State": "California",
+    "County": "Los Angeles"
+  }
+}
