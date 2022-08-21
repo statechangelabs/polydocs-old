@@ -123,3 +123,21 @@
           "method": "post"
           "cors": true
           "private": false
+  "addContract":
+    "handler": "handlers.addContract"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/contracts/add"
+          "method": "post"
+          "cors": true
+          "private": false
+  "removeContract":
+    "handler": "handlers.removeContract"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/contracts"
+          "method": "delete"
+          "cors": true
+          "private": false

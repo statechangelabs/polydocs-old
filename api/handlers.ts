@@ -29,10 +29,12 @@ import { render } from "mustache";
 import fetch from "node-fetch";
 import { KeyPair } from "ucan-storage-commonjs/keypair";
 import { build, validate } from "ucan-storage-commonjs/ucan-storage";
+//#region Constants
 const DEFAULT_RENDERER =
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy";
 const DEFAULT_TEMPLATE =
   "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md";
+//#endregion
 //#region QLDB intialization
 const maxConcurrentTransactions = 10;
 const retryLimit = 4;
@@ -125,8 +127,21 @@ const getRecord = async (tableName: string, id: string) => {
 };
 const getUser = async (address: string) =>
   getRecord("Users", address.toLowerCase());
-const getContract = async (id: string) =>
-  getRecord("Contracts", id.toLowerCase());
+const getContract = async (id: string, account?: Value) => {
+  const contract = await getRecord("Contracts", id);
+  if (!contract)
+    return {
+      contract: undefined,
+      contractError: sendHttpResult(400, "No contract found"),
+    };
+  const owner = contract.get("owner")?.stringValue() ?? "";
+  if (owner !== account?.get("id")?.stringValue())
+    return {
+      contract: undefined,
+      contractError: sendHttpResult(400, "Not contract owner"),
+    };
+  return { contract, contractError: undefined };
+};
 const getAccount = async (id: string) => getRecord("Accounts", id);
 const getAccountsForUser = async (address: string) => {
   const user = await getUser(address);
@@ -174,6 +189,19 @@ const getSignerFromHeader = <T extends { exp: number }>(
   }
   return undefined;
 };
+
+const validateAccount = (
+  accounts: Record<string, Value>,
+  accountId?: string
+) => {
+  let error: ReturnType<typeof sendHttpResult> | undefined;
+  if (!accountId) accountId = Object.keys(accounts)[0];
+  if (!accountId) error = sendHttpResult(400, "No account id");
+  const account = accounts[accountId];
+  if (!account) error = sendHttpResult(400, "No account found");
+  if (error) return { account: undefined, accountError: error };
+  else return { account, accountError: undefined };
+};
 const makeAuthenticatedFunc = (
   func: (args: {
     event: APIGatewayProxyEvent;
@@ -181,6 +209,7 @@ const makeAuthenticatedFunc = (
     callback: Callback<APIGatewayProxyResult>;
     user: Value;
     accounts: Record<string, Value>;
+    validateAccount: (accountId?: string) => ReturnType<typeof validateAccount>;
   }) => void
 ) => <Handler<APIGatewayProxyEvent, APIGatewayProxyResult>>(async (
     event,
@@ -230,8 +259,17 @@ const makeAuthenticatedFunc = (
       callback,
       user,
       accounts: accounts as Record<string, Value>,
+      validateAccount: (accountId?: string) =>
+        validateAccount(accounts, accountId),
     });
   });
+const getProvider = (chainId: string) => {
+  const chainInfo = getChainInfo(chainId);
+  const provider = new ethers.providers.StaticJsonRpcProvider(chainInfo.url);
+  const signer = new ethers.Wallet(chainInfo.privateKey, provider);
+  return { provider, signer };
+};
+
 //#endregion
 //#region Unsecured API Endpoints
 export const signDocument = makeAPIGatewayLambda({
@@ -299,7 +337,7 @@ export const signDocument = makeAPIGatewayLambda({
 //   },
 // });
 //#endregion
-//#region Secured API Endpoints
+//#region Contract Deployment API Endpoints
 type DeployEvent = {
   address: string;
   name: string;
@@ -378,6 +416,7 @@ export const deployNFTContract = makeAPIGatewayLambda({
         symbol,
         contractAddress: polyDocs.address,
         chainId,
+        uri,
       });
       console.log(
         "invoking makecontract",
@@ -411,20 +450,40 @@ export const doDeploy = makeLambda({
       chainId,
       contractAddress,
     }: DeployEvent & { contractAddress: string } = event;
-    const chainInfo = getChainInfo(chainId);
-    const provider = new ethers.providers.StaticJsonRpcProvider(chainInfo.url);
-    const signer = new ethers.Wallet(chainInfo.privateKey, provider);
+    const { signer } = getProvider(chainId);
+    if (!signer) return sendHttpResult(400, "bad chain id");
+    console.log("I will connect to the typechain contract", contractAddress);
     const polyDocs = ERC721Termsable__factory.connect(contractAddress, signer);
-    await polyDocs.deployed();
-    const pdPromise = polyDocs.setPolydocs(renderer, template, []);
-    const mdPromise = polyDocs.setURI(uri);
-    //@TODO support royalty
-    const [pdTxn, mdTxn] = await Promise.all([pdPromise, mdPromise]);
-    await Promise.all([pdTxn.wait(), mdTxn.wait()]);
-    console.log("I have a deployed polydocs with Metadata");
+    console.log("I will wait to be deployed", contractAddress);
+    // await polyDocs.deployed();
+    console.log("I am deployed I say", contractAddress);
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 5000 * (attempt + 1));
+      });
+      try {
+        console.log("Attempting", attempt);
+        console.log("I will set polydocs", renderer, template, []);
+        const pdTxn = await polyDocs.setPolydocs(renderer, template, []);
+        console.log("I set polydocs");
+        console.log("I will set the URI", uri);
+        const mdTxn = await polyDocs.setURI(uri);
+        console.log("I set the uri");
+        //@TODO support royalty
+        console.log("Wiating for pd");
+        await pdTxn.wait();
+        console.log("Waiting for md");
+        await mdTxn.wait();
+        console.log("I have a deployed polydocs with Metadata");
+        break;
+      } catch (e) {
+        console.log("I failed to do whatever thing", e);
+      }
+    }
   },
 });
-
 export const hhDeploy = makeLambda({
   timeout: 300,
   func: async (event) => {
@@ -542,6 +601,7 @@ export const testHH = makeLambda({
   },
 });
 
+//#endregion
 export const mintNFT = makeLambda({
   timeout: 300,
   // method: "post",
@@ -582,8 +642,7 @@ export const mintNFT = makeLambda({
     return httpSuccess("hooray!!!");
   },
 });
-
-//#endregion
+//#region UCAN Management
 let rootToken = "";
 const nsServiceKey = "did:key:z6MknjRbVGkfWK1x5gyJZb6D4LjMj1EsitFzcSccS3sAaviQ";
 const issuerKeyPair = new KeyPair(
@@ -607,7 +666,6 @@ export const getUCANToken = makeAPIGatewayLambda({
       const retJSON = await response.json();
       rootToken = retJSON.value;
     }
-    //#endregion
     const { payload } = await validate(rootToken);
     const { att } = payload;
     const capabilities = att.map((capability) => ({
@@ -625,26 +683,25 @@ export const getUCANToken = makeAPIGatewayLambda({
     return httpSuccess({ token, did: process.env.DID });
   }),
 });
+//#endregion
+//#region Contract REST API
 export const getContracts = makeAPIGatewayLambda({
   timeout: 30,
   method: "get",
   cors: true,
   path: "/contracts",
-  func: makeAuthenticatedFunc(async ({ event, user, accounts }) => {
-    let { account: accountId } = event.queryStringParameters || {};
-    if (!accountId) accountId = Object.keys(accounts)[0];
-    if (!accountId) return sendHttpResult(400, "No account id");
-    const account = accounts[accountId];
-    if (!account) return sendHttpResult(400, "No account found");
+  func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
+    const { account: accountId } = event.queryStringParameters || {};
+    const { account, accountError } = validateAccount(accountId);
+    if (accountError) return accountError;
     //lets get my contracts
     console.log("Getting my contracts", accountId);
     const list = await qldbDriver.executeLambda(async (txn) => {
       const result = await txn.execute(
         `SELECT * FROM Contracts WHERE owner = ?`,
-        accountId
+        account.get("id")?.stringValue() || ""
       );
-      const list = await result.getResultList();
-      return list;
+      return result.getResultList();
     });
     console.log("I got my contracts", list);
     const output = list.map((v, i) => {
@@ -660,3 +717,77 @@ export const getContracts = makeAPIGatewayLambda({
     return httpSuccess(output);
   }),
 });
+export const updateContract = makeAPIGatewayLambda({
+  timeout: 30,
+  method: "post",
+  cors: true,
+  path: "/contracts",
+  func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
+    if (!event.body) return sendHttpResult(400, "No body");
+    const { accountId, address, chainId, uri } = JSON.parse(event.body);
+    const { account, accountError } = validateAccount(accountId);
+    if (accountError) return accountError;
+    const { contractError } = await getContract(
+      `${chainId}::${address}`,
+      account
+    );
+    if (contractError) return contractError;
+    const { provider, signer } = getProvider(chainId);
+    const pdContract = ERC721Termsable__factory.connect(address, provider);
+    const oldUri = await pdContract.URI();
+    if (uri !== oldUri) {
+      const pdSignable = ERC721Termsable__factory.connect(address, signer);
+      await pdSignable.setURI(uri);
+    }
+    return httpSuccess("ok");
+  }),
+});
+export const addContract = makeAPIGatewayLambda({
+  timeout: 30,
+  method: "post",
+  cors: true,
+  path: "/contracts/add",
+  func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
+    if (!event.body) return sendHttpResult(400, "No body");
+    const { accountId, address, chainId } = JSON.parse(event.body);
+    const { account, accountError } = validateAccount(accountId);
+    if (accountError) return accountError;
+    const { provider } = getProvider(chainId);
+    const pdContract = ERC721Termsable__factory.connect(address, provider);
+    const [name, symbol] = await Promise.all([
+      pdContract.name(),
+      pdContract.symbol(),
+    ]);
+    qldbDriver.executeLambda(async (tx) => {
+      await tx.execute("INSERT INTO Contracts ?", {
+        id: `${chainId}::${address}`,
+        name,
+        symbol,
+        owner: account.get("id")?.stringValue(),
+      });
+      return true;
+    });
+    return httpSuccess("ok");
+  }),
+});
+export const removeContract = makeAPIGatewayLambda({
+  timeout: 30,
+  method: "delete",
+  cors: true,
+  path: "/contracts",
+  func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
+    const { accountId, id } = event.queryStringParameters || {};
+    if (!id) return sendHttpResult(400, "No id");
+    const { account, accountError } = validateAccount(accountId);
+    if (accountError) return accountError;
+    const { contractError } = await getContract(id, account);
+    if (contractError) return contractError;
+    console.log("removing from contracts", id);
+    qldbDriver.executeLambda(async (tx) => {
+      await tx.execute("DELETE FROM Contracts WHERE id = ?", id);
+      return true;
+    });
+    return httpSuccess("ok");
+  }),
+});
+//#endregion
