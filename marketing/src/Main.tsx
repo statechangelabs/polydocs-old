@@ -18,7 +18,12 @@ const Renderer = () => {
             <p className="text-white text-3xl font-medium">Polydocs</p>
           </div>
           <nav>
-            <button className="btn btn-gradient text-white">Sign In</button>
+            <a
+              href="https://admin.polydocs.xyz"
+              className="btn btn-gradient text-white"
+            >
+              Sign In
+            </a>
           </nav>
         </header>
       </div>
@@ -39,7 +44,9 @@ const Renderer = () => {
                 dapps through cryptographically confirmed, gasless signed
                 agreements
               </p>
-              <button className="btn btn-primary">Make a Contract</button>
+              <a href="https://admin.polydocs.xyz" className="btn btn-primary">
+                Make a Contract
+              </a>
             </div>
 
             <img
@@ -131,7 +138,9 @@ const Renderer = () => {
               Make your first Agreement- Protected Contract - For Free!
             </h2>
             <div className="mx-auto">
-              <button className="btn btn-primary">Start Now</button>
+              <a href="https://admin.polydocs.xyz" className="btn btn-primary">
+                Start Now
+              </a>
             </div>
           </div>
         </section>
