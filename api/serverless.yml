@@ -28,7 +28,7 @@
     "ledgerName":
       "Ref": "QLDB"
   "layers":
-    - "arn:aws:lambda:us-east-1:210049126456:layer:hardhat-lambda-layer:2"
+    - "arn:aws:lambda:us-east-1:210049126456:layer:hardhat-lambda-layer:3"
 "plugins":
   - "serverless-webpack"
   - "serverless-api-gateway-throttling"
@@ -112,5 +112,14 @@
       - "http":
           "path": "/contracts"
           "method": "get"
+          "cors": true
+          "private": false
+  "updateContract":
+    "handler": "handlers.updateContract"
+    "timeout": 30
+    "events":
+      - "http":
+          "path": "/contracts"
+          "method": "post"
           "cors": true
           "private": false
