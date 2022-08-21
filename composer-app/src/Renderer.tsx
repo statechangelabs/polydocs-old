@@ -101,7 +101,9 @@ const Renderer: FC<{
         const tokens = spans
           .filter(([type]) => type === "name")
           .map(([, key]) => key);
-        const goodTokens = tokens.filter((s) => s.indexOf("{{") === -1);
+        const goodTokens = tokens
+          .filter((s) => s.indexOf("{{") === -1)
+          .filter((s, i, a) => a.indexOf(s) === i);
         goodTokens.forEach(addTerm);
         setTerms(goodTokens);
         console.log("Firing setterms");

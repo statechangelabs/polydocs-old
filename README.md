@@ -21,15 +21,26 @@ With these in combination, brands and service providers can create and manage co
 
 ## How we built it - Sponsor Technologies
 
-We built the app on the Polygon blockchain ecosystem for the on-chain recording. We employed Hardhat and Node.js on the back-end, and Create-React-App, Tailwind on the front end connected by a common theme of using Typescript and Typechain to maximize velocity and safety. 
+### Technical Insights
 
-Sponsor technologies were key to making as much progress as we did in this hackathon.
+In the course of this hackathon, we discovered a kind of decentralized application nirvana at the intersection of the immutable Polygon ledger, decentralized storage via **IPFS**, and "just enough web2" backend and private information store through **AWS**. In short, this is increasing the front-end power without requiring them to spend gas directly. 
+
+For example, we combined the UCAN tokens from NFT.storage and authenticated Lambda endpoints by AWS to facilitate the decentralized (IPFS-hosted) front-end directly pushing files into decentralized storage. AWS holds the private API key, but users get time-and-access-limited tokens for direct communication, making for a much smoother experience without sacrificing security.
+
+We also used the AWS lambdas to route metatransactions onto the Polygon blockchain. This allows us to allow the front end maximum flexibility to execute changes with a minimum of web2 code, while not requiring them to spend gas. 
+
+In combination, we were able to allow more sophisticated management with a minimum of onboarding requirement and code complexity. 
+
+### Sponsor Details
+
+Sponsor technologies were key to making as much progress as we did in this hackathon. In addition to shipping on Polygon mainnet and Mumbai testnet, we got specific utility from services that widened our view of the decentralized web: 
 
 * **Amazon Web Services** For the gasless relay and tracking private user/account information. Our system is built on AWS API Gateway running Lambda functions, authenticated using messages signed by a user's wallet. The system is backed by Quantum Ledger, the private, serverless immutable ledger system to keep everything maximum "blockchain." QLDB has been easy to work with and intuitive. We created a new Lambda Layer to enable hardhat-based deployment and verification of contracts. 
 
-* **Spheron** Our front-ends are hosted on IPFS and stored via FileCoin deals. We leveraged Spheron to deploy not one but **three** apps from a single monorepo, and reduced our concerns through supporting autodeployment based on pushes to main. This took some doing - we made multiple organizations to handle multiple deployments from a single repository. We found a couple of challenges that were generic to hosting on IPFS, but Spheron made them easier to work with. 
 
 * **IPFS/Filecoin** Decentralized storage opens tremendous new possibilities for the integration of trustworthy documents with blockchain record-keeping. The recent introduction of UCAN delegated authority tokesn allowed us to build an even-more-decentralized experience. Now our AWS web2 back-end can ship a time and authority limited token to the front end to facilitate direct uploads for maximum performance and minimum constraints. File transfer went from being our most difficult challege to being one of the best parts of the UX. 
+
+* **Spheron** Our front-ends are hosted on IPFS and stored via FileCoin deals. We leveraged Spheron to deploy not one but **three** apps from a single monorepo, and reduced our concerns through supporting autodeployment based on pushes to main. This took some doing - we made multiple organizations to handle multiple deployments from a single repository. We found a couple of challenges that were generic to hosting on IPFS, but Spheron made them easier to work with. 
 
 ## Challenges, Accomplishments and Lessons
 

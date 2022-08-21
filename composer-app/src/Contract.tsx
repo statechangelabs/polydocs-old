@@ -1,4 +1,12 @@
-import { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FC,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   TokenTermsable__factory,
   TermsableNoToken__factory,
@@ -18,6 +26,7 @@ const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
 const Contract: FC = () => {
+  console.log("Render");
   const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
   const { contractId } = useParams();
@@ -39,7 +48,7 @@ const Contract: FC = () => {
     setCurrentUrl(
       await noTokenContract.termsUrlWithPrefix("https://ipfs.io/ipfs/")
     );
-  }, [contractAddress]);
+  }, [contractAddress, provider]);
   useEffect(() => {
     updateUrl();
   }, [updateUrl, currentTemplate, currentTerms, currentRenderer]);
@@ -82,7 +91,7 @@ const Contract: FC = () => {
       setContractTemplate("");
       setCurrentTerms({});
     }
-  }, [contractAddress]);
+  }, [contractAddress, provider]);
   useEffect(() => {
     setCurrentTemplate(contractTemplate);
   }, [contractTemplate]);
@@ -90,6 +99,10 @@ const Contract: FC = () => {
   useEffect(() => {
     setTemplateTerms([]);
   }, [currentTemplate]);
+  const currentTermsRef = useRef(currentTerms);
+  useEffect(() => {
+    currentTermsRef.current = currentTerms;
+  }, [currentTerms]);
   useAsyncEffect(async () => {
     console.log("starting UAE");
     if (
@@ -106,9 +119,12 @@ const Contract: FC = () => {
         await Promise.all(
           templateTerms
             .filter((v, i, a) => a.indexOf(v) === i)
+            .filter((v) => !currentTermsRef.current[v])
             .map(async (term) => {
               const termText = await tokenContract.tokenTerm(term, tokenId);
-              setCurrentTerms((prev) => ({ ...prev, [term]: termText }));
+              setCurrentTerms((prev) =>
+                prev[term] ? prev : { ...prev, [term]: termText }
+              );
             })
         );
       } catch (e) {
@@ -118,12 +134,16 @@ const Contract: FC = () => {
         );
         //extract terms
         await Promise.all(
-          templateTerms.map(async (term) => {
-            if (!currentTerms[term]) {
-              const termText = await noTokenContract.globalTerm(term);
-              setCurrentTerms((prev) => ({ ...prev, [term]: termText }));
-            }
-          })
+          templateTerms
+            .filter((v) => !currentTermsRef.current[v])
+            .map(async (term) => {
+              if (!currentTerms[term]) {
+                const termText = await noTokenContract.globalTerm(term);
+                setCurrentTerms((prev) =>
+                  prev[term] ? prev : { ...prev, [term]: termText }
+                );
+              }
+            })
         );
       }
     }
@@ -155,7 +175,7 @@ const Contract: FC = () => {
           <div>
             <a
               className="btn btn-primary text-center"
-              href={currentUrl}
+              href={`https://sign.polydocs.xyz/#/redirect::${chainId}::${contractAddress}`}
               target="_blank"
               rel="noreferrer"
             >

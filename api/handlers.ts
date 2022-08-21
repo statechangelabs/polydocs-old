@@ -16,7 +16,7 @@ import { QldbDriver, RetryConfig } from "amazon-qldb-driver-nodejs";
 import { getAssetPath } from "@raydeck/local-assets";
 import { BigNumber, ContractFactory, ethers } from "ethers";
 import { exec } from "child_process";
-import { List, Value } from "ion-js/dist/commonjs/es6/dom";
+import { List, load, Value } from "ion-js/dist/commonjs/es6/dom";
 import { Lambda } from "aws-sdk";
 import { get as registryGet } from "@raydeck/registry-manager";
 import { copyFileSync, readFileSync, writeFileSync } from "fs";
@@ -407,6 +407,7 @@ export const deployNFTContract = makeAPIGatewayLambda({
           name,
           symbol,
           owner: account.get("id")?.stringValue(),
+          deployed: 0,
         });
         return true;
       });
@@ -449,6 +450,7 @@ export const doDeploy = makeLambda({
       uri,
       chainId,
       contractAddress,
+      name,
     }: DeployEvent & { contractAddress: string } = event;
     const { signer } = getProvider(chainId);
     if (!signer) return sendHttpResult(400, "bad chain id");
@@ -465,18 +467,26 @@ export const doDeploy = makeLambda({
       });
       try {
         console.log("Attempting", attempt);
-        console.log("I will set polydocs", renderer, template, []);
+        const testName = await polyDocs.name();
+        console.log("I am named", testName);
+        if (testName !== name)
+          console.log("I will set polydocs", renderer, template, []);
         const pdTxn = await polyDocs.setPolydocs(renderer, template, []);
+        console.log("Wiating for pd", pdTxn);
+        await pdTxn.wait();
         console.log("I set polydocs");
         console.log("I will set the URI", uri);
         const mdTxn = await polyDocs.setURI(uri);
         console.log("I set the uri");
         //@TODO support royalty
-        console.log("Wiating for pd");
-        await pdTxn.wait();
-        console.log("Waiting for md");
+        console.log("Waiting for md", mdTxn);
         await mdTxn.wait();
         console.log("I have a deployed polydocs with Metadata");
+        await qldbDriver.executeLambda(async (tx) => {
+          await tx.execute(
+            `UPDATE Contracts SET deployed = 1 WHERE id = '${chainId}::{contractAddress}'`
+          );
+        });
         break;
       } catch (e) {
         console.log("I failed to do whatever thing", e);
@@ -705,14 +715,24 @@ export const getContracts = makeAPIGatewayLambda({
     });
     console.log("I got my contracts", list);
     const output = list.map((v, i) => {
-      console.log("v is ", v, i);
+      // console.log("v is ", v, i);
       const id = v.get("id")?.stringValue() ?? "";
       const [chainId, address] = id.split("::");
       const name = v.get("name")?.stringValue() ?? "";
       const description = v.get("description")?.stringValue() ?? "";
       const image = v.get("image")?.stringValue() ?? "";
       const symbol = v.get("symbol")?.stringValue() ?? "";
-      return { id, chainId, address, name, description, image, symbol };
+      const deployed = v.get("deployed")?.numberValue() ?? false;
+      return {
+        id,
+        chainId,
+        address,
+        name,
+        description,
+        image,
+        symbol,
+        deployed,
+      };
     });
     return httpSuccess(output);
   }),
@@ -764,6 +784,7 @@ export const addContract = makeAPIGatewayLambda({
         name,
         symbol,
         owner: account.get("id")?.stringValue(),
+        deployed: 1,
       });
       return true;
     });
@@ -783,8 +804,11 @@ export const removeContract = makeAPIGatewayLambda({
     const { contractError } = await getContract(id, account);
     if (contractError) return contractError;
     console.log("removing from contracts", id);
-    qldbDriver.executeLambda(async (tx) => {
-      await tx.execute("DELETE FROM Contracts WHERE id = ?", id);
+    await qldbDriver.executeLambda(async (tx) => {
+      const statement = `DELETE FROM Contracts WHERE id = '${id}'`;
+      console.log("Running statement", statement);
+      // const ionId = load(id.toString());
+      await tx.execute(statement);
       return true;
     });
     return httpSuccess("ok");
