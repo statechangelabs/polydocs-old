@@ -13,11 +13,15 @@ const Home: FC = () => {
   }, []);
   return (
     <div>
-      <div className="mb-16">
-        <div className="flex justify-center space-x-12">
-          <h2 className="flex text-3xl font-bold text-black mb-4">
-            Manage My Smart Contracts
+      <div className="container-narrow">
+        <div className="flex justify-between items-center space-x-12">
+          <h2 className="text-3xl font-bold text-black mb-4">
+            Manage Contracts
           </h2>
+
+          <Link to="/contract" className="btn btn-primary">
+            Create an NFT Contract
+          </Link>
         </div>
         <div>
           <ol className="">
@@ -50,11 +54,6 @@ const Home: FC = () => {
               </li>
             ))}
           </ol>
-          <div className="justify-center flex">
-            <Link to="/contract" className="btn btn-primary">
-              Create an NFT Contract
-            </Link>
-          </div>
         </div>
       </div>
     </div>

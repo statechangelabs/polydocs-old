@@ -134,143 +134,160 @@ export const CreateContract: FC = () => {
       }}
     >
       {({ isSubmitting, isValid, dirty, values, errors }) => (
-        <Form className="space-y-8 divide-y divide-gray-200">
-          <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+        <Form className="space-y-8 ">
+          <div className="container-narrow space-y-8 sm:space-y-5">
             <div>
-              <div>
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Profile
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  General information about the contract
-                </p>
+              <div className="bg-white p-6 doc-shadow">
+                <div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Profile
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                    General information about the contract
+                  </p>
+                </div>
+
+                <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="max-w-lg flex rounded shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                        workcation.com/
+                      </span> */}
+                        <Field
+                          type="text"
+                          name="name"
+                          id="name"
+                          autoComplete="name"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                        />
+                        <ErrorMessage name="name" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="symbol"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Symbol <span className="text-red-500">*</span>
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="w-40 flex rounded shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                        workcation.com/
+                      </span> */}
+                        <Field
+                          type="text"
+                          name="symbol"
+                          id="symbol"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                        />
+                        <ErrorMessage name="symbol" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="title"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Short Description
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="max-w-lg flex rounded shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                        workcation.com/
+                      </span> */}
+                        <Field
+                          type="text"
+                          name="title"
+                          id="title"
+                          autoComplete="title"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                        />
+                        <ErrorMessage name="title" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Longer Description <span className="text-red-500">*</span>
+                      <p className="mt-2 text-xs opacity-50">
+                        A description that will go into each token. The link to
+                        sign the contract terms will be substituted where you
+                        add [POLYDOCS]
+                      </p>
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <Field
+                        component="textarea"
+                        id="description"
+                        name="description"
+                        rows={3}
+                        className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded"
+                        defaultValue={""}
+                      />
+                      <ErrorMessage name="description" />
+                    </div>
+                  </div>
+
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-center sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="thumbnail"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Thumbnail/logo image for the contract
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="flex items-center">
+                        <DropFile
+                          name="thumbnail"
+                          onUploading={setIsUploading}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="cover-photo"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Cover Image
+                    </label>
+                    <DropFile name="cover" onUploading={setIsUploading} />
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                  >
-                    Name
-                  </label>
-                  <div className="mt-1 sm:mt-0 sm:col-span-2">
-                    <div className="max-w-lg flex rounded-md shadow-sm">
-                      {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                        workcation.com/
-                      </span> */}
-                      <Field
-                        type="text"
-                        name="name"
-                        id="name"
-                        autoComplete="name"
-                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                      />
-                      <ErrorMessage name="name" />
-                    </div>
-                  </div>
-                </div>
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="symbol"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                  >
-                    Symbol
-                  </label>
-                  <div className="mt-1 sm:mt-0 sm:col-span-2">
-                    <div className="w-40 flex rounded-md shadow-sm">
-                      {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                        workcation.com/
-                      </span> */}
-                      <Field
-                        type="text"
-                        name="symbol"
-                        id="symbol"
-                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                      />
-                      <ErrorMessage name="symbol" />
-                    </div>
-                  </div>
-                </div>
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                  >
-                    Short Description
-                  </label>
-                  <div className="mt-1 sm:mt-0 sm:col-span-2">
-                    <div className="max-w-lg flex rounded-md shadow-sm">
-                      {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                        workcation.com/
-                      </span> */}
-                      <Field
-                        type="text"
-                        name="title"
-                        id="title"
-                        autoComplete="title"
-                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                      />
-                      <ErrorMessage name="title" />
-                    </div>
-                  </div>
+              <div className="bg-white p-6 doc-shadow my-12">
+                <div className="border-b border-gray-100 pb-5">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Contract Info
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                    Address &amp; Chain
+                  </p>
                 </div>
 
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                  >
-                    Longer Description
-                  </label>
-                  <div className="mt-1 sm:mt-0 sm:col-span-2">
-                    <Field
-                      component="textarea"
-                      id="description"
-                      name="description"
-                      rows={3}
-                      className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
-                      defaultValue={""}
-                    />
-                    <p className="mt-2 text-sm text-gray-500">
-                      A description that will go into each token. The link to
-                      sign the contract terms will be substituted where you add{" "}
-                      <b>[POLYDOCS]</b>
-                    </p>
-                    <ErrorMessage name="description" />
-                  </div>
-                </div>
-
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-center sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="thumbnail"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Thumbnail/logo image for the contract
-                  </label>
-                  <div className="mt-1 sm:mt-0 sm:col-span-2">
-                    <div className="flex items-center">
-                      <DropFile name="thumbnail" onUploading={setIsUploading} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label
-                    htmlFor="cover-photo"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                  >
-                    Cover Image
-                  </label>
-                </div>
-                <DropFile name="cover" onUploading={setIsUploading} />
-
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5 mb-5">
                   <label
                     htmlFor="owner"
                     className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                   >
-                    Contract Owner Address
+                    Contract Owner Address{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <div className="mt-1 sm:mt-0 sm:col-span-2">
                     <Field
@@ -281,12 +298,12 @@ export const CreateContract: FC = () => {
                         //@ts-ignore
                         e.target?.select();
                       }}
-                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
+                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded"
                     />
                     <ErrorMessage name="owner" />
                   </div>
                 </div>
-                <div className="pt-6 sm:pt-5">
+                <div className="pt-6 sm:pt-5 border-t border-gray-100">
                   <div role="group" aria-labelledby="label-notifications">
                     <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
                       <div>
@@ -295,13 +312,13 @@ export const CreateContract: FC = () => {
                           id="label-notifications"
                         >
                           Chain For Deployment
+                          <p className="text-xs opacity-50">
+                            When Experimenting, start with a testnet.
+                          </p>
                         </div>
                       </div>
                       <div className="sm:col-span-2">
                         <div className="max-w-lg">
-                          <p className="text-sm text-gray-500">
-                            When Experimenting, start with a testnet.
-                          </p>
                           <div className="mt-4 space-y-4">
                             {supportedChains.map(({ chainId, name }) => (
                               <div
@@ -337,19 +354,19 @@ export const CreateContract: FC = () => {
               </div>
             </div>
 
-            <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
-              <div>
+            <div className="bg-white p-6 doc-shadow pt-8 space-y-6 sm:pt-10 sm:space-y-5">
+              <div className="border-b border-gray-100 pb-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
                   Royalty Information (optional)
                 </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                <p className="mt-1 max-w-2xl text-sm opacity-50">
                   Only works on NFT platforms that conform to ERC 2981
                 </p>
               </div>
               <div className="space-y-6 sm:space-y-5">
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:border-gray-100 ">
                   <label
-                    htmlFor="last-name"
+                    htmlFor="royaltyRecipient"
                     className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                   >
                     Royalty Fees Recipient (blank to go to owner)
@@ -359,15 +376,15 @@ export const CreateContract: FC = () => {
                       type="text"
                       name="royaltyRecipient"
                       id="royaltyRecipient"
-                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
+                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded"
                     />
                     <ErrorMessage name="royaltyRecipient" />
                   </div>
                 </div>
 
-                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
                   <label
-                    htmlFor="email"
+                    htmlFor="royaltyPercentage"
                     className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                   >
                     Percentage
@@ -377,7 +394,7 @@ export const CreateContract: FC = () => {
                       id="royaltyPercentage"
                       name="royaltyPercentage"
                       type="text"
-                      className="block w-40 w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                      className="block w-40 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded"
                     />
                     <ErrorMessage name="royaltyPercentage" />
                   </div>
@@ -386,26 +403,24 @@ export const CreateContract: FC = () => {
             </div>
           </div>
 
-          <div className="pt-5">
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={!isValid || isSubmitting || !dirty || isUploading}
-                type="submit"
-                className={[
-                  "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
-                  !isValid || isSubmitting || !dirty || isUploading
-                    ? "opacity-50 bg-gray-500"
-                    : "",
-                ].join(" ")}
-              >
-                {isSubmitting ? "Sending..." : "Save"}
-              </button>
+          <div className="container-narrow pt-5">
+            <div className="flex justify-between items-center">
+              {!dirty && <div>Nothing to save yet...</div>}
+              <div>
+                <button
+                  type="button"
+                  className="btn text-gray-500 underline mr-6"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!isValid || isSubmitting || !dirty || isUploading}
+                  type="submit"
+                  className="btn btn-primary"
+                >
+                  {isSubmitting ? "Sending..." : "Save"}
+                </button>
+              </div>
             </div>
             {!isValid && (
               <div>
@@ -414,7 +429,6 @@ export const CreateContract: FC = () => {
                 ))}
               </div>
             )}
-            {!dirty && <div>Nothing to save yet...</div>}
           </div>
         </Form>
       )}

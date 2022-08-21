@@ -2,6 +2,8 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMain } from "./Main";
 import { useKnownTemplates } from "./useKnownTemplates";
+import ThumbsUp from "./thumbs-up.svg";
+import ThumbsDown from "./thumbs-down.svg";
 
 const Home: FC = () => {
   const knownTemplates = useKnownTemplates();
@@ -29,48 +31,80 @@ const Home: FC = () => {
   return (
     <div>
       <div>
-        <div className="w-full mx-auto">
-          <div className="mb-12">
-            <div className="flex justify-center space-x-12 mt-8">
-              <h3 className="flex text-xl font-bold text-black">
-                Known Templates
-              </h3>
+        <div className="container-narrow">
+          <div className="mb-24">
+            <div className="space-x-12">
+              <h3 className="text-xl font-bold text-black">Known Templates</h3>
             </div>
-            <div className="text-xs italic flex justify-center space-x-12 opacity-75 mb-4">
+            <div className="text-xs italic mb-4 opacity-50">
               Click To Review and Copy
             </div>
-            <ul className="max-w-4xl mx-auto">
-              {knownTemplates.map(({ cid, name }) => (
-                <li className="pt-4">
+            <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
+              {knownTemplates.map(({ cid, name }, index) => (
+                <li>
                   <Link
                     to={"/template/" + cid}
-                    className="text-gray-60 mt-4 text-primary-default hover:text-primary-light"
+                    className="relative text-primary-default hover:text-primary-light "
                   >
-                    <div>{name}</div>
-                    <div className="text-xs text-gray-600">
-                      {/* <a
-                    href={"https://ipfs.io/ipfs/" + cid}
-                    className=" hover:text-primary-light"
-                  > */}
-                      cid: {cid}
-                      {/* </a> */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div>{name}</div>
+                        <div className="text-xs opacity-50">
+                          {/* <a
+                      href={"https://ipfs.io/ipfs/" + cid}
+                       className=" hover:text-primary-light"
+                      > */}
+                          cid: {cid}
+                          {/* </a> */}
+                        </div>
+                        {index === 0 && (
+                          <p className="absolute text-teal-dark bg-teal-100 px-2 mt-0.5 rounded-full text-[10px]">
+                            Highly Trusted!
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <button className="group mr-5" type="button">
+                          <img
+                            src={ThumbsDown}
+                            className="h-5 w-5 opacity-20 group-hover:opacity-100  transition ease-in-out duration-150"
+                          />
+                          <span className="sr-only">
+                            Cast a down vote for contract {name}
+                          </span>
+                        </button>
+
+                        <button className="group" type="button">
+                          <img
+                            src={ThumbsUp}
+                            className="h-5 w-5 opacity-20 group-hover:opacity-100  transition ease-in-out duration-150"
+                          />
+                          <span className="sr-only">
+                            Cast an up vote for contract {name}
+                          </span>
+                        </button>
+                      </div>
                     </div>
+                    {index + 1 !== knownTemplates.length && (
+                      <>
+                        <hr className="bg-gray-50 mt-6" />
+                      </>
+                    )}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <div className="flex justify-center space-x-12 mt-8">
-              <h3 className="flex text-xl font-bold text-black">
-                My Templates
-              </h3>
+          <div className="mb-24">
+            <div className="">
+              <h3 className="text-xl font-bold text-black">My Templates</h3>
             </div>
-            <div className="text-xs italic flex justify-center space-x-12">
+            <div className="text-xs italic mb-4 opacity-50">
               Click To Review/Revise
             </div>
-            <ul className="max-w-4xl mx-auto">
-              {Object.entries(templates).map(([cid, template]) => (
+            <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
+              {Object.entries(templates).map(([cid, template], index) => (
                 <div className="flex justify-between mt-4">
                   <Link
                     to={"/template/" + cid}
@@ -95,6 +129,12 @@ const Home: FC = () => {
                   >
                     Delete
                   </button>
+
+                  {index + 1 !== Object.entries(templates).length && (
+                    <>
+                      <hr className="bg-gray-50 mt-6" />
+                    </>
+                  )}
                 </div>
               ))}
             </ul>
