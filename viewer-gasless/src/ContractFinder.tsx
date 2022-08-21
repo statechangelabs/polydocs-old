@@ -19,7 +19,7 @@ const ContractFinder: FC = () => {
       <div className="flex flex-col space-y-8 items-center p-4 lg:p-0">
         <div className="flex items-center space-x-6">
           <img src={Logo} alt="Logo" className="w-12 lg:w-32" />
-          <h1 className="text-4xl lg:text-7xl font-bold ">PolyDocs</h1>
+          <h1 className="text-4xl lg:text-7xl font-bold ">Polydocs</h1>
         </div>
         <div className="flex flex-row justify-center">
           <Formik
