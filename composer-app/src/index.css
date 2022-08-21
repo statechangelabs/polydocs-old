@@ -5,26 +5,30 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Devanagari:wght@400;500;700&display=swap");
 
 .btn {
-  @apply font-medium px-12 py-1;
+  @apply font-medium px-4 py-1;
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-purple-dark to-purple-light text-white border;
+  @apply bg-gradient-to-r from-primary-default to-primary-light text-white border;
 }
 
 .btn-primary:hover {
-  @apply from-purple-light to-purple-dark;
+  @apply from-primary-light to-primary-default;
+}
+
+.btn-primary:disabled {
+  @apply pointer-events-none opacity-50;
 }
 
 .btn-gradient {
   border-style: solid;
   border-image-slice: 1;
   border-width: 2px;
-  border-image-source: linear-gradient(120deg, #66ffc8, #509e8c);
+  border-image-source: linear-gradient(120deg, #00e2b7, #009377);
 }
 
 .btn-gradient:hover {
-  border-image-source: linear-gradient(120deg, #509e8c, #66ffc8);
+  border-image-source: linear-gradient(120deg, #009377, #00e2b7);
 }
 
 .doc-shadow {
