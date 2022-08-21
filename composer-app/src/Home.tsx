@@ -6,7 +6,7 @@ import { useContracts } from "./useContracts";
 import { useKnownTemplates } from "./useKnownTemplates";
 
 const Home: FC = () => {
-  const { contracts } = useContracts();
+  const { contracts, removeContract } = useContracts();
   const templates = useMemo(() => {
     return JSON.parse(localStorage.getItem("templates") || "{}") as Record<
       string,
@@ -34,7 +34,7 @@ const Home: FC = () => {
         <div>
           <ol className="">
             {contracts.map((contract) => (
-              <li>
+              <li key={contract.id}>
                 <Link to={`/contracts/${contract.id}`}>
                   <div>
                     {contract.name} ({contract.symbol})
@@ -49,6 +49,13 @@ const Home: FC = () => {
                 >
                   View on Block Explorer
                 </a>
+                <button
+                  onClick={() => {
+                    removeContract(contract.id);
+                  }}
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ol>
@@ -92,7 +99,7 @@ const Home: FC = () => {
             </div>
             <ul className="max-w-4xl mx-auto">
               {knownTemplates.map(({ cid, name }) => (
-                <li className="pt-4">
+                <li className="pt-4" key={cid}>
                   <Link
                     to={"/template/" + cid}
                     className="text-gray-60 mt-4 text-primary-default hover:text-primary-light"
@@ -122,7 +129,7 @@ const Home: FC = () => {
             </div>
             <ul className="max-w-4xl mx-auto">
               {Object.entries(templates).map(([cid, template]) => (
-                <div className="flex justify-between mt-4">
+                <div className="flex justify-between mt-4" key={cid}>
                   <Link
                     to={"/template/" + cid}
                     className="w-3/4 block align-left text-primary-default hover:text-primary-light"

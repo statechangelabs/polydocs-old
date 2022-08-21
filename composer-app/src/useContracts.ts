@@ -27,9 +27,18 @@ export const useContracts = () => {
   useEffect(() => {
     getContracts();
   }, [getContracts]);
-
+  const removeContract = useCallback(
+    async (contractId: string) => {
+      setContracts((old) =>
+        old.filter((contract) => contract.id !== contractId)
+      );
+      await fetch(`/contracts?id=${contractId}`, { method: "DELETE" });
+      getContracts();
+    },
+    [fetch]
+  );
   return useMemo(
-    () => ({ contracts, refresh: getContracts, loading }),
-    [contracts, getContracts, loading]
+    () => ({ contracts, refresh: getContracts, loading, removeContract }),
+    [contracts, getContracts, loading, removeContract]
   );
 };
