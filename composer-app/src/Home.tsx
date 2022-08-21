@@ -35,7 +35,7 @@ const Home: FC = () => {
           <ol className="">
             {contracts.map((contract) => (
               <li>
-                <Link to={`/contract/${contract.id}`}>
+                <Link to={`/contracts/${contract.id}`}>
                   <div>
                     {contract.name} ({contract.symbol})
                   </div>
