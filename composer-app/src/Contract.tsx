@@ -20,8 +20,8 @@ const knownRenderers = [
 const Contract: FC = () => {
   const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [chainId, contractAddress] = (id || "").split("::");
+  const { contractId } = useParams();
+  const [chainId, contractAddress] = (contractId || "").split("::");
   const provider = useProvider(chainId);
   const [currentRenderer, setCurrentRenderer] = useState("");
   const [currentBlock, setCurrentBlock] = useState("");
