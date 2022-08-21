@@ -1,11 +1,12 @@
 import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { blockExplorers } from "./chains";
+import ContractFinder from "./ContractFinder";
 import { useMain } from "./Main";
 import { useContracts } from "./useContracts";
 
 const Home: FC = () => {
-  const { contracts, removeContract } = useContracts();
+  const { contracts, removeContract, refresh } = useContracts();
 
   const { setTitle } = useMain();
   useEffect(() => {
@@ -55,6 +56,7 @@ const Home: FC = () => {
             ))}
           </ol>
         </div>
+        <ContractFinder refresh={refresh} />
       </div>
     </div>
   );
