@@ -97,23 +97,19 @@ const Renderer = () => {
               <ul className="grid lg:grid-cols-2 gap-y-4">
                 <li className="flex space-x-3">
                   <img src={Check} alt="A stylized checkmark" />
-                  <p className="text-sm">
-                    Unlimited collections &amp; submissions!
-                  </p>
+                  <p className="text-sm">DeFi</p>
                 </li>
                 <li className="flex space-x-3">
                   <img src={Check} alt="A stylized checkmark" />
-                  <p className="text-sm">
-                    Open, close, &amp; schedule your books
-                  </p>
+                  <p className="text-sm">DAOs</p>
                 </li>
                 <li className="flex space-x-3">
                   <img src={Check} alt="A stylized checkmark" />
-                  <p className="text-sm">Reference photo collection</p>
+                  <p className="text-sm">NFTs</p>
                 </li>
                 <li className="flex space-x-3">
                   <img src={Check} alt="A stylized checkmark" />
-                  <p className="text-sm">Instant search and filtering</p>
+                  <p className="text-sm">Public Mission Statements</p>
                 </li>
               </ul>
             </div>
