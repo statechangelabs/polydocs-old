@@ -254,7 +254,7 @@ const Renderer: FC<{
           <header className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
               <img src={Logo} alt="Logo" className="w-6" />
-              <h1 className="text-lg font-bold text-purple-default">
+              <h1 className="text-lg font-bold text-primary-default">
                 PolyDocs
               </h1>
             </div>

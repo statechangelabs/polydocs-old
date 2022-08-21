@@ -98,7 +98,7 @@ const Main: FC = () => {
                   <div className="flex">
                     <div className="flex-shrink-0 flex items-center space-x-2">
                       <img src={Logo} alt="Logo" className="w-6" />
-                      <span className="text-lg font-bold text-purple-default">
+                      <span className="text-lg font-bold text-black">
                         PolyDocs
                       </span>
                     </div>
@@ -109,8 +109,8 @@ const Main: FC = () => {
                           to={item.to}
                           className={classNames(
                             item.current
-                              ? "border-purple-600 text-gray-600"
-                              : "border-transparent text-gray-400 hover:border-gray-300 hover:text-purple-600",
+                              ? "border-primary-light text-gray-600"
+                              : "border-transparent text-gray-400 hover:border-gray-300 hover:text-black",
                             "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                           )}
                           aria-current={item.current ? "page" : undefined}
@@ -193,7 +193,7 @@ const Main: FC = () => {
         <div className="py-2">
           <header>
             <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <h1 className="text-4xl font-bold leading-tight text-purple-default mt-2">
+              <h1 className="text-4xl font-bold leading-tight text-primary-default mt-2">
                 {title}
               </h1>
             </div>

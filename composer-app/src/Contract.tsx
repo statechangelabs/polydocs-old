@@ -295,7 +295,7 @@ const Contract: FC = () => {
                             onClick={() => {
                               setCurrentTemplate(cid);
                             }}
-                            className="text-gray-60 text-purple-default hover:text-purple-light truncate"
+                            className="text-gray-60 text-primary-default hover:text-primary-light truncate"
                           >
                             <div>
                               {name}
@@ -324,7 +324,7 @@ const Contract: FC = () => {
                             onClick={() => {
                               setCurrentTemplate(cid);
                             }}
-                            className="text-gray-60 text-purple-default hover:text-purple-light truncate"
+                            className="text-gray-60 text-primary-default hover:text-primary-light truncate"
                           >
                             <div>
                               {template.replaceAll("#", "").substring(0, 60)}

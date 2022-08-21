@@ -38,7 +38,7 @@ const Templates: FC = () => {
                   <li className="pt-4">
                     <Link
                       to={"/templates/" + cid}
-                      className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
+                      className="text-gray-60 mt-4 text-primary-default hover:text-primary-light"
                     >
                       <div>{name}</div>
                       <div className="text-xs text-gray-600">cid: {cid}</div>

@@ -54,7 +54,7 @@ const Home: FC = () => {
           </ol>
           <div className="justify-center flex">
             <Link to="/contract" className="btn btn-primary">
-              Create a NFT Contract
+              Create an NFT Contract
             </Link>
           </div>
           {/* <input
@@ -95,13 +95,13 @@ const Home: FC = () => {
                 <li className="pt-4">
                   <Link
                     to={"/template/" + cid}
-                    className="text-gray-60 mt-4 text-purple-default hover:text-purple-light"
+                    className="text-gray-60 mt-4 text-primary-default hover:text-primary-light"
                   >
                     <div>{name}</div>
                     <div className="text-xs text-gray-600">
                       {/* <a
                     href={"https://ipfs.io/ipfs/" + cid}
-                    className=" hover:text-purple-light"
+                    className=" hover:text-primary-light"
                   > */}
                       cid: {cid}
                       {/* </a> */}
@@ -125,7 +125,7 @@ const Home: FC = () => {
                 <div className="flex justify-between mt-4">
                   <Link
                     to={"/template/" + cid}
-                    className="w-3/4 block align-left text-purple-default hover:text-purple-light"
+                    className="w-3/4 block align-left text-primary-default hover:text-primary-light"
                   >
                     <div className="truncate">
                       {template.replaceAll("#", "").substring(0, 120)}
