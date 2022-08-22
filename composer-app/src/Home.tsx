@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, Fragment, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { blockExplorers } from "./chains";
 import ContractFinder from "./ContractFinder";
@@ -27,50 +27,60 @@ const Home: FC = () => {
         <div className="mb-12">
           <ol className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
             {contracts.map((contract, index) => (
-              <li key={contract.id} className="flex justify-between space-x-6">
-                <div>
-                  <Link
-                    to={`/contracts/${contract.id}`}
-                    className="relative text-primary-default hover:text-primary-light "
-                  >
-                    <h2 className="">
-                      <span className="font-bold text-md mr-2">
-                        {contract.name}
-                      </span>
-                      <span className="text-gray-700">
-                        ({contract.symbol}){" "}
-                        {contract.deployed ? "" : "(deploying...)"}
-                      </span>
-                    </h2>
-
-                    <div className="text-gray-700 text-xs">
-                      {contract.address}{" "}
-                    </div>
-                  </Link>
-                </div>
-                <div>
-                  {!!contract.deployed && (
-                    <a
-                      className="btn-gradient btn mr-2"
-                      href={`${blockExplorers[parseInt(contract.chainId)]}/${
-                        contract.address
-                      }`}
-                      target="_blank"
-                      rel="noreferrer"
+              <Fragment>
+                <li
+                  key={contract.id}
+                  className="flex justify-between space-x-6"
+                >
+                  <div>
+                    <Link
+                      to={`/contracts/${contract.id}`}
+                      className="relative text-primary-default hover:text-primary-light "
                     >
-                      View on Block Explorer
-                    </a>
-                  )}
-                  <button
-                    className="btn btn-gradient"
-                    onClick={() => {
-                      removeContract(contract.id);
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </li>
+                      <h2 className="">
+                        <span className="font-bold text-md mr-2">
+                          {contract.name}
+                        </span>
+                        <span className="text-gray-700">
+                          ({contract.symbol}){" "}
+                          {contract.deployed ? "" : "(deploying...)"}
+                        </span>
+                      </h2>
+
+                      <div className="text-gray-700 text-xs">
+                        {contract.address}{" "}
+                      </div>
+                    </Link>
+                  </div>
+                  <div>
+                    {!!contract.deployed && (
+                      <a
+                        className="btn-gradient btn mr-2"
+                        href={`${blockExplorers[parseInt(contract.chainId)]}/${
+                          contract.address
+                        }`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View on Block Explorer
+                      </a>
+                    )}
+                    <button
+                      className="btn btn-gradient"
+                      onClick={() => {
+                        removeContract(contract.id);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </li>
+                {index + 1 !== Object.entries(contracts).length && (
+                  <>
+                    <hr className="bg-gray-50 mt-6" />
+                  </>
+                )}
+              </Fragment>
             ))}
           </ol>
         </div>

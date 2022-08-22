@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMain } from "./Main";
 import { useKnownTemplates } from "./useKnownTemplates";
@@ -112,37 +112,38 @@ const Home: FC = () => {
             {hasTemplates && (
               <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
                 {Object.entries(templates).map(([cid, template], index) => (
-                  <div className="flex justify-between mt-4">
-                    <Link
-                      to={"/template/" + cid}
-                      className="w-3/4 block align-left text-primary-default hover:text-primary-light"
-                    >
-                      <div className="truncate">
-                        {template.replaceAll("#", "").substring(0, 120)}
-                        ...
-                      </div>
-                      <div className="text-xs text-gray-60">cid: {cid}</div>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        delete templates[cid];
-                        localStorage.setItem(
-                          "templates",
-                          JSON.stringify(templates)
-                        );
-                        incrementCounter();
-                      }}
-                      className="btn btn-gradient"
-                    >
-                      Delete
-                    </button>
-
+                  <Fragment>
+                    <div className="flex justify-between mt-4">
+                      <Link
+                        to={"/template/" + cid}
+                        className="w-3/4 block align-left text-primary-default hover:text-primary-light"
+                      >
+                        <div className="truncate">
+                          {template.replaceAll("#", "").substring(0, 120)}
+                          ...
+                        </div>
+                        <div className="text-xs text-gray-60">cid: {cid}</div>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          delete templates[cid];
+                          localStorage.setItem(
+                            "templates",
+                            JSON.stringify(templates)
+                          );
+                          incrementCounter();
+                        }}
+                        className="btn btn-gradient"
+                      >
+                        Delete
+                      </button>
+                    </div>
                     {index + 1 !== Object.entries(templates).length && (
                       <>
                         <hr className="bg-gray-50 mt-6" />
                       </>
                     )}
-                  </div>
+                  </Fragment>
                 ))}
               </ul>
             )}
