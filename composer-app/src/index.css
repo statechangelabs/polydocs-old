@@ -9,11 +9,11 @@
 }
 
 .btn {
-  @apply font-medium px-5 py-2;
+  @apply font-medium px-5 py-2 border-2;
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-primary-default to-teal-dark text-white;
+  @apply bg-gradient-to-r from-primary-default to-teal-dark text-white border-transparent;
 }
 
 .btn-primary:hover {
