@@ -156,8 +156,8 @@ export const CreateContract: FC = () => {
                       Name <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
-                      <div className="max-w-lg flex rounded shadow-sm">
-                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      <div className="max-w-lg flex  shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 -l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                         workcation.com/
                       </span> */}
                         <Field
@@ -165,7 +165,7 @@ export const CreateContract: FC = () => {
                           name="name"
                           id="name"
                           autoComplete="name"
-                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
                         <ErrorMessage name="name" />
                       </div>
@@ -179,15 +179,15 @@ export const CreateContract: FC = () => {
                       Symbol <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
-                      <div className="w-40 flex rounded shadow-sm">
-                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      <div className="w-40 flex  shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 -l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                         workcation.com/
                       </span> */}
                         <Field
                           type="text"
                           name="symbol"
                           id="symbol"
-                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
                         <ErrorMessage name="symbol" />
                       </div>
@@ -201,8 +201,8 @@ export const CreateContract: FC = () => {
                       Short Description
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
-                      <div className="max-w-lg flex rounded shadow-sm">
-                        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      <div className="max-w-lg flex  shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 -l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                         workcation.com/
                       </span> */}
                         <Field
@@ -210,7 +210,7 @@ export const CreateContract: FC = () => {
                           name="title"
                           id="title"
                           autoComplete="title"
-                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded sm:text-sm border-gray-300"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
                         <ErrorMessage name="title" />
                       </div>
@@ -235,7 +235,7 @@ export const CreateContract: FC = () => {
                         id="description"
                         name="description"
                         rows={3}
-                        className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded"
+                        className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 "
                         defaultValue={""}
                       />
                       <ErrorMessage name="description" />
@@ -298,7 +298,7 @@ export const CreateContract: FC = () => {
                         //@ts-ignore
                         e.target?.select();
                       }}
-                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded"
+                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
                     <ErrorMessage name="owner" />
                   </div>
@@ -376,7 +376,7 @@ export const CreateContract: FC = () => {
                       type="text"
                       name="royaltyRecipient"
                       id="royaltyRecipient"
-                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded"
+                      className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
                     <ErrorMessage name="royaltyRecipient" />
                   </div>
@@ -394,7 +394,7 @@ export const CreateContract: FC = () => {
                       id="royaltyPercentage"
                       name="royaltyPercentage"
                       type="text"
-                      className="block w-40 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded"
+                      className="block w-40 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 "
                     />
                     <ErrorMessage name="royaltyPercentage" />
                   </div>

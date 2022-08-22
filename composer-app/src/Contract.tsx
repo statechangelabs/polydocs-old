@@ -163,25 +163,23 @@ const Contract: FC = () => {
   return (
     <Fragment>
       <div>
-        <div className="flex space-x-6 items-center mb-12 bg-white doc-shadow p-6">
+        <div className="flex space-x-6 items-center justify-end mb-12">
           {/* <h2 className="text-xl font-semibold ">Contract Address</h2>
           <input
             className="border border-gray-200 rounded-none p-1  flex-grow"
             value={contractAddress}
             onChange={(e) => {
               setContractAddress(e.target.value);
-            }}
+            }} 
           /> */}
-          <div>
-            <a
-              className="btn btn-primary text-center"
-              href={`https://sign.polydocs.xyz/#/redirect::${chainId}::${contractAddress}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open Signing Page in New Tab
-            </a>
-          </div>
+          <a
+            className="btn btn-primary text-center"
+            href={`https://sign.polydocs.xyz/#/redirect::${chainId}::${contractAddress}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Signing Page in New Tab
+          </a>
         </div>
         <div className="grid grid-cols-2 gap-x-6">
           <div>
@@ -208,7 +206,7 @@ const Contract: FC = () => {
                 <h2 className="text-lg font-semibold">Document Template</h2>
                 {currentRenderer !== knownRenderers[0] && (
                   <button
-                    className="btn btn-primary"
+                    className="btn btn-gradient"
                     onClick={async () => {
                       console.log("Uou are pressing the button");
                       if (!provider) return;
@@ -302,31 +300,31 @@ const Contract: FC = () => {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs opacity-75 mb-2">
-                      Click on a template to preview how it would work in your
+                    <p className="text-xs opacity-50 mb-6">
+                      Select a template to preview how it would work in your
                       contract. Click copy to make a modified version of the
                       template.
                     </p>
                     <h3 className="font-semibold mb-2">Known Templates</h3>
                     <ul>
                       {knownTemplates.map(({ cid, name }) => (
-                        <li className="flex justify-between  mb-4 ">
+                        <li className="flex justify-between mb-6 ">
                           <button
                             onClick={() => {
                               setCurrentTemplate(cid);
                             }}
-                            className="text-gray-60 text-primary-default hover:text-primary-light truncate"
+                            className="text-left text-primary-default hover:text-primary-light truncate"
                           >
                             <div>
                               {name}
                               ...
                             </div>
-                            <div className="text-xs text-gray-60">
+                            <div className="text-xs text-left opacity-50">
                               cid: {cid}
                             </div>
                           </button>
                           <button
-                            className="btn btn-gradient !px-4 ml-4"
+                            className="text-teal-dark underline"
                             onClick={() => {
                               navigate("/template/" + cid);
                             }}
@@ -336,38 +334,44 @@ const Contract: FC = () => {
                         </li>
                       ))}
                     </ul>
-                    <h3 className="font-semibold mb-2">My Templates</h3>
-                    <ul>
-                      {Object.entries(templates).map(([cid, template]) => (
-                        <li className="flex justify-between  mb-4 ">
-                          <button
-                            onClick={() => {
-                              setCurrentTemplate(cid);
-                            }}
-                            className="text-gray-60 text-primary-default hover:text-primary-light truncate"
-                          >
-                            <div>
-                              {template.replaceAll("#", "").substring(0, 60)}
-                              ...
-                            </div>
-                            <div className="text-xs text-gray-60">
-                              cid: {cid}
-                            </div>
-                          </button>
-                          <button
-                            className="btn btn-gradient !px-4 ml-4"
-                            onClick={() => {
-                              navigate("/template/" + cid);
-                            }}
-                          >
-                            Copy
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    {Object.entries(templates).length > 0 && (
+                      <>
+                        <h3 className="font-semibold mb-2">My Templates</h3>
+                        <ul>
+                          {Object.entries(templates).map(([cid, template]) => (
+                            <li className="flex justify-between  mb-4 ">
+                              <button
+                                onClick={() => {
+                                  setCurrentTemplate(cid);
+                                }}
+                                className="text-gray-60 text-primary-default hover:text-primary-light truncate"
+                              >
+                                <div>
+                                  {template
+                                    .replaceAll("#", "")
+                                    .substring(0, 60)}
+                                  ...
+                                </div>
+                                <div className="text-xs text-gray-60">
+                                  cid: {cid}
+                                </div>
+                              </button>
+                              <button
+                                className="text-teal-dark underline"
+                                onClick={() => {
+                                  navigate("/template/" + cid);
+                                }}
+                              >
+                                Copy
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                   </div>
                   <button
-                    className="btn btn-gradient"
+                    className="btn btn-gradient mt-8"
                     onClick={() => setShowTemplateForm(false)}
                   >
                     Cancel
@@ -387,7 +391,7 @@ const Contract: FC = () => {
                   </div>
                   <div className="w-full flex">
                     <input
-                      className="border border-gray-200 p-1 rounded-none flex-grow"
+                      className="border border-gray-200 p-1 flex-grow"
                       value={currentTerms[term]}
                       onChange={(e) => {
                         setCurrentTerms((prev) => ({

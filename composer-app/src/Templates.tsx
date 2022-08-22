@@ -8,6 +8,7 @@ import ThumbsDown from "./thumbs-down.svg";
 const Home: FC = () => {
   const knownTemplates = useKnownTemplates();
   const [contractAddress, setContractAddress] = useState("");
+  const [hasTemplates, setHasTemplates] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const contractAddress = localStorage.getItem("contractAddress");
@@ -19,6 +20,11 @@ const Home: FC = () => {
       string
     >;
   }, []);
+
+  useEffect(() => {
+    if (Object.entries(templates).length > 0) setHasTemplates(true);
+  }, [templates]);
+
   const [counter, setCounter] = useState(0);
   const incrementCounter = useCallback(() => {
     setCounter((old) => old + 1);
@@ -103,41 +109,43 @@ const Home: FC = () => {
             <div className="text-xs italic mb-4 opacity-50">
               Click To Review/Revise
             </div>
-            <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
-              {Object.entries(templates).map(([cid, template], index) => (
-                <div className="flex justify-between mt-4">
-                  <Link
-                    to={"/template/" + cid}
-                    className="w-3/4 block align-left text-primary-default hover:text-primary-light"
-                  >
-                    <div className="truncate">
-                      {template.replaceAll("#", "").substring(0, 120)}
-                      ...
-                    </div>
-                    <div className="text-xs text-gray-60">cid: {cid}</div>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      delete templates[cid];
-                      localStorage.setItem(
-                        "templates",
-                        JSON.stringify(templates)
-                      );
-                      incrementCounter();
-                    }}
-                    className="btn btn-gradient"
-                  >
-                    Delete
-                  </button>
+            {hasTemplates && (
+              <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
+                {Object.entries(templates).map(([cid, template], index) => (
+                  <div className="flex justify-between mt-4">
+                    <Link
+                      to={"/template/" + cid}
+                      className="w-3/4 block align-left text-primary-default hover:text-primary-light"
+                    >
+                      <div className="truncate">
+                        {template.replaceAll("#", "").substring(0, 120)}
+                        ...
+                      </div>
+                      <div className="text-xs text-gray-60">cid: {cid}</div>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        delete templates[cid];
+                        localStorage.setItem(
+                          "templates",
+                          JSON.stringify(templates)
+                        );
+                        incrementCounter();
+                      }}
+                      className="btn btn-gradient"
+                    >
+                      Delete
+                    </button>
 
-                  {index + 1 !== Object.entries(templates).length && (
-                    <>
-                      <hr className="bg-gray-50 mt-6" />
-                    </>
-                  )}
-                </div>
-              ))}
-            </ul>
+                    {index + 1 !== Object.entries(templates).length && (
+                      <>
+                        <hr className="bg-gray-50 mt-6" />
+                      </>
+                    )}
+                  </div>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

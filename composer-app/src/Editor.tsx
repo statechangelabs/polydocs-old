@@ -86,10 +86,10 @@ const Editor: FC = () => {
       >
         {({ values }) => (
           <Form>
-            <div className="flex w-full flex-row justify-between space-x-12">
-              <div className="flex-1 w-1/2 flex-col ">
-                <div className="doc-shadow p-6 bg-white">
-                  <h2 className="text-2xl font-bold mb-4">Template Editor</h2>
+            <div className="grid lg:grid-cols-2 gap-12">
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Template Editor</h2>
+                <div className="doc-shadow p-6 bg-white mb-12">
                   <Field
                     as="textarea"
                     name="template"
@@ -130,33 +130,36 @@ const Editor: FC = () => {
 
                 <div>
                   {terms && (
-                    <div className=" p-4 m-2 bg-white doc-shadow  mt-12">
-                      <h2 className="text-2xl font-bold">
+                    <div className=" p-6 bg-white doc-shadow ">
+                      <h2 className="text-2xl font-bold mb-4">
                         Terms Used in this document
                       </h2>
-                      {Object.entries(terms).map(([key, value]) => (
-                        <div>
-                          <label
-                            className="text-gray-800 font-medium text-xs"
-                            htmlFor={`terms.${key}`}
-                          >
-                            {key}
-                          </label>
-                          <div>
-                            <Field
-                              type="text"
-                              name={`terms.${key}`}
-                              class="field w-full border border-gray-400"
-                            />
+
+                      <div className="flex flex-col gap-6">
+                        {Object.entries(terms).map(([key, value]) => (
+                          <div className="flex">
+                            <label
+                              className="text-primary-default font-medium text-xs w-1/3"
+                              htmlFor={`terms.${key}`}
+                            >
+                              {key}
+                            </label>
+                            <div className="w-2/3">
+                              <Field
+                                type="text"
+                                name={`terms.${key}`}
+                                class="field w-full border border-gray-300 rounded"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex-1 w-1/2 flex-col px-4">
+              <div className="px-4">
                 <h2 className="text-2xl font-bold mb-4">Preview</h2>
                 <Renderer
                   addTerm={addTerm}

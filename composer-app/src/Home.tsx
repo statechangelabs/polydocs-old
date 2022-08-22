@@ -24,7 +24,7 @@ const Home: FC = () => {
             Create an NFT Contract
           </Link>
         </div>
-        <div>
+        <div className="mb-12">
           <ol className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
             {contracts.map((contract, index) => (
               <li key={contract.id} className="flex justify-between space-x-6">
