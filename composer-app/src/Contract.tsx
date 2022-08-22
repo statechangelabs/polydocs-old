@@ -31,12 +31,12 @@ import {
 } from "formik";
 import { DropFile } from "./DropFile";
 import { useAuthenticatedFetch } from "./Authenticator";
+import { useUpload } from "./useIPFSUpload";
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
 
 const ContractDocument: FC = () => {
-  console.log("Render");
   const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
   const { contractId } = useParams();
@@ -497,12 +497,7 @@ const ContractEditor: FC = () => {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [jsonObj, setJsonObj] = useState({
-    title: "",
-    description: "",
-    thumbnail: "",
-    cover: "",
-  });
+  const [jsonObj, setJsonObj] = useState<Record<string, any>>();
   useAsyncEffect(async () => {
     const contract = ERC721Termsable__factory.connect(
       contractAddress,
@@ -516,14 +511,30 @@ const ContractEditor: FC = () => {
     const json = await getIPFSText(uri);
     const obj = JSON.parse(json);
     setJsonObj(obj);
+    console.log("json obj is updated", obj);
     // const image = JSON.parse(image);
   }, [provider]);
-
+  const { upload } = useUpload();
+  const fetch = useAuthenticatedFetch();
+  if (!jsonObj) return null;
   return (
     <>
       <Formik
         initialValues={jsonObj}
         onSubmit={async (values) => {
+          const newObj = { ...jsonObj, ...values };
+          toast.info("Saving new JSON file to IPFS");
+          const cid = await upload(JSON.stringify(newObj));
+          toast.info("Updating contract via metatransaction");
+          await fetch("/contracts", {
+            method: "POST",
+            body: JSON.stringify({
+              contractAddress,
+              chainId,
+              uri: "ipfs://" + cid,
+            }),
+          });
+          toast.success("Saved!");
           console.log("submit");
         }}
       >
@@ -597,13 +608,21 @@ const ContractEditor: FC = () => {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Thumbnail/logo image for the contract
+                      {values.image && (
+                        <button
+                          className="btn btn-gradient block"
+                          type="button"
+                          onClick={() => {
+                            setFieldValue("image", "", true);
+                          }}
+                        >
+                          Clear
+                        </button>
+                      )}
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
                       <div className="flex items-center">
-                        <DropFile
-                          name="thumbnail"
-                          onUploading={setIsUploading}
-                        />
+                        <DropFile name="image" onUploading={setIsUploading} />
                       </div>
                     </div>
                   </div>
@@ -614,10 +633,42 @@ const ContractEditor: FC = () => {
                       className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                     >
                       Cover Image
+                      {values.cover && (
+                        <button
+                          className="btn btn-gradient block"
+                          type="button"
+                          onClick={() => {
+                            setFieldValue("cover", "", true);
+                          }}
+                        >
+                          Clear
+                        </button>
+                      )}
                     </label>
                     <DropFile name="cover" onUploading={setIsUploading} />
                   </div>
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="background"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Background Image
+                      {values.background && (
+                        <button
+                          className="btn btn-gradient block"
+                          type="button"
+                          onClick={() => {
+                            setFieldValue("background", "", true);
+                          }}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </label>
+                    <DropFile name="background" onUploading={setIsUploading} />
+                  </div>
                 </div>
+
                 <button
                   disabled={!dirty || !isValid || isSubmitting}
                   className="btn btn-primary mt-6"
