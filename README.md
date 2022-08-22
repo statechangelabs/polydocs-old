@@ -10,6 +10,8 @@ Polydocs is first a standard for expressing agreement to a document made of dece
     renderer/#/template::chainId::contractAddress::blockheight[::tokenId]
 *Note: `tokenID` is for when the agreement is particular to the token, rather than the whole contract*
 
+We created interfaces and template contracts [available via npm](https://www.npmjs.com/package/@polydocs/contracts)
+
 To make this easy, we created three services in this hackathon:
 
 1) [sign.polydocs.xyz](https://sign.polydocs.xyz) is a gasless mini-app to enable a customer to accept the terms of an agreement and get recorded on the blockchain using a metatransaction 
