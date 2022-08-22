@@ -777,7 +777,7 @@ export const updateContract = makeAPIGatewayLambda({
     if (!event.body) return sendHttpResult(400, "No body");
     const {
       accountId,
-      address,
+      contractAddress,
       chainId,
       uri,
       template,
@@ -785,7 +785,7 @@ export const updateContract = makeAPIGatewayLambda({
       terms,
     }: {
       accountId?: string;
-      address: string;
+      contractAddress: string;
       chainId: string;
       uri?: string;
       template?: string;
@@ -795,31 +795,35 @@ export const updateContract = makeAPIGatewayLambda({
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { contractError } = await getContract(
-      `${chainId}::${address}`,
+      `${chainId}::${contractAddress}`,
       account
     );
     if (contractError) return contractError;
     const { provider, signer } = getProvider(chainId);
     const gasOptions = await getGasOptions(chainId);
-    const pdContract = ERC721Termsable__factory.connect(address, provider);
+    const pdContract = ERC721Termsable__factory.connect(
+      contractAddress,
+      provider
+    );
+    const pdSignable = ERC721Termsable__factory.connect(
+      contractAddress,
+      signer
+    );
     if (uri) {
       const oldUri = await pdContract.URI();
       if (uri !== oldUri) {
-        const pdSignable = ERC721Termsable__factory.connect(address, signer);
         await pdSignable.setURI(uri, gasOptions);
       }
     }
     if (template) {
       const oldUri = await pdContract.docTemplate();
       if (template !== oldUri) {
-        const pdSignable = ERC721Termsable__factory.connect(address, signer);
         await pdSignable.setGlobalTemplate(template, gasOptions);
       }
     }
     if (renderer) {
       const oldUri = await pdContract.renderer();
       if (renderer !== oldUri) {
-        const pdSignable = ERC721Termsable__factory.connect(address, signer);
         await pdSignable.setGlobalRenderer(renderer, gasOptions);
       }
     }
@@ -827,7 +831,6 @@ export const updateContract = makeAPIGatewayLambda({
       const termsEntries = Object.entries(terms);
       for (let x = 0; x < termsEntries.length; x++) {
         const [termId, termUri] = termsEntries[x];
-        const pdSignable = ERC721Termsable__factory.connect(address, signer);
         await pdSignable.setGlobalTerm(termId, termUri, gasOptions);
       }
     }

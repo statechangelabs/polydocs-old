@@ -30,6 +30,7 @@ import {
   Formik,
 } from "formik";
 import { DropFile } from "./DropFile";
+import { useAuthenticatedFetch } from "./Authenticator";
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
@@ -69,7 +70,7 @@ const ContractDocument: FC = () => {
     console.log("I will use templates", templates);
     return templates;
   }, []);
-
+  const fetch = useAuthenticatedFetch();
   useAsyncEffect(async () => {
     if (!provider) return;
     if (ethers.utils.isAddress(contractAddress)) {
@@ -215,12 +216,20 @@ const ContractDocument: FC = () => {
                         provider?.getSigner()
                       );
                       try {
-                        const txn = await contract.setGlobalRenderer(
-                          knownRenderers[0]
-                        );
-                        toast("Saving renderer to blockchain");
-                        txn.wait();
-                        toast("Saved to blockchain");
+                        const p = fetch("/contracts", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            contractAddress,
+                            chainId,
+                            renderer: knownRenderers[0],
+                          }),
+                        });
+                        // const txn = await contract.setGlobalRenderer(
+                        //   knownRenderers[0]
+                        // );
+                        toast("Saving renderer via metatransaction");
+                        await p;
+                        toast("Saved");
                         setCurrentRenderer(knownRenderers[0]);
                       } catch (e) {
                         toast(
@@ -275,12 +284,18 @@ const ContractDocument: FC = () => {
                             contractAddress,
                             provider.getSigner()
                           );
+
                           try {
-                            const txn = await contract.setGlobalTemplate(
-                              currentTemplate
-                            );
                             toast("Saving new template to chain");
-                            await txn.wait();
+                            await fetch("/contracts", {
+                              method: "POST",
+                              body: JSON.stringify({
+                                contractAddress,
+                                chainId,
+                                template: currentTemplate,
+                              }),
+                            });
+
                             toast("Template saved to chain");
                             updateUrl();
                           } catch (e) {
@@ -409,13 +424,21 @@ const ContractDocument: FC = () => {
                           provider.getSigner()
                         );
                         try {
-                          const txn = await contract.setGlobalTerm(
-                            term,
-                            currentTerms[term]
-                          );
                           console.log("Saving", term, currentTerms[term]);
                           toast("Saving new term to chain");
-                          await txn.wait();
+                          await fetch("/contracts", {
+                            method: "POST",
+                            body: JSON.stringify({
+                              contractAddress,
+                              chainId,
+                              terms: { [term]: currentTerms[term] },
+                            }),
+                          });
+                          // const txn = await contract.setGlobalTerm(
+                          //   term,
+                          //   currentTerms[term]
+                          // );
+                          // await txn.wait();
                           toast("Term saved to chain");
                           updateUrl();
                         } catch (e) {
@@ -474,6 +497,12 @@ const ContractEditor: FC = () => {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [jsonObj, setJsonObj] = useState({
+    title: "",
+    description: "",
+    thumbnail: "",
+    cover: "",
+  });
   useAsyncEffect(async () => {
     const contract = ERC721Termsable__factory.connect(
       contractAddress,
@@ -486,106 +515,119 @@ const ContractEditor: FC = () => {
     const uri = await contract.URI();
     const json = await getIPFSText(uri);
     const obj = JSON.parse(json);
+    setJsonObj(obj);
     // const image = JSON.parse(image);
   }, [provider]);
 
   return (
     <>
       <Formik
-        initialValues={{ title: "", description: "", thumbnail: "", cover: "" }}
+        initialValues={jsonObj}
         onSubmit={async (values) => {
           console.log("submit");
         }}
       >
-        <div>
-          <div className="container-narrow mb-12">
-            <div className="bg-white doc-shadow p-6">
-              <div className="pb-6 border-b border-gray-100">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Profile
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  General information about the contract
-                </p>
-              </div>
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:py-6">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                >
-                  Short Description
-                </label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex  shadow-sm">
-                    {/* <span className="inline-flex items-center px-3 -l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+        {({ dirty, isValid, isSubmitting, setFieldValue, values }) => (
+          <Form>
+            <div>
+              <div className="container-narrow mb-12">
+                <div className="bg-white doc-shadow p-6">
+                  <div className="pb-6 border-b border-gray-100">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Profile
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                      General information about the contract
+                    </p>
+                  </div>
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:py-6">
+                    <label
+                      htmlFor="title"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Short Description
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="max-w-lg flex  shadow-sm">
+                        {/* <span className="inline-flex items-center px-3 -l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                         workcation.com/
                       </span> */}
-                    <Field
-                      type="text"
-                      name="title"
-                      id="title"
-                      autoComplete="title"
-                      className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
-                    />
+                        <Field
+                          type="text"
+                          name="title"
+                          id="title"
+                          autoComplete="title"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
+                        />
+                      </div>
+                      <ErrorMessage name="title" />
+                    </div>
                   </div>
-                  <ErrorMessage name="title" />
-                </div>
-              </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:py-6">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                >
-                  Longer Description <span className="text-red-500">*</span>
-                  <p className="mt-2 text-xs opacity-50">
-                    A description that will go into each token. The link to sign
-                    the contract terms will be substituted where you add
-                    [POLYDOCS]
-                  </p>
-                </label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <Field
-                    component="textarea"
-                    id="description"
-                    name="description"
-                    rows={3}
-                    className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 "
-                    defaultValue={
-                      "Purchasing this token requires accepting our service terms: [POLYDOCS]"
-                    }
-                  />
-                  <ErrorMessage name="description" />
-                </div>
-              </div>
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:py-6">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Longer Description <span className="text-red-500">*</span>
+                      <p className="mt-2 text-xs opacity-50">
+                        A description that will go into each token. The link to
+                        sign the contract terms will be substituted where you
+                        add [POLYDOCS]
+                      </p>
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <Field
+                        component="textarea"
+                        id="description"
+                        name="description"
+                        rows={3}
+                        className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 "
+                        defaultValue={
+                          "Purchasing this token requires accepting our service terms: [POLYDOCS]"
+                        }
+                      />
+                      <ErrorMessage name="description" />
+                    </div>
+                  </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-center sm:border-t sm:border-gray-100 sm:py-6">
-                <label
-                  htmlFor="thumbnail"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Thumbnail/logo image for the contract
-                </label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="flex items-center">
-                    <DropFile name="thumbnail" onUploading={setIsUploading} />
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-center sm:border-t sm:border-gray-100 sm:py-6">
+                    <label
+                      htmlFor="thumbnail"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Thumbnail/logo image for the contract
+                    </label>
+                    <div className="mt-1 sm:mt-0 sm:col-span-2">
+                      <div className="flex items-center">
+                        <DropFile
+                          name="thumbnail"
+                          onUploading={setIsUploading}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
+                    <label
+                      htmlFor="cover-photo"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Cover Image
+                    </label>
+                    <DropFile name="cover" onUploading={setIsUploading} />
                   </div>
                 </div>
-              </div>
-
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
-                <label
-                  htmlFor="cover-photo"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                <button
+                  disabled={!dirty || !isValid || isSubmitting}
+                  className="btn btn-primary mt-6"
                 >
-                  Cover Image
-                </label>
-                <DropFile name="cover" onUploading={setIsUploading} />
+                  Save Changes
+                </button>
               </div>
             </div>
-            <button className="btn btn-primary mt-6">Save Changes</button>
-          </div>
-        </div>
+          </Form>
+        )}
       </Formik>
     </>
   );
