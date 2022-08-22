@@ -166,6 +166,10 @@ abstract contract TokenTermsable is
         _setTokenTemplate(tokenId, newTokenTemplate);
     }
 
+    /// @notice This is an internal function that sets the CID of the template for a specific token.
+    /// @dev This function sets the CID of the template for a specific token. It emits TokenTemplateChanged.
+    /// @param tokenId The token id for which the template is set.
+    /// @param newTokenTemplate The CID of the template for a specific token.
     function _setTokenTemplate(uint256 tokenId, string memory newTokenTemplate)
         internal
         virtual
@@ -198,6 +202,10 @@ abstract contract TokenTermsable is
         _setTokenRenderer(tokenId, newRenderer);
     }
 
+    /// @notice This is an internal function that sets the CID of the renderer for a specific token.
+    /// @dev This function sets the CID of the renderer for a specific token. It emits TokenRendererChanged.
+    /// @param tokenId The token id for which the renderer is set.
+    /// @param newRenderer The CID of the renderer for a specific token.
     function _setTokenRenderer(uint256 tokenId, string memory newRenderer)
         internal
         virtual
@@ -260,6 +268,11 @@ abstract contract TokenTermsable is
         _setTokenTerm(_term, _tokenId, _value);
     }
 
+    /// @notice This is an internal function that sets a value for a specific term for a specific token.
+    /// @dev This function is used to set a value for a specific term for a specific token. It emits the the TokenTermChanged event.
+    /// @param _tokenId The token id for which the term is set.
+    /// @param _term The term for which the value is set.
+    /// @param _value The value for the term.
     function _setTokenTerm(
         string memory _term,
         uint256 _tokenId,
