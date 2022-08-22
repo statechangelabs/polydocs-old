@@ -42,7 +42,7 @@ import Loading from "./Loading";
 
 const POLYDOCS_URL =
   process.env.REACT_APP_POLYDOCS_URL ??
-  "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev/sign";
+  "https://y86jifedeh.execute-api.us-east-1.amazonaws.com/dev/sign";
 
 export const ethereum = (window as unknown as { ethereum: any }).ethereum;
 export const provider = ethereum

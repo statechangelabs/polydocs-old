@@ -20,7 +20,7 @@ const context = createContext({
 });
 const { Provider } = context;
 const POLYDOCS_BASE =
-  "https://kdshw9reug.execute-api.us-east-1.amazonaws.com/dev";
+  "https://y86jifedeh.execute-api.us-east-1.amazonaws.com/dev";
 const TOKENLIFETIME = 60 * 60 * 1000;
 const ethereum = (window as unknown as { ethereum: any }).ethereum;
 const provider = ethereum
