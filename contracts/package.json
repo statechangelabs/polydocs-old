@@ -1,6 +1,6 @@
 {
   "name": "@polydocs/contracts",
-  "version": "0.1.9",
+  "version": "1.0.1",
   "peerDependencies": {
     "@openzeppelin/contracts": "*"
   },

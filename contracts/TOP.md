@@ -1,4 +1,4 @@
-# <img src="assets/Polydocs Logo.svg" height="40px"> Polydocs contracts
+# <img src="assets/Polydocs Logo 4.png" height="40px"> Polydocs contracts
 
 PolyDocs: an open-source tool to create immutable and dynamic documents using IPFS and Polygon smart contracts. Our goal is to De-Risk the web3 space.
 
