@@ -10,9 +10,7 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { DropFile } from "./DropFile";
-import { upload } from "@testing-library/user-event/dist/upload";
 import { useUpload } from "./useIPFSUpload";
-import { contracts } from "./contracts/factories/@openzeppelin";
 const supportedChains = [
   { chainId: 137, name: "Polygon Mainnet" },
   { chainId: 80001, name: "Polygon Mumbai Testnet" },
