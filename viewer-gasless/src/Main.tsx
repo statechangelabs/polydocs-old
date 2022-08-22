@@ -309,7 +309,7 @@ const Renderer: FC<{
           style={{ backgroundImage: `url(${bg})` }}
         />
         <div className="relative  mx-auto flex flex-col">
-          <header className="flex justify-between items-center p-4">
+          <header className="flex justify-between items-center p-4 bg-opacity-80 bg-white">
             <div className="flex items-center space-x-2">
               <img src={Logo} alt="Logo" className="w-12" />
               <h1 className="text-lg font-bold text-black">Polydocs</h1>
@@ -328,7 +328,7 @@ const Renderer: FC<{
               </button>
             </div>
           </header>
-          <div className="max-w-[760px] mx-auto">
+          <div className="max-w-[760px] mx-auto lg:-mt-4 shadow-lg">
             <div className="flex-grow w-full prose mx-auto  bg-white doc-shadow print:shadow-none">
               <div className="relative overflow-hidden">
                 {cover && (
