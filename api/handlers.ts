@@ -273,6 +273,33 @@ const getProvider = (chainId: string) => {
   const signer = new ethers.Wallet(chainInfo.privateKey, provider);
   return { provider, signer };
 };
+const getGasOptions = async (chainId: string) => {
+  const { provider } = getProvider(chainId);
+
+  const feeData = await provider.getFeeData();
+  const gasPrice = await provider.getGasPrice();
+
+  // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
+  // console.log("A hundred gwei is", hundredgwei.toString());
+  console.log(
+    "feedata",
+    feeData.maxFeePerGas?.toNumber().toLocaleString(),
+    feeData.maxPriorityFeePerGas?.toNumber().toLocaleString()
+  );
+  console.log("ethers gasprice", gasPrice.toNumber().toLocaleString());
+  const maxFeePerGas = gasPrice
+    ? gasPrice.gt(utils.parseUnits("10", "gwei"))
+      ? gasPrice.mul(5)
+      : utils.parseUnits("30", "gwei")
+    : utils.parseUnits("100", "gwei");
+  const maxPriorityFeePerGas = maxFeePerGas.mul(2).div(10);
+  console.log(
+    "using recalculated",
+    maxFeePerGas.toNumber().toLocaleString(),
+    maxPriorityFeePerGas.toNumber().toLocaleString()
+  );
+  return { maxFeePerGas, maxPriorityFeePerGas };
+};
 
 //#endregion
 //#region Unsecured API Endpoints
@@ -300,37 +327,12 @@ export const signDocument = makeAPIGatewayLambda({
     const fragment = polydocsURI.substring(polydocsURI.indexOf("#") + 1);
     const [, chainId, contractAddress, blockNumber] = fragment.split("::");
     //check the chainID
-    const { provider, signer } = getProvider(chainId);
-
-    const feeData = await provider.getFeeData();
-    const gasPrice = await provider.getGasPrice();
-
-    // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
-    // console.log("A hundred gwei is", hundredgwei.toString());
-    console.log(
-      "feedata",
-      feeData.maxFeePerGas?.toNumber().toLocaleString(),
-      feeData.maxPriorityFeePerGas?.toNumber().toLocaleString()
-    );
-    console.log("ethers gasprice", gasPrice.toNumber().toLocaleString());
-    const maxFeePerGas = gasPrice
-      ? gasPrice.gt(utils.parseUnits("10", "gwei"))
-        ? gasPrice.mul(5)
-        : utils.parseUnits("30", "gwei")
-      : utils.parseUnits("100", "gwei");
-    const maxPriorityFeePerGas = maxFeePerGas.mul(2).div(10);
-    console.log(
-      "using recalculated",
-      maxFeePerGas.toNumber().toLocaleString(),
-      maxPriorityFeePerGas.toNumber().toLocaleString()
-    );
+    const { signer } = getProvider(chainId);
+    const gasOptions = await getGasOptions(chainId);
 
     const polydocs = TermsableNoToken__factory.connect(contractAddress, signer);
     try {
-      await polydocs.acceptTermsFor(address, message, signature, {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-      });
+      await polydocs.acceptTermsFor(address, message, signature, gasOptions);
       return httpSuccess("signed");
     } catch (e) {
       console.log("error on the transaction", e);
@@ -663,32 +665,16 @@ export const mintNFT = makeLambda({
   // path: "/mintNFT",
   // cors: true,
   func: async (event) => {
-    console.log("hello!!!");
-    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY) return;
-    if (!process.env.ALCHEMY_MUMBAI_KEY) return;
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      process.env.ALCHEMY_MUMBAI_KEY
-      // "0x" + (80001).toString(16)
-    );
-    // const provider = ethers.getDefaultProvider(80001);
-    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
-    // console.log("provider", provider);
-    const signer = new ethers.Wallet(
-      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
-      provider
-    );
     //Get the image
-    const { address, name, text, cid } = event;
+    const { address, name, text, cid, chainId } = event;
+    const { provider, signer } = getProvider(chainId);
     console.log("Hooray I did not run upload and got a cid", cid);
     console.log("connecting to contract at ", address);
     const contract = ERC721Termsable__factory.connect(address, signer);
     console.log("Connected to contract at address", address);
-    const hundredgwei = ethers.utils.parseUnits("50", "gwei");
-    console.log("A hundred gwei is", hundredgwei.toString());
-
+    const gasOptions = await getGasOptions(chainId);
     const tx = await contract.mint(cid, {
-      maxFeePerGas: hundredgwei,
-      maxPriorityFeePerGas: hundredgwei,
+      ...gasOptions,
       gasLimit: BigNumber.from(500_000),
     });
     console.log("Minted good as gold");
@@ -789,7 +775,9 @@ export const updateContract = makeAPIGatewayLambda({
   path: "/contracts",
   func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
     if (!event.body) return sendHttpResult(400, "No body");
-    const { accountId, address, chainId, uri } = JSON.parse(event.body);
+    const { accountId, address, chainId, uri, template, renderer } = JSON.parse(
+      event.body
+    );
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { contractError } = await getContract(
@@ -798,11 +786,28 @@ export const updateContract = makeAPIGatewayLambda({
     );
     if (contractError) return contractError;
     const { provider, signer } = getProvider(chainId);
+    const gasOptions = await getGasOptions(chainId);
     const pdContract = ERC721Termsable__factory.connect(address, provider);
-    const oldUri = await pdContract.URI();
-    if (uri !== oldUri) {
-      const pdSignable = ERC721Termsable__factory.connect(address, signer);
-      await pdSignable.setURI(uri);
+    if (uri) {
+      const oldUri = await pdContract.URI();
+      if (uri !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setURI(uri, gasOptions);
+      }
+    }
+    if (template) {
+      const oldUri = await pdContract.docTemplate();
+      if (template !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setGlobalTemplate(template, gasOptions);
+      }
+    }
+    if (renderer) {
+      const oldUri = await pdContract.renderer();
+      if (renderer !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setGlobalRenderer(renderer, gasOptions);
+      }
     }
     return httpSuccess("ok");
   }),
@@ -814,9 +819,7 @@ export const addContract = makeAPIGatewayLambda({
   path: "/contracts/add",
   func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
     if (!event.body) return sendHttpResult(400, "No body");
-    console.log("My body is", event.body);
     const { accountId, contractAddress, chainId } = JSON.parse(event.body);
-    console.log("My body parts are", accountId, contractAddress, chainId);
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { provider } = getProvider(chainId);
