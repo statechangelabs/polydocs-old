@@ -38,12 +38,13 @@ export const CreateContract: FC = () => {
         name: "",
         symbol: "",
         title: "",
-        description: "",
+        description:
+          "Purchasing this token requires accepting our service terms: [POLYDOCS]",
         thumbnail: "",
         cover: "",
         owner: address,
         chainId: "137",
-        royaltyRecipient: address,
+        royaltyRecipient: "",
         royaltyPercentage: "0.00",
       }}
       validate={async ({
@@ -127,11 +128,10 @@ export const CreateContract: FC = () => {
             royaltyPercentage: values.royaltyPercentage,
           }),
         });
-        const { id } = await res.json();
+        // const { id } = await res.json();
         if (res.status === 200) {
           toast("Contract Created", { type: "success" });
-          toast("I would have navigated in real mode");
-          //   navigate(`/contracts/${id}`);
+          navigate(`/`);
         } else {
           toast("Error creating contract", { type: "error" });
         }
@@ -157,7 +157,8 @@ export const CreateContract: FC = () => {
                       htmlFor="name"
                       className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                     >
-                      Name <span className="text-red-500">*</span>
+                      Name (cannot be changed)
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
                       <div className="max-w-lg flex  shadow-sm">
@@ -180,7 +181,8 @@ export const CreateContract: FC = () => {
                       htmlFor="symbol"
                       className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                     >
-                      Symbol <span className="text-red-500">*</span>
+                      Symbol (cannot be changed)
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
                       <div className="w-40 flex  shadow-sm">
@@ -240,7 +242,9 @@ export const CreateContract: FC = () => {
                         name="description"
                         rows={3}
                         className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 "
-                        defaultValue={""}
+                        defaultValue={
+                          "Purchasing this token requires accepting our service terms: [POLYDOCS]"
+                        }
                       />
                       <ErrorMessage name="description" />
                     </div>
