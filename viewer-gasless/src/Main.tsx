@@ -356,14 +356,14 @@ const Renderer: FC<{
                   </div>
                 </div>
               </div>
-              <div className="p-6 lg:p-8">
+              <div className="p-6 lg:p-8 overflow-x-scroll scrollable">
                 <Markdown>{output}</Markdown>
               </div>
             </div>
 
-            <div className="py-4 bg-white border-t-2 border-gray-200">
-              <div className="prose mx-auto flex flex-row justify-end mt-4">
-                <div className=" flex flex-row  print:hidden gap-4">
+            <div className="bg-white doc-shadow p-6 my-6">
+              <div className="prose mx-auto">
+                <div className=" flex flex-row justify-between print:hidden ">
                   <button
                     className="btn btn-gradient"
                     onClick={() => setIsHighlight((old) => !old)}
