@@ -12,6 +12,7 @@ import {
   TermsableNoToken__factory,
   TokenTermReader__factory,
   TermReader__factory,
+  ERC721Termsable__factory,
 } from "./contracts";
 import { ethers } from "ethers";
 import useAsyncEffect from "./useAsyncEffect";
@@ -25,7 +26,8 @@ import { useProvider } from "./provider";
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
-const Contract: FC = () => {
+
+const ContractDocument: FC = () => {
   console.log("Render");
   const knownTemplates = useKnownTemplates();
   const navigate = useNavigate();
@@ -60,10 +62,7 @@ const Contract: FC = () => {
     console.log("I will use templates", templates);
     return templates;
   }, []);
-  const { setTitle } = useMain();
-  useEffect(() => {
-    setTitle("Contract");
-  }, []);
+
   useAsyncEffect(async () => {
     if (!provider) return;
     if (ethers.utils.isAddress(contractAddress)) {
@@ -162,6 +161,8 @@ const Contract: FC = () => {
   // const knownTemplates = useIPFSList(knownCids);
   return (
     <Fragment>
+      <hr className="my-4" />
+      <h2 className="text-xl font-bold text-gray-700">Terms Document</h2>
       <div>
         <div className="flex space-x-6 items-center justify-end mb-12">
           {/* <h2 className="text-xl font-semibold ">Contract Address</h2>
@@ -451,4 +452,43 @@ const Contract: FC = () => {
     </Fragment>
   );
 };
+
+const Contract: FC = () => {
+  const { setTitle } = useMain();
+  useEffect(() => {
+    setTitle("");
+  }, [setTitle]);
+  const navigate = useNavigate();
+  const { contractId } = useParams();
+  const [chainId, contractAddress] = (contractId || "").split("::");
+  const provider = useProvider(chainId);
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+  useAsyncEffect(async () => {
+    const contract = ERC721Termsable__factory.connect(
+      contractAddress,
+      provider
+    );
+    const name = await contract.name();
+    setName(name);
+    const symbol = await contract.symbol();
+    setSymbol(symbol);
+  }, [provider]);
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-primary">
+        {name} ({symbol}){" "}
+        {chainId === "80001" && (
+          <span className=" text-yellow-dark bg-yellow-100 px-2 mt-0.5 rounded-full text-[10px]">
+            Testnet
+          </span>
+        )}
+      </h1>
+      <div className="text-xs">{contractAddress}</div>
+      <ContractDocument />
+    </div>
+  );
+};
+
 export default Contract;
