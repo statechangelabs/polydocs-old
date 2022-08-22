@@ -25,33 +25,51 @@ const Home: FC = () => {
           </Link>
         </div>
         <div>
-          <ol className="">
-            {contracts.map((contract) => (
-              <li key={contract.id}>
-                <Link to={`/contracts/${contract.id}`}>
-                  <div>
-                    {contract.name} ({contract.symbol}){" "}
-                    {contract.deployed ? "" : "(deploying...)"}
-                  </div>
-                  {/* <div>{contract.title}</div> */}
-                  {contract.address}{" "}
-                </Link>
-                {contract.deployed && (
-                  <a
-                    href={`${blockExplorers[parseInt(contract.chainId)]}/${
-                      contract.address
-                    }`}
+          <ol className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
+            {contracts.map((contract, index) => (
+              <li key={contract.id} className="flex justify-between space-x-6">
+                <div>
+                  <Link
+                    to={`/contracts/${contract.id}`}
+                    className="relative text-primary-default hover:text-primary-light "
                   >
-                    View on Block Explorer
-                  </a>
-                )}
-                <button
-                  onClick={() => {
-                    removeContract(contract.id);
-                  }}
-                >
-                  Remove
-                </button>
+                    <h2 className="">
+                      <span className="font-bold text-md mr-2">
+                        {contract.name}
+                      </span>
+                      <span className="text-gray-700">
+                        ({contract.symbol}){" "}
+                        {contract.deployed ? "" : "(deploying...)"}
+                      </span>
+                    </h2>
+
+                    <div className="text-gray-700 text-xs">
+                      {contract.address}{" "}
+                    </div>
+                  </Link>
+                </div>
+                <div>
+                  {!!contract.deployed && (
+                    <a
+                      className="btn-gradient btn mr-2"
+                      href={`${blockExplorers[parseInt(contract.chainId)]}/${
+                        contract.address
+                      }`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View on Block Explorer
+                    </a>
+                  )}
+                  <button
+                    className="btn btn-gradient"
+                    onClick={() => {
+                      removeContract(contract.id);
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
               </li>
             ))}
           </ol>
