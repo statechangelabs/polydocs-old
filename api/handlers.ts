@@ -775,9 +775,23 @@ export const updateContract = makeAPIGatewayLambda({
   path: "/contracts",
   func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
     if (!event.body) return sendHttpResult(400, "No body");
-    const { accountId, address, chainId, uri, template, renderer } = JSON.parse(
-      event.body
-    );
+    const {
+      accountId,
+      address,
+      chainId,
+      uri,
+      template,
+      renderer,
+      terms,
+    }: {
+      accountId?: string;
+      address: string;
+      chainId: string;
+      uri?: string;
+      template?: string;
+      renderer?: string;
+      terms?: Record<string, string>;
+    } = JSON.parse(event.body);
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { contractError } = await getContract(
@@ -807,6 +821,14 @@ export const updateContract = makeAPIGatewayLambda({
       if (renderer !== oldUri) {
         const pdSignable = ERC721Termsable__factory.connect(address, signer);
         await pdSignable.setGlobalRenderer(renderer, gasOptions);
+      }
+    }
+    if (terms && Object.keys(terms).length) {
+      const termsEntries = Object.entries(terms);
+      for (let x = 0; x < termsEntries.length; x++) {
+        const [termId, termUri] = termsEntries[x];
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setGlobalTerm(termId, termUri, gasOptions);
       }
     }
     return httpSuccess("ok");
