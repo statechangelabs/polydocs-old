@@ -19,7 +19,11 @@ const supportedChains = [
 ];
 const ErrorMessage: FC<{ name: string }> = ({ name }) => {
   return (
-    <FormikErrorMessage component="div" name={name} className="text-red-500" />
+    <FormikErrorMessage
+      component="div"
+      name={name}
+      className="text-red-500 text-xs pt-2"
+    />
   );
 };
 export const CreateContract: FC = () => {
@@ -167,8 +171,8 @@ export const CreateContract: FC = () => {
                           autoComplete="name"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="name" />
                       </div>
+                      <ErrorMessage name="name" />
                     </div>
                   </div>
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -189,8 +193,8 @@ export const CreateContract: FC = () => {
                           id="symbol"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="symbol" />
                       </div>
+                      <ErrorMessage name="symbol" />
                     </div>
                   </div>
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -212,8 +216,8 @@ export const CreateContract: FC = () => {
                           autoComplete="title"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="title" />
                       </div>
+                      <ErrorMessage name="title" />
                     </div>
                   </div>
 
@@ -300,8 +304,8 @@ export const CreateContract: FC = () => {
                       }}
                       className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="owner" />
                   </div>
+                  <ErrorMessage name="owner" />
                 </div>
                 <div className="pt-6 sm:pt-5 border-t border-gray-100">
                   <div role="group" aria-labelledby="label-notifications">
@@ -345,8 +349,8 @@ export const CreateContract: FC = () => {
                               </div>
                             ))}
                           </div>
-                          <ErrorMessage name="chainId" />
                         </div>
+                        <ErrorMessage name="chainId" />
                       </div>
                     </div>
                   </div>
@@ -378,8 +382,8 @@ export const CreateContract: FC = () => {
                       id="royaltyRecipient"
                       className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="royaltyRecipient" />
                   </div>
+                  <ErrorMessage name="royaltyRecipient" />
                 </div>
 
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -396,8 +400,8 @@ export const CreateContract: FC = () => {
                       type="text"
                       className="block w-40 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="royaltyPercentage" />
                   </div>
+                  <ErrorMessage name="royaltyPercentage" />
                 </div>
               </div>
             </div>
@@ -422,13 +426,13 @@ export const CreateContract: FC = () => {
                 </button>
               </div>
             </div>
-            {!isValid && (
+            {/* {!isValid && (
               <div>
                 {Object.entries(errors).map(([key, value]) => (
                   <ErrorMessage name={key} />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </Form>
       )}
