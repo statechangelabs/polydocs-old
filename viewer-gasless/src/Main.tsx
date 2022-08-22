@@ -249,7 +249,7 @@ const Renderer: FC<{
   }, [contractBg]);
   const title = obj.title || "";
   const description = obj.description || "";
-  const jsonTerms = obj.terms as Record<string, string>;
+  const jsonTerms = (obj.terms || {}) as Record<string, string>;
   const template = useIPFSText(documentId);
   const { terms, addTerm, termBlocks } = useTerms(
     contractAddress,
