@@ -1,0 +1,11 @@
+{
+  "image": "ipfs://bafybeihaejmfddiavxfhcnb3nbpxetyscwoarde4g42xtk4e5vupql3mmi",
+  "cover": "ipfs://bafkreibee6yzhkjbpmsvcohwbzi6wuiqhpi3w53xsd4cpsf444ppepwpja",
+  "title": "Terms and Conditions for NFT's",
+  "background": "ipfs://bafybeiayyu676f6exvgiuhk2h7bryj3hnp2keuiaxvf6uj5dascyjrs2hi",
+  "description": "This is an NFT template contract adapted from a major NFT project. A user must sign the terms and conditions of a contract to use the project.",
+  "terms": {
+    "ShortCompanyName": "Statechange Labs",
+    "LongCompanyName": "Statechange Labs, Inc."
+  }
+}

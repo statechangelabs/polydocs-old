@@ -2,102 +2,44 @@ import hre, { network, ethers } from "hardhat";
 import fs from "fs";
 import { execSync } from "child_process";
 async function main() {
-  const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
+  // const [signer_1, signer_2, signer_3, signer_4] = await ethers.getSigners();
 
   const Doc = await ethers.getContractFactory("ERC721Termsable");
-  const doc = await Doc.deploy("0xa591453bC3d01E248e1284340477dc9Fd0f46849","TESTNAME", "TEST");
+  const doc = await Doc.deploy("0x90f14e3282977416286085e0d90210A400bEFD22","Signing Sloths v2.0", "SS");
   await doc.deployed();
 
   console.log("721_NoToken deployed to:", doc.address);
-  // console.log("Signer2 address:", signer_2.address);
-
-//   let config = `
-//   export const ERC721_NoToken address = "${doc.address}";
-//   `;
-//   const onThisNetwork = network.name;
-//   if (onThisNetwork && onThisNetwork !== "hardhat") {
-//     setTimeout(() => {
-//       const cmd = `yarn hardhat verify ${doc.address} --network ${onThisNetwork}`;
-//       console.log("Running", cmd);
-//       execSync(cmd, {
-//         stdio: "inherit",
-//       });
-//     }, 30000);
-//   }
-//   let data = JSON.stringify(config);
-//   fs.writeFileSync("./config.ts", JSON.parse(data));
-//   fs.writeFileSync(
-//     "contracts.txt",
-//     `${new Date().toLocaleString()}: ${network.config.chainId}: ${doc.address}
-// `,
-//     { flag: "a" }
-//   );
-  // console.log("We assigned owner of the contract to:", signer_4.address);
+  
   console.log(await doc.name());
   console.log(await doc.symbol());
   console.log(await doc.owner());
 
-  // const addwhitelist = await doc.connect(signer_2).addToWhiteList(signer_3.address);
-  // const addwhitelist_receipt = await addwhitelist.wait();
-  // console.log("Added signer 3 to whitelist");
 
   const terms = await doc.termsUrl();
   console.log("Terms url:", terms);
 
-  // const accept_terms = await doc.connect(signer_3).acceptTerms(terms);
-  // const accept_terms_receipt = await accept_terms.wait();
-  // console.log("Accepted terms by signer 3");
 
-  // const mint = await doc.connect(signer_3).mint("sampleURI");
-  // const mint_receipt = await mint.wait();
-  // console.log("Minted token to signer_3");
-  // console.log("signer 3 address is :", signer_3.address);
-
-  const set_document = await doc.setPolydocs("RendererCID", "TemplateCID", [{"key":"key1", "value": "value1"},{"key":"key2", "value": "value2"}]);
+  const set_document = await doc.setPolydocs("bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy", "bafkreihjxacfifvrpwwcve4l33ysrcfqylxjo33mq7mqe4pja25d5mubve", [{"key":"ShortCompanyName", "value": "Statechange Labs"},{"key":"LongCompanyName", "value": "Statechange Labs, Inc."}]);
   const set_document_receipt = await set_document.wait();
   console.log("Set document for the contract!");
 
-  const get_term_value_1 = await doc.globalTerm("key1");
+  const get_term_value_1 = await doc.globalTerm("ShortCompanyName");
   console.log("key1's value is :", get_term_value_1);
 
-  const get_term_value_2 = await doc.globalTerm("key2");
+  const get_term_value_2 = await doc.globalTerm("LongCompanyName");
   console.log("key2's value is :", get_term_value_2);
-
-
-  // const set_signer3 = await doc.connect(signer_2).addMetaSigner(signer_3.address);
-  // const set_signer3_receipt = await set_signer3.wait();
-  // console.log("Added signer 3 to metasigner list");
-
-  // const accept_terms_signer3 = await doc.connect(signer_3).acceptTerms(terms);
-  // const accept_terms_signer3_receipt = await accept_terms_signer3.wait();
-  // console.log("Accepted terms by signer 3");
-
-  // const mint_signer3 = await doc.connect(signer_3).mint("sampleURI");
-  // const mint_signer3_receipt = await mint_signer3.wait();
-  // console.log("Minted token to signer_3");
-
-  // can signer3 set polydocs
-
-  const set_document_signer3 = await doc.setPolydocs("bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy", "bafybeiavljiisrizkro3ob5rhdludulsiqwkjp43lanlekth33sqhikfry/template.md", [{"key":"key1", "value": "Ray"},{"key":"key2", "value": "Akshay"}]);
-  const set_document_signer3_receipt = await set_document_signer3.wait();
-  console.log("Set document for the contract by signer1!");
-
-  const get_term_value_12 = await doc.globalTerm("key1");
-  console.log("key1's value is :", get_term_value_12);
-
-  const get_term_value_21 = await doc.globalTerm("key2");
-  console.log("key2's value is :", get_term_value_21);
-
-  const renderer = await doc.renderer();
-  console.log("Renderer is :", renderer);
   
-  const URI = 'ipfs://bafkreiarb26zlmmcjjgryezyn5h2few75bwsscb4rr7mj4cixkkylt4sce';
+  const URI = 'ipfs://bafkreiem6fz33ddo6u72woy6ebxpbqggo77jatts4e5c6s6twyknanxooy';
 
   const setURI = await doc.setURI(URI);
   const setURI_receipt = await setURI.wait();
 
   const getURI = await doc.URI();
   console.log("URI is :", getURI);
+
+  const mint_nft = await doc.mint();
+  const mint_nft_receipt = await mint_nft.wait();
+  console.log("Minted the NFT!");
 
   // try {
   // // should pass - as signer 1 is the owner of the contract

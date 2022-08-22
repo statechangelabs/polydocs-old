@@ -351,7 +351,9 @@ const Renderer: FC<{
                   <div className=" ml-32 mt-6">
                     {title && <p className="my-0">{title}</p>}{" "}
                     {description && (
-                      <p className="text-sm opacity-75 my-0">{description}</p>
+                      <p className="text-sm opacity-75 my-0">
+                        {description.replace("[POLYDOCS]", "").trim()}
+                      </p>
                     )}
                   </div>
                 </div>

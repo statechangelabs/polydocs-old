@@ -14,7 +14,7 @@ import {
 import { Agent } from "https";
 import { QldbDriver, RetryConfig } from "amazon-qldb-driver-nodejs";
 import { getAssetPath } from "@raydeck/local-assets";
-import { BigNumber, ContractFactory, ethers } from "ethers";
+import { BigNumber, ContractFactory, ethers, utils } from "ethers";
 import { exec } from "child_process";
 import { List, load, Value } from "ion-js/dist/commonjs/es6/dom";
 import { Lambda } from "aws-sdk";
@@ -23,6 +23,7 @@ import { copyFileSync, readFileSync, writeFileSync } from "fs";
 import {
   TermsableNoToken__factory,
   ERC721Termsable__factory,
+  ERC721Termsable,
 } from "./contracts/index";
 import { promisify } from "util";
 import { render } from "mustache";
@@ -134,15 +135,16 @@ const getContract = async (id: string, account?: Value) => {
       contract: undefined,
       contractError: sendHttpResult(400, "No contract found"),
     };
-  const owner = contract.get("owner")?.stringValue() ?? "";
-  if (owner !== account?.get("id")?.stringValue())
+  const owner = contract.get("owner")?.stringValue()?.toLowerCase() ?? "";
+  if (owner !== account?.get("id")?.stringValue()?.toLowerCase())
     return {
       contract: undefined,
       contractError: sendHttpResult(400, "Not contract owner"),
     };
   return { contract, contractError: undefined };
 };
-const getAccount = async (id: string) => getRecord("Accounts", id);
+const getAccount = async (id: string) =>
+  getRecord("Accounts", id.toLowerCase());
 const getAccountsForUser = async (address: string) => {
   const user = await getUser(address);
   if (user) {
@@ -190,14 +192,14 @@ const getSignerFromHeader = <T extends { exp: number }>(
   return undefined;
 };
 
-const validateAccount = (
+const _validateAccount = (
   accounts: Record<string, Value>,
   accountId?: string
 ) => {
   let error: ReturnType<typeof sendHttpResult> | undefined;
   if (!accountId) accountId = Object.keys(accounts)[0];
   if (!accountId) error = sendHttpResult(400, "No account id");
-  const account = accounts[accountId];
+  const account = accounts[accountId.toLowerCase()];
   if (!account) error = sendHttpResult(400, "No account found");
   if (error) return { account: undefined, accountError: error };
   else return { account, accountError: undefined };
@@ -209,7 +211,9 @@ const makeAuthenticatedFunc = (
     callback: Callback<APIGatewayProxyResult>;
     user: Value;
     accounts: Record<string, Value>;
-    validateAccount: (accountId?: string) => ReturnType<typeof validateAccount>;
+    validateAccount: (
+      accountId?: string
+    ) => ReturnType<typeof _validateAccount>;
   }) => void
 ) => <Handler<APIGatewayProxyEvent, APIGatewayProxyResult>>(async (
     event,
@@ -260,7 +264,7 @@ const makeAuthenticatedFunc = (
       user,
       accounts: accounts as Record<string, Value>,
       validateAccount: (accountId?: string) =>
-        validateAccount(accounts, accountId),
+        _validateAccount(accounts, accountId),
     });
   });
 const getProvider = (chainId: string) => {
@@ -268,6 +272,33 @@ const getProvider = (chainId: string) => {
   const provider = new ethers.providers.StaticJsonRpcProvider(chainInfo.url);
   const signer = new ethers.Wallet(chainInfo.privateKey, provider);
   return { provider, signer };
+};
+const getGasOptions = async (chainId: string) => {
+  const { provider } = getProvider(chainId);
+
+  const feeData = await provider.getFeeData();
+  const gasPrice = await provider.getGasPrice();
+
+  // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
+  // console.log("A hundred gwei is", hundredgwei.toString());
+  console.log(
+    "feedata",
+    feeData.maxFeePerGas?.toNumber().toLocaleString(),
+    feeData.maxPriorityFeePerGas?.toNumber().toLocaleString()
+  );
+  console.log("ethers gasprice", gasPrice.toNumber().toLocaleString());
+  const maxFeePerGas = gasPrice
+    ? gasPrice.gt(utils.parseUnits("10", "gwei"))
+      ? gasPrice.mul(5)
+      : utils.parseUnits("30", "gwei")
+    : utils.parseUnits("100", "gwei");
+  const maxPriorityFeePerGas = maxFeePerGas.mul(2).div(10);
+  console.log(
+    "using recalculated",
+    maxFeePerGas.toNumber().toLocaleString(),
+    maxPriorityFeePerGas.toNumber().toLocaleString()
+  );
+  return { maxFeePerGas, maxPriorityFeePerGas };
 };
 
 //#endregion
@@ -296,14 +327,15 @@ export const signDocument = makeAPIGatewayLambda({
     const fragment = polydocsURI.substring(polydocsURI.indexOf("#") + 1);
     const [, chainId, contractAddress, blockNumber] = fragment.split("::");
     //check the chainID
-    const { url, privateKey } = getChainInfo(chainId);
-    const provider = new ethers.providers.StaticJsonRpcProvider(url);
-    const signer = new ethers.Wallet(privateKey, provider);
+    const { signer } = getProvider(chainId);
+    const gasOptions = await getGasOptions(chainId);
+
     const polydocs = TermsableNoToken__factory.connect(contractAddress, signer);
     try {
-      await polydocs.acceptTermsFor(address, message, signature);
+      await polydocs.acceptTermsFor(address, message, signature, gasOptions);
       return httpSuccess("signed");
     } catch (e) {
+      console.log("error on the transaction", e);
       return sendHttpResult(
         500,
         "Could not sign document on contract " + contractAddress
@@ -360,7 +392,7 @@ export const deployNFTContract = makeAPIGatewayLambda({
   cors: true,
   timeout: 30,
   func: makeAuthenticatedFunc(
-    async ({ event, context, callback, user, accounts }) => {
+    async ({ event, context, callback, user, accounts, validateAccount }) => {
       if (!event.body) return sendHttpResult(400, "No body provided");
       const {
         address,
@@ -376,53 +408,20 @@ export const deployNFTContract = makeAPIGatewayLambda({
       //Validate the address
       if (!address || ethers.utils.isAddress(address) === false)
         return sendHttpResult(400, "Invalid address");
-      const account = accounts[address.toLowerCase()];
-      if (!account) return sendHttpResult(401, "Unauthorized");
+      const { account, accountError } = validateAccount(address);
+      if (accountError) return accountError;
       if (!name) return sendHttpResult(400, "Invalid name");
       if (!symbol) return sendHttpResult(400, "Invalid symbol");
-      const chainInfo = getChainInfo(chainId);
-      if (!chainInfo) return sendHttpResult(400, "Invalid chainId");
-
-      const provider = new ethers.providers.StaticJsonRpcProvider(
-        chainInfo.url
-      );
-      const signer = new ethers.Wallet(chainInfo.privateKey, provider);
-      //time to deploy
-      // build the new contract
-      //copy everything into tmp/contracts
-
-      const polyDocsFactory = new ERC721Termsable__factory(signer);
-      const hundredgwei = ethers.utils.parseUnits("50", "gwei");
-      console.log("A hundred gwei is", hundredgwei.toString());
-      console.log("Deploying with", address, name, symbol);
-      const polyDocs = await polyDocsFactory.deploy(address, name, symbol, {
-        maxFeePerGas: hundredgwei,
-        maxPriorityFeePerGas: hundredgwei,
-        gasLimit: BigNumber.from(6_500_000),
-      });
-      console.log("polyDocs is ", polyDocs.address);
-      qldbDriver.executeLambda(async (tx) => {
-        await tx.execute("INSERT INTO Contracts ?", {
-          id: `${chainId}::${polyDocs.address}`,
-          name,
-          symbol,
-          owner: account.get("id")?.stringValue(),
-          deployed: 0,
-        });
-        return true;
-      });
+      if (!getChainInfo(chainId).url)
+        return sendHttpResult(400, "Invalid chainId");
       const Payload = JSON.stringify({
         address,
         name,
         symbol,
-        contractAddress: polyDocs.address,
         chainId,
         uri,
+        accountId: account,
       });
-      console.log(
-        "invoking makecontract",
-        registryGet("MAKE_CONTRACT_FUNCTION")
-      );
       await new Lambda({ region: registryGet("AWS_REGION", "us-east-1") })
         .invoke({
           InvocationType: "Event",
@@ -430,7 +429,6 @@ export const deployNFTContract = makeAPIGatewayLambda({
           Payload,
         })
         .promise();
-
       return httpSuccess({
         message: "I got this party started",
       });
@@ -449,49 +447,98 @@ export const doDeploy = makeLambda({
       // terms = {},
       uri,
       chainId,
-      contractAddress,
       name,
-    }: DeployEvent & { contractAddress: string } = event;
-    const { signer } = getProvider(chainId);
+      address,
+      symbol,
+    }: DeployEvent = event;
+    const { provider, signer } = getProvider(chainId);
     if (!signer) return sendHttpResult(400, "bad chain id");
-    console.log("I will connect to the typechain contract", contractAddress);
-    const polyDocs = ERC721Termsable__factory.connect(contractAddress, signer);
-    console.log("I will wait to be deployed", contractAddress);
-    // await polyDocs.deployed();
-    console.log("I am deployed I say", contractAddress);
-    for (let attempt = 0; attempt < 5; attempt++) {
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, 5000 * (attempt + 1));
+    //time to deploy
+    // build the new contract
+
+    const feeData = await provider.getFeeData();
+    const gasPrice = await provider.getGasPrice();
+    const polyDocsFactory = new ERC721Termsable__factory(signer);
+
+    // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
+    // console.log("A hundred gwei is", hundredgwei.toString());
+    console.log("Deploying with", address, name, symbol);
+    console.log(
+      "feedata",
+      feeData.maxFeePerGas?.toNumber().toLocaleString(),
+      feeData.maxPriorityFeePerGas?.toNumber().toLocaleString()
+    );
+    console.log("ethers gasprice", gasPrice.toNumber().toLocaleString());
+    let maxFeePerGas = gasPrice
+      ? gasPrice.gt(utils.parseUnits("10", "gwei"))
+        ? gasPrice.mul(5)
+        : utils.parseUnits("30", "gwei")
+      : utils.parseUnits("100", "gwei");
+    let maxPriorityFeePerGas = maxFeePerGas.mul(2).div(10);
+    console.log(
+      "using recalculated",
+      maxFeePerGas.toNumber().toLocaleString(),
+      maxPriorityFeePerGas.toNumber().toLocaleString()
+    );
+    let polyDocs: ERC721Termsable;
+    try {
+      const polyDocs1 = await polyDocsFactory.deploy(address, name, symbol, {
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+        gasLimit: BigNumber.from(6_500_000),
       });
-      try {
-        console.log("Attempting", attempt);
-        const testName = await polyDocs.name();
-        console.log("I am named", testName);
-        if (testName !== name)
-          console.log("I will set polydocs", renderer, template, []);
-        const pdTxn = await polyDocs.setPolydocs(renderer, template, []);
-        console.log("Wiating for pd", pdTxn);
-        await pdTxn.wait();
-        console.log("I set polydocs");
-        console.log("I will set the URI", uri);
-        const mdTxn = await polyDocs.setURI(uri);
-        console.log("I set the uri");
-        //@TODO support royalty
-        console.log("Waiting for md", mdTxn);
-        await mdTxn.wait();
-        console.log("I have a deployed polydocs with Metadata");
-        await qldbDriver.executeLambda(async (tx) => {
-          await tx.execute(
-            `UPDATE Contracts SET deployed = 1 WHERE id = '${chainId}::{contractAddress}'`
-          );
-        });
-        break;
-      } catch (e) {
-        console.log("I failed to do whatever thing", e);
-      }
+      polyDocs = polyDocs1;
+    } catch (e) {
+      console.log("Trying with double fees");
+      maxFeePerGas = maxFeePerGas.mul(2);
+      maxPriorityFeePerGas = maxPriorityFeePerGas.mul(2);
+      const polyDocs2 = await polyDocsFactory.deploy(address, name, symbol, {
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+        gasLimit: BigNumber.from(6_500_000),
+      });
+      polyDocs = polyDocs2;
     }
+    console.log("polyDocs is ", polyDocs.address);
+
+    const id = `${chainId}::${polyDocs.address}`;
+    await qldbDriver.executeLambda(async (tx) => {
+      await tx.execute("INSERT INTO Contracts ?", {
+        id,
+        name,
+        symbol,
+        owner: address.toLowerCase(),
+        deployed: 0,
+      });
+      return true;
+    });
+    console.log("I will wait to be deployed", polyDocs.address);
+    await polyDocs.deployed();
+    console.log("I have been deployed");
+    const testName = await polyDocs.name();
+    console.log("I am named", testName);
+    if (testName !== name)
+      console.log("I will set polydocs", renderer, template, []);
+    const pdTxn = await polyDocs.setPolydocs(renderer, template, [], {
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+    });
+    console.log("Wiating for pd", pdTxn);
+    await pdTxn.wait();
+    console.log("I set polydocs");
+    console.log("I will set the URI", uri);
+    const mdTxn = await polyDocs.setURI(uri, {
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+    });
+    console.log("I set the uri");
+    //@TODO support royalty
+    console.log("Waiting for md", mdTxn);
+    await mdTxn.wait();
+    console.log("I have a deployed polydocs with Metadata");
+    await qldbDriver.executeLambda(async (tx) => {
+      await tx.execute(`UPDATE Contracts SET deployed = 1 WHERE id = '${id}'`);
+    });
   },
 });
 export const hhDeploy = makeLambda({
@@ -618,32 +665,16 @@ export const mintNFT = makeLambda({
   // path: "/mintNFT",
   // cors: true,
   func: async (event) => {
-    console.log("hello!!!");
-    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY) return;
-    if (!process.env.ALCHEMY_MUMBAI_KEY) return;
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      process.env.ALCHEMY_MUMBAI_KEY
-      // "0x" + (80001).toString(16)
-    );
-    // const provider = ethers.getDefaultProvider(80001);
-    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
-    // console.log("provider", provider);
-    const signer = new ethers.Wallet(
-      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
-      provider
-    );
     //Get the image
-    const { address, name, text, cid } = event;
+    const { address, name, text, cid, chainId } = event;
+    const { provider, signer } = getProvider(chainId);
     console.log("Hooray I did not run upload and got a cid", cid);
     console.log("connecting to contract at ", address);
     const contract = ERC721Termsable__factory.connect(address, signer);
     console.log("Connected to contract at address", address);
-    const hundredgwei = ethers.utils.parseUnits("50", "gwei");
-    console.log("A hundred gwei is", hundredgwei.toString());
-
+    const gasOptions = await getGasOptions(chainId);
     const tx = await contract.mint(cid, {
-      maxFeePerGas: hundredgwei,
-      maxPriorityFeePerGas: hundredgwei,
+      ...gasOptions,
       gasLimit: BigNumber.from(500_000),
     });
     console.log("Minted good as gold");
@@ -709,7 +740,7 @@ export const getContracts = makeAPIGatewayLambda({
     const list = await qldbDriver.executeLambda(async (txn) => {
       const result = await txn.execute(
         `SELECT * FROM Contracts WHERE owner = ?`,
-        account.get("id")?.stringValue() || ""
+        account.get("id")?.stringValue()?.toLowerCase() || ""
       );
       return result.getResultList();
     });
@@ -744,7 +775,9 @@ export const updateContract = makeAPIGatewayLambda({
   path: "/contracts",
   func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
     if (!event.body) return sendHttpResult(400, "No body");
-    const { accountId, address, chainId, uri } = JSON.parse(event.body);
+    const { accountId, address, chainId, uri, template, renderer } = JSON.parse(
+      event.body
+    );
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { contractError } = await getContract(
@@ -753,11 +786,28 @@ export const updateContract = makeAPIGatewayLambda({
     );
     if (contractError) return contractError;
     const { provider, signer } = getProvider(chainId);
+    const gasOptions = await getGasOptions(chainId);
     const pdContract = ERC721Termsable__factory.connect(address, provider);
-    const oldUri = await pdContract.URI();
-    if (uri !== oldUri) {
-      const pdSignable = ERC721Termsable__factory.connect(address, signer);
-      await pdSignable.setURI(uri);
+    if (uri) {
+      const oldUri = await pdContract.URI();
+      if (uri !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setURI(uri, gasOptions);
+      }
+    }
+    if (template) {
+      const oldUri = await pdContract.docTemplate();
+      if (template !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setGlobalTemplate(template, gasOptions);
+      }
+    }
+    if (renderer) {
+      const oldUri = await pdContract.renderer();
+      if (renderer !== oldUri) {
+        const pdSignable = ERC721Termsable__factory.connect(address, signer);
+        await pdSignable.setGlobalRenderer(renderer, gasOptions);
+      }
     }
     return httpSuccess("ok");
   }),
@@ -769,21 +819,24 @@ export const addContract = makeAPIGatewayLambda({
   path: "/contracts/add",
   func: makeAuthenticatedFunc(async ({ event, validateAccount }) => {
     if (!event.body) return sendHttpResult(400, "No body");
-    const { accountId, address, chainId } = JSON.parse(event.body);
+    const { accountId, contractAddress, chainId } = JSON.parse(event.body);
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     const { provider } = getProvider(chainId);
-    const pdContract = ERC721Termsable__factory.connect(address, provider);
+    const pdContract = ERC721Termsable__factory.connect(
+      contractAddress,
+      provider
+    );
     const [name, symbol] = await Promise.all([
       pdContract.name(),
       pdContract.symbol(),
     ]);
-    qldbDriver.executeLambda(async (tx) => {
+    await qldbDriver.executeLambda(async (tx) => {
       await tx.execute("INSERT INTO Contracts ?", {
-        id: `${chainId}::${address}`,
+        id: `${chainId}::${contractAddress}`,
         name,
         symbol,
-        owner: account.get("id")?.stringValue(),
+        owner: account.get("id")?.stringValue()?.toLowerCase(),
         deployed: 1,
       });
       return true;
@@ -803,11 +856,8 @@ export const removeContract = makeAPIGatewayLambda({
     if (accountError) return accountError;
     const { contractError } = await getContract(id, account);
     if (contractError) return contractError;
-    console.log("removing from contracts", id);
     await qldbDriver.executeLambda(async (tx) => {
       const statement = `DELETE FROM Contracts WHERE id = '${id}'`;
-      console.log("Running statement", statement);
-      // const ionId = load(id.toString());
       await tx.execute(statement);
       return true;
     });

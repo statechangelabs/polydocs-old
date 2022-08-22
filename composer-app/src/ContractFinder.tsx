@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Field, Form, ErrorMessage, validateYupSchema } from "formik";
 import { ethers } from "ethers";
 import { useAuthenticatedFetch } from "./Authenticator";
 import { toast } from "react-toastify";
@@ -15,7 +15,7 @@ const ContractFinder: FC<{ refresh: () => void }> = ({ refresh }) => {
         <Formik
           initialValues={{
             contractAddress: "",
-            chainID: 137,
+            chainId: 137,
           }}
           validate={(values) => {
             const errors: Record<string, any> = {};
@@ -34,7 +34,10 @@ const ContractFinder: FC<{ refresh: () => void }> = ({ refresh }) => {
             console.log("I received values", values);
             await fetch("/contracts/add", {
               method: "POST",
-              body: JSON.stringify(values),
+              body: JSON.stringify({
+                contractAddress: values.contractAddress,
+                chainId: values.chainId.toString(10),
+              }),
             });
             refresh();
             toast.success("Added contract to your list");
@@ -54,16 +57,16 @@ const ContractFinder: FC<{ refresh: () => void }> = ({ refresh }) => {
                     </p>
                   </div>
 
-                  <Field as="fieldset" name="chainID" className="mt-4">
+                  <Field as="fieldset" name="chainId" className="mt-4">
                     <legend className="sr-only">Blockchain</legend>
                     <div className="space-y-4">
                       {supportedChains.map(({ chainId, name }) => (
                         <div key={chainId} className="flex items-center">
                           <Field
                             id={"chain_" + chainId}
-                            name="chainID"
+                            name="chainId"
                             type="radio"
-                            checked={chainId == values.chainID}
+                            checked={chainId == values.chainId}
                             onChange={() => {
                               console.log("I changed", chainId);
                             }}

@@ -29,6 +29,7 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @dev This function returns whether the address is allowed to accept terms on behalf of the signer.
     mapping(address => bool) private _metaSigners;
 
+    /// @notice This modifier requires that the msg.sender is either the owner of the contract or an approved metasigner
     modifier onlyMetaSigner() {
         require(
             _metaSigners[_msgSender()] || owner() == _msgSender(),
@@ -45,6 +46,9 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         _addMetaSigner(_signer);
     }
 
+    /// @notice Adds a meta signer to the list of signers that can accept terms on behalf of the signer.
+    /// @dev This internal function adds a meta signer to the list of signers that can accept terms on behalf of the signer.
+    /// @param _signer The address of the signer that can accept terms on behalf of the signer.
     function _addMetaSigner(address _signer) internal {
         _metaSigners[_signer] = true;
     }
@@ -57,10 +61,17 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         _removeMetaSigner(_signer);
     }
 
+    /// @notice Removes a meta signer from the list of signers that can accept terms on behalf of the signer.
+    /// @dev This internal function removes a meta signer from the list of signers that can accept terms on behalf of the signer.
+    /// @param _signer The address of the signer that can no longer accept terms on behalf of the signer.
     function _removeMetaSigner(address _signer) internal {
         _metaSigners[_signer] = false;
     }
 
+    /// @notice Returns whether the address is allowed to accept terms on behalf of the signer.
+    /// @dev This function returns whether the address is allowed to accept terms on behalf of the signer.
+    /// @param _signer The address of the signer that can accept terms on behalf of the signer.
+    /// @return Whether the address is allowed to accept terms on behalf of the signer.
     function isMetaSigner(address _signer) public view returns (bool) {
         return _metaSigners[_signer];
     }
@@ -72,6 +83,10 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         _setGlobalRenderer(_newRenderer);
     }
 
+    /// @notice Function to set the Global Renderer.
+    /// @dev This internal function sets the global renderer of the terms.
+    /// @dev It emits the GlobalRendererChanged event when renderer is updated.
+    /// @param _newRenderer The new renderer to use for the terms.
     function _setGlobalRenderer(string memory _newRenderer) internal {
         _globalRenderer = _newRenderer;
         emit GlobalRendererChanged(_newRenderer);
@@ -95,6 +110,10 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         _setGlobalTemplate(_newDocTemplate);
     }
 
+    /// @notice Function to set the Global Document Template.
+    /// @dev This internal function sets the global document template of the terms.
+    /// @dev It emits the GlobalTemplateChanged event when template is updated.
+    /// @param _newDocTemplate The new document template to use for the terms.
     function _setGlobalTemplate(string memory _newDocTemplate) internal {
         _globalDocTemplate = _newDocTemplate;
         emit GlobalTemplateChanged(_newDocTemplate);
@@ -119,6 +138,11 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         _setGlobalTerm(_term, _value);
     }
 
+    /// @notice Function to set the Global Term
+    /// @dev This internal function sets the global terms
+    /// @dev It emits the GlobalTermChanged event when term is updated.
+    /// @param _term The term to set.
+    /// @param _value The value of the term to set.
     function _setGlobalTerm(string memory _term, string memory _value)
         internal
     {
@@ -149,12 +173,19 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
         return _lastTermChange;
     }
 
+    /// @notice Function to set the contract URI
+    /// @dev This function lets the owner of the contract or a metasigner set the contract URI.
+    /// @dev It emits UpdatedURI event when URI is updated.
+    /// @param _newURI The URI to set.
     function setURI(string memory _newURI) external onlyMetaSigner {
         _uri = _newURI;
         _lastTermChange = block.number;
         emit UpdatedURI(_uri);
     }
 
+    /// @notice Function to get the contract URI
+    /// @dev This function returns the contract URI.
+    /// @return _uri The contract URI.
     function URI() public view returns (string memory) {
         return _uri;
     }

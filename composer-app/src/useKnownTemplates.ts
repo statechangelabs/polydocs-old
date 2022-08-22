@@ -4,12 +4,12 @@ import { TemplateRegistry__factory } from "./contracts";
 import { useProvider } from "./provider";
 import useAsyncEffect from "./useAsyncEffect";
 
-const templateRegistryAddress =
+export const templateRegistryAddress =
   process.env.REACT_APP_TEMPLATE_REGISTRY_ADDRESS ??
   "0x278dB8dd01466b8d8b92CAe3E3CC01A446949edd";
-const templateRegistryChain =
+export const templateRegistryChain =
   process.env.REACT_APP_TEMPLATE_REGISTRY_CHAINID ?? "137";
-
+export const templateBlockExplorer = `https://polygonscan.com/address/${templateRegistryAddress}`;
 export const useKnownTemplates = () => {
   const provider = useProvider(templateRegistryChain);
   const [knownCids, setKnownCids] = useState(

@@ -1,7 +1,7 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMain } from "./Main";
-import { useKnownTemplates } from "./useKnownTemplates";
+import { templateBlockExplorer, useKnownTemplates } from "./useKnownTemplates";
 import ThumbsUp from "./thumbs-up.svg";
 import ThumbsDown from "./thumbs-down.svg";
 
@@ -39,9 +39,17 @@ const Home: FC = () => {
       <div>
         <div className="container-narrow">
           <div className="mb-24">
-            <div className="space-x-12">
-              <h3 className="text-xl font-bold text-black">Known Templates</h3>
+            <div className="flex flex-row justify-between space-x-12">
+              <h3 className="text-xl font-bold text-black">Known Templates </h3>
+              <button
+                className="btn btn-gradient text-xs"
+                type="button"
+                onClick={() => window.open(templateBlockExplorer, "_blank")}
+              >
+                View Registry on Block Explorer
+              </button>
             </div>
+
             <div className="text-xs italic mb-4 opacity-50">
               Click To Review and Copy
             </div>
@@ -112,37 +120,38 @@ const Home: FC = () => {
             {hasTemplates && (
               <ul className=" doc-shadow bg-white p-6 flex flex-col space-y-6">
                 {Object.entries(templates).map(([cid, template], index) => (
-                  <div className="flex justify-between mt-4">
-                    <Link
-                      to={"/template/" + cid}
-                      className="w-3/4 block align-left text-primary-default hover:text-primary-light"
-                    >
-                      <div className="truncate">
-                        {template.replaceAll("#", "").substring(0, 120)}
-                        ...
-                      </div>
-                      <div className="text-xs text-gray-60">cid: {cid}</div>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        delete templates[cid];
-                        localStorage.setItem(
-                          "templates",
-                          JSON.stringify(templates)
-                        );
-                        incrementCounter();
-                      }}
-                      className="btn btn-gradient"
-                    >
-                      Delete
-                    </button>
-
+                  <Fragment>
+                    <div className="flex justify-between mt-4">
+                      <Link
+                        to={"/template/" + cid}
+                        className="w-3/4 block align-left text-primary-default hover:text-primary-light"
+                      >
+                        <div className="truncate">
+                          {template.replaceAll("#", "").substring(0, 120)}
+                          ...
+                        </div>
+                        <div className="text-xs text-gray-60">cid: {cid}</div>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          delete templates[cid];
+                          localStorage.setItem(
+                            "templates",
+                            JSON.stringify(templates)
+                          );
+                          incrementCounter();
+                        }}
+                        className="btn btn-gradient"
+                      >
+                        Delete
+                      </button>
+                    </div>
                     {index + 1 !== Object.entries(templates).length && (
                       <>
                         <hr className="bg-gray-50 mt-6" />
                       </>
                     )}
-                  </div>
+                  </Fragment>
                 ))}
               </ul>
             )}

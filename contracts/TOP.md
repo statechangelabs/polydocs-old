@@ -1,20 +1,23 @@
-# <img src="assets/Polydocs Logo.svg" height="40px"> Polydocs contracts
+# <img src="assets/Polydocs Logo 4.png" height="40px"> Polydocs contracts
 
 PolyDocs: an open-source tool to create immutable and dynamic documents using IPFS and Polygon smart contracts. Our goal is to De-Risk the web3 space.
 
 Finalist: [HackFS 2022](https://ethglobal.com/showcase/polydocs-1oas6)
 
 ## Interfaces
+* MetadataURI.sol: Interface for adding Metadata on contract level
+* Signable.sol: Interface that allows for signing of terms
+* TokenSignable.sol: Interface that allows for signing of token specific terms
 * TermReader.sol - Interface for termsreader contracts
 * TokenTermReader.sol - Interface for token termsreader contracts
 
 
 ## Contracts
-* TermsableBase.sol - Abstract contract that implements the TermReader interface and provides the basic functionality for termsable contracts
-* TermsableNoToken.sol - Abstract contract that inherits TermsableBase.sol and provides functionality for acceptance of Terms that are not token specific
-* TokenTermsable.sol - Abstract contract that inherits TermsableBase.sol , implements TokenTermReader interface and provides functionality for acceptance of terms that are token specific
+* TermsableBase.sol - Abstract contract that implements the TermReader and Metadata interfaces and provides the base functionality for termsable contracts
+* TermsableNoToken.sol - Abstract contract that inherits TermsableBase.sol, implements Signable.sol and provides functionality for acceptance of Terms that are not token specific
+* TokenTermsable.sol - Abstract contract that inherits TermsableBase.sol , implements TokenTermReader and TokenSignable interfaces and provides functionality for acceptance of terms that are token specific
 
-## Future directions
+## Contract Registry
 * TemplateRegistery - list and ability to vote on the credibility of templates to start to build *reputation* management
 
 
@@ -61,5 +64,3 @@ contract MyCollectible is ERC721 is TermsableNoToken {
 ## License
 
 Polydocs Contracts is released under the [MIT License](LICENSE).
-
-

@@ -10,16 +10,18 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { DropFile } from "./DropFile";
-import { upload } from "@testing-library/user-event/dist/upload";
 import { useUpload } from "./useIPFSUpload";
-import { contracts } from "./contracts/factories/@openzeppelin";
 const supportedChains = [
   { chainId: 137, name: "Polygon Mainnet" },
   { chainId: 80001, name: "Polygon Mumbai Testnet" },
 ];
 const ErrorMessage: FC<{ name: string }> = ({ name }) => {
   return (
-    <FormikErrorMessage component="div" name={name} className="text-red-500" />
+    <FormikErrorMessage
+      component="div"
+      name={name}
+      className="text-red-500 text-xs pt-2"
+    />
   );
 };
 export const CreateContract: FC = () => {
@@ -34,12 +36,13 @@ export const CreateContract: FC = () => {
         name: "",
         symbol: "",
         title: "",
-        description: "",
+        description:
+          "Purchasing this token requires accepting our service terms: [POLYDOCS]",
         thumbnail: "",
         cover: "",
         owner: address,
         chainId: "137",
-        royaltyRecipient: address,
+        royaltyRecipient: "",
         royaltyPercentage: "0.00",
       }}
       validate={async ({
@@ -123,17 +126,16 @@ export const CreateContract: FC = () => {
             royaltyPercentage: values.royaltyPercentage,
           }),
         });
-        const { id } = await res.json();
+        // const { id } = await res.json();
         if (res.status === 200) {
           toast("Contract Created", { type: "success" });
-          toast("I would have navigated in real mode");
-          //   navigate(`/contracts/${id}`);
+          navigate(`/`);
         } else {
           toast("Error creating contract", { type: "error" });
         }
       }}
     >
-      {({ isSubmitting, isValid, dirty, values, errors }) => (
+      {({ isSubmitting, isValid, dirty, values, setFieldValue }) => (
         <Form className="space-y-8 ">
           <div className="container-narrow space-y-8 sm:space-y-5">
             <div>
@@ -153,7 +155,8 @@ export const CreateContract: FC = () => {
                       htmlFor="name"
                       className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                     >
-                      Name <span className="text-red-500">*</span>
+                      Name (cannot be changed)
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
                       <div className="max-w-lg flex  shadow-sm">
@@ -167,8 +170,8 @@ export const CreateContract: FC = () => {
                           autoComplete="name"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="name" />
                       </div>
+                      <ErrorMessage name="name" />
                     </div>
                   </div>
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -176,7 +179,8 @@ export const CreateContract: FC = () => {
                       htmlFor="symbol"
                       className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                     >
-                      Symbol <span className="text-red-500">*</span>
+                      Symbol (cannot be changed)
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
                       <div className="w-40 flex  shadow-sm">
@@ -189,8 +193,8 @@ export const CreateContract: FC = () => {
                           id="symbol"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="symbol" />
                       </div>
+                      <ErrorMessage name="symbol" />
                     </div>
                   </div>
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -212,8 +216,8 @@ export const CreateContract: FC = () => {
                           autoComplete="title"
                           className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0  sm:text-sm border-gray-300"
                         />
-                        <ErrorMessage name="title" />
                       </div>
+                      <ErrorMessage name="title" />
                     </div>
                   </div>
 
@@ -236,7 +240,9 @@ export const CreateContract: FC = () => {
                         name="description"
                         rows={3}
                         className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 "
-                        defaultValue={""}
+                        defaultValue={
+                          "Purchasing this token requires accepting our service terms: [POLYDOCS]"
+                        }
                       />
                       <ErrorMessage name="description" />
                     </div>
@@ -300,8 +306,8 @@ export const CreateContract: FC = () => {
                       }}
                       className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="owner" />
                   </div>
+                  <ErrorMessage name="owner" />
                 </div>
                 <div className="pt-6 sm:pt-5 border-t border-gray-100">
                   <div role="group" aria-labelledby="label-notifications">
@@ -337,6 +343,9 @@ export const CreateContract: FC = () => {
                                 />
 
                                 <label
+                                  onClick={() =>
+                                    setFieldValue("chainId", chainId.toString())
+                                  }
                                   htmlFor="push-everything"
                                   className="ml-3 block text-sm font-medium text-gray-700"
                                 >
@@ -345,8 +354,8 @@ export const CreateContract: FC = () => {
                               </div>
                             ))}
                           </div>
-                          <ErrorMessage name="chainId" />
                         </div>
+                        <ErrorMessage name="chainId" />
                       </div>
                     </div>
                   </div>
@@ -378,8 +387,8 @@ export const CreateContract: FC = () => {
                       id="royaltyRecipient"
                       className="max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="royaltyRecipient" />
                   </div>
+                  <ErrorMessage name="royaltyRecipient" />
                 </div>
 
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-100 sm:pt-5">
@@ -396,8 +405,8 @@ export const CreateContract: FC = () => {
                       type="text"
                       className="block w-40 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 "
                     />
-                    <ErrorMessage name="royaltyPercentage" />
                   </div>
+                  <ErrorMessage name="royaltyPercentage" />
                 </div>
               </div>
             </div>
@@ -422,13 +431,13 @@ export const CreateContract: FC = () => {
                 </button>
               </div>
             </div>
-            {!isValid && (
+            {/* {!isValid && (
               <div>
                 {Object.entries(errors).map(([key, value]) => (
                   <ErrorMessage name={key} />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </Form>
       )}

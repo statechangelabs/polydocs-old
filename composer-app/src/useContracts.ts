@@ -2,11 +2,24 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthenticatedFetch } from "./Authenticator";
 import { ERC721Termsable__factory } from "./contracts";
 import { getProvider } from "./provider";
+import {
+  useIPFSText,
+  useIPFSDataUri,
+  getIPFS,
+  getIPFSText,
+  getIPFSDataUri,
+} from "./useIPFS";
 type PartialContract = {
   chainId: string;
   address: string;
   id: string;
   deployed: number;
+  image?: string;
+  cover?: string;
+  title?: string;
+  description?: string;
+  imageSrc?: string;
+  coverSrc?: string;
 };
 export type Contract = PartialContract & {
   name: string;
@@ -39,6 +52,43 @@ export const useContracts = () => {
         setContracts((old) => [
           ...old.filter((c) => c.address !== address),
           { address, chainId, name, symbol, id, deployed },
+        ]);
+        const uri = await contract.URI();
+        const json = await getIPFSText(uri);
+        const { image, cover, description, title } = JSON.parse(json);
+        setContracts((old) => [
+          ...old.filter((c) => c.address !== address || c.chainId !== chainId),
+          {
+            address,
+            chainId,
+            name,
+            symbol,
+            id,
+            deployed,
+            description,
+            title,
+            image,
+            cover,
+          },
+        ]);
+        const imageSrc = await getIPFSDataUri(image);
+        const coverSrc = await getIPFSDataUri(cover);
+        setContracts((old) => [
+          ...old.filter((c) => c.address !== address || c.chainId !== chainId),
+          {
+            address,
+            chainId,
+            name,
+            symbol,
+            id,
+            deployed,
+            description,
+            title,
+            image,
+            imageSrc,
+            cover,
+            coverSrc,
+          },
         ]);
       } catch (e) {
         console.log("THat wasnt nice", e);
