@@ -68,29 +68,53 @@ const Home: FC = () => {
                           }}
                         />
                       )}
-                      <Link
-                        to={`/contracts/${contract.id}`}
-                        className="relative text-primary-default hover:text-primary-light "
-                      >
-                        <h2 className="">
-                          <span className="font-bold text-md mr-2">
-                            {contract.name}
-                          </span>
-                          <span className="text-gray-700">
-                            ({contract.symbol}){" "}
-                            {contract.deployed ? "" : "(deploying...)"}
-                          </span>
-                          {contract.chainId === "80001" && (
-                            <span className=" text-yellow-dark bg-yellow-100 px-2 mt-0.5 rounded-full text-[10px]">
-                              Testnet
+                      {!!contract.deployed && (
+                        <Link
+                          to={`/contracts/${contract.id}`}
+                          className="relative text-primary-default hover:text-primary-light "
+                        >
+                          <h2 className="">
+                            <span className="font-bold text-md mr-2">
+                              {contract.name}
                             </span>
-                          )}
-                        </h2>
+                            <span className="text-gray-700">
+                              ({contract.symbol}){" "}
+                              {contract.deployed ? "" : "(deploying...)"}
+                            </span>
+                            {contract.chainId === "80001" && (
+                              <span className=" text-yellow-dark bg-yellow-100 px-2 mt-0.5 rounded-full text-[10px]">
+                                Testnet
+                              </span>
+                            )}
+                          </h2>
 
-                        <div className="text-gray-700 text-xs">
-                          {contract.address}{" "}
+                          <div className="text-gray-700 text-xs">
+                            {contract.address}{" "}
+                          </div>
+                        </Link>
+                      )}
+                      {!contract.deployed && (
+                        <div className="relative text-primary-default hover:text-primary-light ">
+                          <h2 className="">
+                            <span className="font-bold text-md mr-2">
+                              {contract.name}
+                            </span>
+                            <span className="text-gray-700">
+                              ({contract.symbol}){" "}
+                              {contract.deployed ? "" : "(deploying...)"}
+                            </span>
+                            {contract.chainId === "80001" && (
+                              <span className=" text-yellow-dark bg-yellow-100 px-2 mt-0.5 rounded-full text-[10px]">
+                                Testnet
+                              </span>
+                            )}
+                          </h2>
+
+                          <div className="text-gray-700 text-xs">
+                            {contract.address}{" "}
+                          </div>
                         </div>
-                      </Link>
+                      )}
                     </div>
                     <div>
                       {!!contract.deployed && (
