@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import useAsyncEffect from "./useAsyncEffect";
 import { useMain } from "./Main";
 import Renderer from "./Renderer";
-import { useIPFSText } from "./useIPFS";
+import { getIPFSText, useIPFSText } from "./useIPFS";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useKnownTemplates } from "./useKnownTemplates";
@@ -451,6 +451,34 @@ const ContractDocument: FC = () => {
       </div>
     </Fragment>
   );
+};
+
+const ContractEditor: FC = () => {
+  const { setTitle } = useMain();
+  useEffect(() => {
+    setTitle("");
+  }, [setTitle]);
+  const navigate = useNavigate();
+  const { contractId } = useParams();
+  const [chainId, contractAddress] = (contractId || "").split("::");
+  const provider = useProvider(chainId);
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+  useAsyncEffect(async () => {
+    const contract = ERC721Termsable__factory.connect(
+      contractAddress,
+      provider
+    );
+    const name = await contract.name();
+    setName(name);
+    const symbol = await contract.symbol();
+    setSymbol(symbol);
+    const uri = await contract.URI();
+    const json = await getIPFSText(uri);
+    const obj = JSON.parse(json);
+    const image = JSON.parse(image);
+    const;
+  }, [provider]);
 };
 
 const Contract: FC = () => {
