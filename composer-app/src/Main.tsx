@@ -65,17 +65,21 @@ const Main: FC = () => {
   const navigate = useNavigate();
   const navigation = useMemo(() => {
     return [
-      { name: "Home", to: "/", current: pathname === "/" },
       {
-        name: "Template",
+        name: "Contracts",
+        to: "/",
+        current: !pathname.startsWith("/template"),
+      },
+      {
+        name: "Templates",
         to: "/template",
         current: pathname.startsWith("/template"),
       },
-      {
-        name: "Contract",
-        to: "/contract",
-        current: pathname.startsWith("/contract"),
-      },
+      // {
+      //   name: "Contract",
+      //   to: "/contract",
+      //   current: pathname.startsWith("/contract"),
+      // },
     ];
   }, [pathname]);
 

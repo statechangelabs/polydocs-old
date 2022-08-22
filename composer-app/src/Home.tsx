@@ -10,7 +10,7 @@ const Home: FC = () => {
 
   const { setTitle } = useMain();
   useEffect(() => {
-    setTitle("My Smart Contracts");
+    setTitle("");
   }, []);
   return (
     <div>
