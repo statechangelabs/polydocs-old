@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMain } from "./Main";
-import { useKnownTemplates } from "./useKnownTemplates";
+import { templateBlockExplorer, useKnownTemplates } from "./useKnownTemplates";
 
 const Templates: FC = () => {
   const knownTemplates = useKnownTemplates();
@@ -23,13 +23,19 @@ const Templates: FC = () => {
         </div>
         <div className="w-full mx-auto">
           <div className="mb-12">
-            <div className="flex justify-center space-x-12 mt-8">
-              <h3 className="flex text-xl font-bold text-black">
-                Known Templates
-              </h3>
+            <div className="flex flex-row justify-between space-x-12">
+              <h3 className="text-xl font-bold text-black">Known Templates </h3>
+              <button
+                className="btn btn-gradient text-xs"
+                type="button"
+                onClick={() => window.open(templateBlockExplorer, "_blank")}
+              >
+                View Registry on Block Explorer
+              </button>
             </div>
-            <div className="text-xs italic flex justify-center space-x-12 opacity-75 mb-4">
-              Click To Review/Revise
+
+            <div className="text-xs italic mb-4 opacity-50">
+              Click To Review and Copy
             </div>
             <ul className="max-w-4xl mx-auto">
               {knownTemplates

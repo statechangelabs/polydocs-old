@@ -1,7 +1,7 @@
 import { FC, Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMain } from "./Main";
-import { useKnownTemplates } from "./useKnownTemplates";
+import { templateBlockExplorer, useKnownTemplates } from "./useKnownTemplates";
 import ThumbsUp from "./thumbs-up.svg";
 import ThumbsDown from "./thumbs-down.svg";
 
@@ -39,9 +39,17 @@ const Home: FC = () => {
       <div>
         <div className="container-narrow">
           <div className="mb-24">
-            <div className="space-x-12">
-              <h3 className="text-xl font-bold text-black">Known Templates</h3>
+            <div className="flex flex-row justify-between space-x-12">
+              <h3 className="text-xl font-bold text-black">Known Templates </h3>
+              <button
+                className="btn btn-gradient text-xs"
+                type="button"
+                onClick={() => window.open(templateBlockExplorer, "_blank")}
+              >
+                View Registry on Block Explorer
+              </button>
             </div>
+
             <div className="text-xs italic mb-4 opacity-50">
               Click To Review and Copy
             </div>

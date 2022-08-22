@@ -135,7 +135,7 @@ export const CreateContract: FC = () => {
         }
       }}
     >
-      {({ isSubmitting, isValid, dirty, values, errors }) => (
+      {({ isSubmitting, isValid, dirty, values, setFieldValue }) => (
         <Form className="space-y-8 ">
           <div className="container-narrow space-y-8 sm:space-y-5">
             <div>
@@ -343,6 +343,9 @@ export const CreateContract: FC = () => {
                                 />
 
                                 <label
+                                  onClick={() =>
+                                    setFieldValue("chainId", chainId.toString())
+                                  }
                                   htmlFor="push-everything"
                                   className="ml-3 block text-sm font-medium text-gray-700"
                                 >

@@ -48,6 +48,16 @@ export const getIPFSText = async (cid: string | undefined, nocache = false) => {
   return new TextDecoder().decode(content);
 };
 
+export const getIPFSDataUri = async (
+  cid: string | undefined,
+  nocache = false
+) => {
+  const content = await getIPFS(cid, nocache);
+  if (!content) return "";
+  const base64 = encode(content);
+  return base64 ? `data:;base64,${base64}` : "";
+};
+
 export const useIPFS = (cid: string | undefined) => {
   const [ipfs, setIPFS] = useState<ArrayBuffer>();
   useAsyncEffect(async () => {
