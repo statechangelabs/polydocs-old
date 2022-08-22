@@ -83,7 +83,6 @@ let madeTables = false;
 const makeTables = async () => {
   if (madeTables) return;
   const tableNames = await qldbDriver.getTableNames();
-  console.log(tableNames);
   if (!tableNames.includes("Contracts")) {
     //Build transmissions table
     await qldbDriver.executeLambda(async (txn) => {
@@ -149,19 +148,14 @@ const getAccountsForUser = async (address: string) => {
   const user = await getUser(address);
   if (user) {
     const accounts = user.get("accounts") as List;
-    console.log("accounts as list", accounts);
-    console.log("length of accounts", accounts.length);
-    console.log("first account", accounts.get(0));
     const accountArr: Value[] = [];
     for (let i = 0; i < accounts.length; i++) {
       const a = accounts.get(i);
       if (a) {
-        console.log("account", a);
         accountArr.push(a);
       }
     }
     const output = accountArr.map((v) => v.stringValue()).filter(Boolean);
-    console.log("Outputs");
     if (output && output.length) return output as string[];
   }
   return [];
@@ -241,11 +235,9 @@ const makeAuthenticatedFunc = (
       }
     }
     const accountIds = await getAccountsForUser(payload.address);
-    console.log("accountIds", accountIds);
     const accountList = (
       await Promise.all(accountIds.map(async (id) => await getAccount(id)))
     ).filter(Boolean);
-    console.log("accountList", accountList);
     const accounts = accountList.reduce(
       (acc, account) => ({
         ...acc,
@@ -253,7 +245,6 @@ const makeAuthenticatedFunc = (
       }),
       {}
     );
-    console.log("accounts", accounts);
     if (!Object.keys(accounts).length) {
       return sendHttpResult(401, "No Authorized accounts");
     }
@@ -276,17 +267,7 @@ const getProvider = (chainId: string) => {
 const getGasOptions = async (chainId: string) => {
   const { provider } = getProvider(chainId);
 
-  const feeData = await provider.getFeeData();
   const gasPrice = await provider.getGasPrice();
-
-  // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
-  // console.log("A hundred gwei is", hundredgwei.toString());
-  console.log(
-    "feedata",
-    feeData.maxFeePerGas?.toNumber().toLocaleString(),
-    feeData.maxPriorityFeePerGas?.toNumber().toLocaleString()
-  );
-  console.log("ethers gasprice", gasPrice.toNumber().toLocaleString());
   const maxFeePerGas = gasPrice
     ? gasPrice.gt(utils.parseUnits("10", "gwei"))
       ? gasPrice.mul(5)
@@ -294,7 +275,7 @@ const getGasOptions = async (chainId: string) => {
     : utils.parseUnits("100", "gwei");
   const maxPriorityFeePerGas = maxFeePerGas.mul(2).div(10);
   console.log(
-    "using recalculated",
+    "using recalculated gas fees",
     maxFeePerGas.toNumber().toLocaleString(),
     maxPriorityFeePerGas.toNumber().toLocaleString()
   );
@@ -438,7 +419,6 @@ export const deployNFTContract = makeAPIGatewayLambda({
 export const doDeploy = makeLambda({
   timeout: 300,
   func: async (event) => {
-    console.log("my event is ", event);
     const {
       royaltyRecipient,
       royaltyPercentage,
@@ -460,8 +440,6 @@ export const doDeploy = makeLambda({
     const gasPrice = await provider.getGasPrice();
     const polyDocsFactory = new ERC721Termsable__factory(signer);
 
-    // const hundredgwei = ethers.utils.parseUnits("100", "gwei");
-    // console.log("A hundred gwei is", hundredgwei.toString());
     console.log("Deploying with", address, name, symbol);
     console.log(
       "feedata",
@@ -512,30 +490,20 @@ export const doDeploy = makeLambda({
       });
       return true;
     });
-    console.log("I will wait to be deployed", polyDocs.address);
     await polyDocs.deployed();
-    console.log("I have been deployed");
-    const testName = await polyDocs.name();
-    console.log("I am named", testName);
-    if (testName !== name)
-      console.log("I will set polydocs", renderer, template, []);
+
     const pdTxn = await polyDocs.setPolydocs(renderer, template, [], {
       maxFeePerGas,
       maxPriorityFeePerGas,
     });
-    console.log("Wiating for pd", pdTxn);
     await pdTxn.wait();
-    console.log("I set polydocs");
-    console.log("I will set the URI", uri);
     const mdTxn = await polyDocs.setURI(uri, {
       maxFeePerGas,
       maxPriorityFeePerGas,
     });
-    console.log("I set the uri");
+
     //@TODO support royalty
-    console.log("Waiting for md", mdTxn);
     await mdTxn.wait();
-    console.log("I have a deployed polydocs with Metadata");
     await qldbDriver.executeLambda(async (tx) => {
       await tx.execute(`UPDATE Contracts SET deployed = 1 WHERE id = '${id}'`);
     });
@@ -544,7 +512,6 @@ export const doDeploy = makeLambda({
 export const hhDeploy = makeLambda({
   timeout: 300,
   func: async (event) => {
-    console.log("my event is ", event);
     const {
       address,
       name,
@@ -552,6 +519,7 @@ export const hhDeploy = makeLambda({
       renderer = DEFAULT_RENDERER,
       template = DEFAULT_TEMPLATE,
       terms = {},
+      chainId,
     }: {
       address: string;
       name: string;
@@ -559,23 +527,10 @@ export const hhDeploy = makeLambda({
       renderer: string;
       template: string;
       terms: Record<string, string>;
+      chainId: string;
     } = event;
-    console.log("hello!!!");
-    if (!process.env.METASIGNER_MUMBAI_PRIVATE_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
-    if (!process.env.ALCHEMY_MUMBAI_KEY)
-      return sendHttpResult(500, "Environment keys not properly set up");
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      process.env.ALCHEMY_MUMBAI_KEY
-      // "0x" + (80001).toString(16)
-    );
-    // const provider = ethers.getDefaultProvider(80001);
-    console.log("provider key", process.env.ALCHEMY_MUMBAI_KEY);
-    // console.log("provider", provider);
-    const signer = new ethers.Wallet(
-      process.env.METASIGNER_MUMBAI_PRIVATE_KEY,
-      provider
-    );
+    const { provider, signer } = getProvider(chainId);
+
     //time to deploy
     // build the new contract
     //copy everything into tmp/contracts
@@ -736,7 +691,6 @@ export const getContracts = makeAPIGatewayLambda({
     const { account, accountError } = validateAccount(accountId);
     if (accountError) return accountError;
     //lets get my contracts
-    console.log("Getting my contracts", accountId);
     const list = await qldbDriver.executeLambda(async (txn) => {
       const result = await txn.execute(
         `SELECT * FROM Contracts WHERE owner = ?`,
@@ -744,9 +698,7 @@ export const getContracts = makeAPIGatewayLambda({
       );
       return result.getResultList();
     });
-    console.log("I got my contracts", list);
     const output = list.map((v, i) => {
-      // console.log("v is ", v, i);
       const id = v.get("id")?.stringValue() ?? "";
       const [chainId, address] = id.split("::");
       const name = v.get("name")?.stringValue() ?? "";
