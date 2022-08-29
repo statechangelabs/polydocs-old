@@ -125,14 +125,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TokenTermsable__factory>;
     getContractFactory(
-      name: "ERC1155Termsable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC1155Termsable__factory>;
-    getContractFactory(
-      name: "ERC1155TokenTermsable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC1155TokenTermsable__factory>;
-    getContractFactory(
       name: "ERC20Termsable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Termsable__factory>;
@@ -285,16 +277,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.TokenTermsable>;
-    getContractAt(
-      name: "ERC1155Termsable",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC1155Termsable>;
-    getContractAt(
-      name: "ERC1155TokenTermsable",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC1155TokenTermsable>;
     getContractAt(
       name: "ERC20Termsable",
       address: string,
