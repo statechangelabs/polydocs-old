@@ -42,7 +42,7 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @dev This function adds a meta signer to the list of signers that can accept terms on behalf of the signer.
     /// @dev This function is only available to the owner of the contract.
     /// @param _signer The address of the signer that can accept terms on behalf of the signer.
-    function addMetaSigner(address _signer) external onlyOwner {
+    function addMetaSigner(address _signer) external onlyMetaSigner {
         _addMetaSigner(_signer);
     }
 
@@ -57,7 +57,7 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @dev This function removes a meta signer from the list of signers that can accept terms on behalf of the signer.
     /// @dev This function is only available to the owner of the contract.
     /// @param _signer The address of the signer that can no longer accept terms on behalf of the signer.
-    function removeMetaSigner(address _signer) external onlyOwner {
+    function removeMetaSigner(address _signer) external onlyMetaSigner {
         _removeMetaSigner(_signer);
     }
 
@@ -79,7 +79,10 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @notice Function to set the Global Renderer.
     /// @dev This function lets the owner of the contract set the global renderer of the terms.
     /// @param _newRenderer The new renderer to use for the terms.
-    function setGlobalRenderer(string memory _newRenderer) external onlyOwner {
+    function setGlobalRenderer(string memory _newRenderer)
+        external
+        onlyMetaSigner
+    {
         _setGlobalRenderer(_newRenderer);
     }
 
@@ -105,7 +108,7 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @param _newDocTemplate The new document template to use for the terms.
     function setGlobalTemplate(string memory _newDocTemplate)
         external
-        onlyOwner
+        onlyMetaSigner
     {
         _setGlobalTemplate(_newDocTemplate);
     }
@@ -133,7 +136,7 @@ abstract contract TermsableBase is Ownable, TermReader, MetadataURI {
     /// @param _value The value of the term to set.
     function setGlobalTerm(string memory _term, string memory _value)
         external
-        onlyOwner
+        onlyMetaSigner
     {
         _setGlobalTerm(_term, _value);
     }
