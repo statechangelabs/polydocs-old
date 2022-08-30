@@ -32,6 +32,7 @@ import {
 import { DropFile } from "./DropFile";
 import { useAuthenticatedFetch } from "./Authenticator";
 import { useUpload } from "./useIPFSUpload";
+import { blockExplorers } from "./chains";
 const knownRenderers = [
   "bafybeig44fabnqp66umyilergxl6bzwno3ntill3yo2gtzzmyhochbchhy",
 ];
@@ -724,7 +725,7 @@ const Contract: FC = () => {
           <div>
             <a
               className="btn-gradient btn mr-2"
-              href="/"
+              href={blockExplorers[parseInt(chainId)] + contractAddress}
               target="_blank"
               rel="noreferrer"
             >
