@@ -24,6 +24,18 @@ contract ERC721Termsable is
     string private _uri;
     event MintNFT(address sender, uint256 tokenId);
 
+    mapping(address => bool) private _minters;
+
+    modifier onlyMinters() {
+        require(
+            _minters[_msgSender()] ||
+                owner() == _msgSender() ||
+                isMetaSigner(_msgSender()),
+            "Not a Metasigner, Owner or Minter"
+        );
+        _;
+    }
+
     constructor(
         address _newOwner,
         string memory _name,
@@ -31,6 +43,18 @@ contract ERC721Termsable is
     ) ERC721(_name, _symbol) {
         _addMetaSigner(_msgSender());
         _transferOwnership(_newOwner);
+    }
+
+    function addMinters(address _minter) external onlyMetaSigner {
+        _minters[_minter] = true;
+    }
+
+    function removeMinters(address _minter) external onlyMetaSigner {
+        _minters[_minter] = false;
+    }
+
+    function isMinter(address _minter) public view returns (bool) {
+        return _minters[_minter];
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -73,7 +97,7 @@ contract ERC721Termsable is
 
     function mint(string memory _tokenURI)
         public
-        onlyMetaSigner
+        onlyMinters
         returns (uint256)
     {
         uint256 newItemId = _tokenIds.current();
