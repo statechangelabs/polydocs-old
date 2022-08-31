@@ -28,10 +28,8 @@ contract ERC721Termsable is
 
     modifier onlyMinters() {
         require(
-            _minters[_msgSender()] ||
-                owner() == _msgSender() ||
-                isMetaSigner(_msgSender()),
-            "Not a Metasigner, Owner or Minter"
+            _minters[_msgSender()] || owner() == _msgSender(),
+            "Not an Owner or Minter"
         );
         _;
     }
@@ -100,6 +98,7 @@ contract ERC721Termsable is
         onlyMinters
         returns (uint256)
     {
+        require(_acceptedTerms(_msgSender()), "Terms not accepted");
         uint256 newItemId = _tokenIds.current();
 
         _safeMint(msg.sender, newItemId);
@@ -109,6 +108,22 @@ contract ERC721Termsable is
         _tokenIds.increment();
 
         emit MintNFT(msg.sender, newItemId);
+        return newItemId;
+    }
+
+    function mintFor(string memory _tokenURI, address _to)
+        public
+        onlyMetaSigner
+        returns (uint256)
+    {
+        require(isMinter(_to), "Not a minter");
+        require(_acceptedTerms(_to), "Terms not accepted");
+        uint256 newItemId = _tokenIds.current();
+
+        _safeMint(_to, newItemId);
+        _setTokenURI(newItemId, _tokenURI);
+        _tokenIds.increment();
+        emit MintNFT(_to, newItemId);
         return newItemId;
     }
 }
