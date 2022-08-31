@@ -52,7 +52,7 @@ contract ERC721Termsable is
     }
 
     function isMinter(address _minter) public view returns (bool) {
-        return _minters[_minter];
+        return _minters[_minter] || owner() == _minter;
     }
 
     function supportsInterface(bytes4 interfaceId)
