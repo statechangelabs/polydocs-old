@@ -101,6 +101,7 @@ abstract contract TermsableNoToken is TermsableBase, Signable {
     function _termsUrlWithPrefix(string memory prefix)
         internal
         view
+        virtual
         returns (string memory _termsURL)
     {
         _termsURL = string(
